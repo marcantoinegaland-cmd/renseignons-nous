@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Renseignons-nous — Décrypter l'ombre, comprendre le monde. Renseignement, défense, géopolitique et OSINT." />
+<title>Renseignons-nous — Décrypter l'ombre, comprendre le monde</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          abyss:   '#000104',
+          deep:    '#03050a',
+          panel:   '#070a11',
+          steel:   '#10151f',
+          mist:    '#8a98ad',
+          radar:   '#5d8cff',
+          alert:   '#ef4452',
+          night:   '#3b82f6',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(1200px 700px at 12% 8%, rgba(93,140,255,0.07), transparent 60%),
+      radial-gradient(1000px 800px at 88% 92%, rgba(59,130,246,0.06), transparent 60%),
+      #000104;
+    color: #e2e8f0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Texture radar / grain */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(77,124,254,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,124,254,0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .bg-noise::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.30 0 0 0 0 0.49 0 0 0 0 1.00 0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.4'/></svg>");
+    opacity: 0.08; pointer-events: none; mix-blend-mode: overlay;
+  }
+
+  /* ===== Liquid Glass system ===== */
+  .glass {
+    position: relative;
+    background: rgba(10, 14, 22, 0.35);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.08),
+      inset -1px -1px 0 0 rgba(255,255,255,0.02),
+      0 10px 40px -10px rgba(0,0,0,0.6);
+  }
+  .glass-strong {
+    background: rgba(3, 5, 10, 0.55);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
+  }
+
+  /* Liquid glass — refractive distortion via SVG filter */
+  .liquid-glass {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      inset 1.5px 1.5px 0 0 rgba(255,255,255,0.10),
+      inset -1px -1px 0 0 rgba(255,255,255,0.03),
+      0 20px 60px -20px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(93,140,255,0.04);
+  }
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: url(#liquid-distortion) blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+  .liquid-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.06), transparent 50%),
+      radial-gradient(120% 80% at 100% 100%, rgba(93,140,255,0.05), transparent 50%);
+    mix-blend-mode: screen;
+  }
+
+  /* Glow CTA */
+  .btn-glow {
+    position: relative;
+    transition: all .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .btn-glow::before {
+    content:""; position:absolute; inset:-2px; border-radius:inherit;
+    background: radial-gradient(60% 100% at 50% 50%, rgba(77,124,254,.55), transparent 70%);
+    opacity:0; transition: opacity .35s ease; z-index:-1; filter: blur(14px);
+  }
+  .btn-glow:hover::before { opacity: 1; }
+  .btn-glow:hover { transform: translateY(-1px); }
+
+  /* Radar pulse */
+  @keyframes pulse-radar {
+    0%   { box-shadow: 0 0 0 0 rgba(77,124,254,.55); }
+    70%  { box-shadow: 0 0 0 14px rgba(77,124,254,0); }
+    100% { box-shadow: 0 0 0 0 rgba(77,124,254,0); }
+  }
+  .pulse-dot { animation: pulse-radar 2.4s infinite; }
+
+  /* Marquee */
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .ticker-track { animation: ticker 45s linear infinite; }
+
+  /* Hover zoom image */
+  .zoom-img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter .6s ease; }
+  .group:hover .zoom-img { transform: scale(1.08); filter: saturate(1.1) contrast(1.05); }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .text-radar { color: #4d7cfe; }
+
+  /* Classified stamp */
+  .stamp {
+    border: 1.5px solid currentColor;
+    padding: 4px 10px;
+    letter-spacing: .22em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+
+  /* Hero spotlight */
+  .spotlight {
+    background:
+      radial-gradient(800px 500px at 18% 30%, rgba(77,124,254,.10), transparent 60%),
+      radial-gradient(700px 600px at 85% 70%, rgba(59,130,246,.10), transparent 60%);
+  }
+
+  /* Tag */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid rgba(77,124,254,.25);
+    color: #4d7cfe;
+    background: rgba(77,124,254,.06);
+    border-radius: 4px;
+  }
+  .tag.alert { border-color: rgba(239,68,82,.35); color: #ef4452; background: rgba(239,68,82,.06); }
+  .tag.night { border-color: rgba(59,130,246,.35); color: #93c5fd; background: rgba(59,130,246,.06); }
+
+  /* ===== Cosmic parallax ===== */
+  :root { --animation-iteration: infinite; }
+
+  .cosmic-parallax-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100dvh;
+    background: radial-gradient(ellipse at bottom, #0b1730 0%, #03060d 75%);
+    overflow: hidden;
+    isolation: isolate;
+    z-index: 40;
+    transition: opacity .9s cubic-bezier(.2,.7,.2,1);
+    will-change: opacity, transform;
+  }
+  .cosmic-parallax-container.is-done {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .cosmic-stars,
+  .cosmic-stars-medium,
+  .cosmic-stars-large {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1px; height: 1px;
+    background: transparent;
+    animation: animStar 50s linear var(--animation-iteration);
+  }
+  .cosmic-stars-medium { width: 2px; height: 2px; animation-duration: 100s; }
+  .cosmic-stars-large  { width: 3px; height: 3px; animation-duration: 150s; }
+  .cosmic-stars::after,
+  .cosmic-stars-medium::after,
+  .cosmic-stars-large::after {
+    content: ""; position: absolute; top: 2000px; left: 0;
+    width: inherit; height: inherit; background: transparent;
+    box-shadow: inherit;
+  }
+
+  #horizon {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #4d7cfe 50%, transparent);
+    box-shadow: 0 0 16px 2px rgba(77,124,254,0.55);
+  }
+  #horizon .glow {
+    position: absolute;
+    bottom: -2px; left: 50%;
+    transform: translateX(-50%);
+    width: 90%; height: 220px;
+    background: radial-gradient(ellipse at bottom, rgba(77,124,254,0.55) 0%, rgba(77,124,254,0.15) 35%, transparent 70%);
+    filter: blur(28px);
+    pointer-events: none;
+  }
+  #earth {
+    position: absolute;
+    bottom: -65vw; left: 50%;
+    transform: translateX(-50%);
+    width: 130vw; height: 130vw;
+    max-width: 1600px; max-height: 1600px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 30%, #050810 0%, #02040a 70%, #000 100%);
+    box-shadow: 0 -20px 80px rgba(77,124,254,0.35);
+  }
+
+  #title {
+    position: absolute;
+    top: 42%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.22em;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.4rem, 7vw, 5.5rem);
+    letter-spacing: 0.18em;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 0 32px rgba(77,124,254,0.45);
+    z-index: 5;
+  }
+  .title-part {
+    display: inline-block;
+    will-change: transform;
+  }
+  .title-dash {
+    display: inline-block;
+    font-weight: 300;
+    opacity: 0.55;
+    transition: opacity .25s ease;
+  }
+  #subtitle {
+    position: absolute;
+    top: 54%; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.7rem, 1.1vw, 0.95rem);
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.35em;
+    text-align: center;
+    width: max-content; max-width: 92vw;
+    z-index: 5;
+  }
+  #subtitle span { display: inline-block; opacity: 0; }
+  #subtitle .subtitle-part-1 { animation: animGravity 4.5s ease-in-out var(--animation-iteration); }
+  #subtitle .subtitle-part-2 { animation: animLet     4.5s ease-in-out var(--animation-iteration); }
+  #subtitle .subtitle-part-3 { animation: animGo      4.5s ease-in-out var(--animation-iteration); }
+
+  .cosmic-scroll-cue {
+    position: absolute;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .35em;
+    color: rgba(255,255,255,0.55);
+    z-index: 5;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .cosmic-scroll-cue .line {
+    width: 1px; height: 36px;
+    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.6));
+    animation: scrollPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: .3; transform: scaleY(.6); transform-origin: top; }
+    50%      { opacity: 1;  transform: scaleY(1);   transform-origin: top; }
+  }
+
+  @keyframes animStar {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-2000px); }
+  }
+  @keyframes animGravity {
+    0%             { transform: translateY(-26px); opacity: 0; letter-spacing: .2em; }
+    30%, 80%       { transform: translateY(0);    opacity: 1; letter-spacing: .55em; }
+    92%, 100%      { transform: translateY(-4px); opacity: 0; letter-spacing: .5em; }
+  }
+  @keyframes animLet {
+    0%, 25%        { transform: translateY(-26px); opacity: 0; }
+    45%, 80%       { transform: translateY(0);    opacity: 1; }
+    92%, 100%      { transform: translateY(-4px); opacity: 0; }
+  }
+  @keyframes animGo {
+    0%, 35%        { transform: translateY(-26px); opacity: 0; }
+    55%, 80%       { transform: translateY(0);    opacity: 1; }
+    92%, 100%      { transform: translateY(-4px); opacity: 0; }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #05070a; }
+  ::-webkit-scrollbar-thumb { background: #1a2230; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4d7cfe; }
+
+  /* Underline link */
+  .link-under {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .link-under:hover { background-size: 100% 1px; }
+
+  /* Card — liquid glass */
+  .card {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+      rgba(7, 10, 17, 0.55);
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.06),
+      inset -1px -1px 0 0 rgba(255,255,255,0.02),
+      0 20px 50px -20px rgba(0,0,0,0.7);
+    transition: border-color .4s ease, transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .4s ease;
+  }
+  .card:hover {
+    border-color: rgba(93,140,255,0.30);
+    transform: translateY(-4px);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.10),
+      inset -1px -1px 0 0 rgba(255,255,255,0.03),
+      0 30px 60px -20px rgba(0,0,0,0.85),
+      0 0 30px -5px rgba(93,140,255,0.15);
+  }
+
+  /* Mobile menu */
+  .mobile-panel { transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .4s ease; }
+
+  /* Phone 3D scroll animation */
+  .phone-perspective {
+    perspective: 1400px;
+    perspective-origin: 50% 30%;
+  }
+  .phone-3d {
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: box-shadow .4s ease;
+  }
+  .phone-3d::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(77,124,254,0.35), transparent 40%, transparent 60%, rgba(77,124,254,0.15));
+    z-index: -1;
+    filter: blur(14px);
+    opacity: 0.7;
+  }
+  .phone-slide {
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity .8s ease, transform 4s ease;
+    pointer-events: none;
+  }
+  .phone-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .phone-progress-fill {
+    transition: width .25s linear;
+  }
+
+  /* ===================================================================
+     Sky toggle — dark / light
+     =================================================================== */
+  .theme-switch {
+    --toggle-size: 16px;
+    --container-width: 5.625em;
+    --container-height: 2.5em;
+    --container-radius: 6.25em;
+    --container-light-bg: #3D7EAE;
+    --container-night-bg: #1D1F2C;
+    --circle-container-diameter: 3.375em;
+    --sun-moon-diameter: 2.125em;
+    --sun-bg: #ECCA2F;
+    --moon-bg: #C4C9D1;
+    --spot-color: #959DB1;
+    --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1);
+    --stars-color: #fff;
+    --clouds-color: #F3FDFF;
+    --back-clouds-color: #AACADF;
+    --transition: .5s cubic-bezier(0, -0.02, 0.4, 1.25);
+    --circle-transition: .3s cubic-bezier(0, -0.02, 0.35, 1.17);
+    display: inline-block;
+  }
+  .theme-switch, .theme-switch *, .theme-switch *::before, .theme-switch *::after {
+    box-sizing: border-box; margin: 0; padding: 0; font-size: var(--toggle-size);
+  }
+  .theme-switch__container {
+    width: var(--container-width); height: var(--container-height);
+    background-color: var(--container-night-bg);
+    border-radius: var(--container-radius); overflow: hidden; cursor: pointer;
+    box-shadow: 0em -0.062em 0.062em rgba(0,0,0,0.25), 0em 0.062em 0.125em rgba(255,255,255,0.94);
+    transition: var(--transition); position: relative;
+  }
+  .theme-switch__container::before {
+    content: ""; position: absolute; z-index: 1; inset: 0;
+    box-shadow: 0em 0.05em 0.187em rgba(0,0,0,0.25) inset, 0em 0.05em 0.187em rgba(0,0,0,0.25) inset;
+    border-radius: var(--container-radius);
+  }
+  .theme-switch__checkbox { display: none; }
+  .theme-switch__circle-container {
+    width: var(--circle-container-diameter); height: var(--circle-container-diameter);
+    background-color: rgba(255,255,255,0.1); position: absolute;
+    left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter));
+    top: var(--circle-container-offset); border-radius: var(--container-radius);
+    box-shadow: inset 0 0 0 3.375em rgba(255,255,255,0.1), inset 0 0 0 3.375em rgba(255,255,255,0.1), 0 0 0 0.625em rgba(255,255,255,0.1), 0 0 0 1.25em rgba(255,255,255,0.1);
+    display: flex; transition: var(--circle-transition); pointer-events: none;
+  }
+  .theme-switch__sun-moon-container {
+    pointer-events: auto; position: relative; z-index: 2;
+    width: var(--sun-moon-diameter); height: var(--sun-moon-diameter);
+    margin: auto; border-radius: var(--container-radius); background-color: var(--sun-bg);
+    box-shadow: 0.062em 0.062em 0.062em 0em rgba(254,255,239,0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+    filter: drop-shadow(0.062em 0.125em 0.125em rgba(0,0,0,0.25)) drop-shadow(0em 0.062em 0.125em rgba(0,0,0,0.25));
+    overflow: hidden; transition: var(--transition);
+  }
+  .theme-switch__moon {
+    transform: translate(0); width: 100%; height: 100%;
+    background-color: var(--moon-bg); border-radius: inherit;
+    box-shadow: 0.062em 0.062em 0.062em 0em rgba(254,255,239,0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+    transition: var(--transition); position: relative;
+  }
+  .theme-switch__spot {
+    position: absolute; top: 0.75em; left: 0.312em;
+    width: 0.75em; height: 0.75em; border-radius: var(--container-radius);
+    background-color: var(--spot-color);
+    box-shadow: 0em 0.0312em 0.062em rgba(0,0,0,0.25) inset;
+  }
+  .theme-switch__spot:nth-of-type(2) { width: 0.375em; height: 0.375em; top: 0.937em; left: 1.375em; }
+  .theme-switch__spot:nth-last-of-type(3) { width: 0.25em; height: 0.25em; top: 0.312em; left: 0.812em; }
+  .theme-switch__clouds {
+    width: 1.25em; height: 1.25em; background-color: var(--clouds-color);
+    border-radius: var(--container-radius); position: absolute;
+    bottom: -4.062em; left: 0.312em;
+    box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+    transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+  }
+  .theme-switch__stars-container {
+    position: absolute; color: var(--stars-color);
+    top: 50%; transform: translateY(-50%); left: 0.312em;
+    width: 2.75em; height: auto; transition: var(--transition);
+  }
+  /* Light (checked) state */
+  .theme-switch__checkbox:checked + .theme-switch__container { background-color: var(--container-light-bg); }
+  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container {
+    left: var(--circle-container-offset);
+  }
+  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container:hover {
+    left: calc(var(--circle-container-offset) + 0.187em);
+  }
+  .theme-switch__circle-container:hover {
+    left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter) - 0.187em);
+  }
+  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__moon { transform: translateX(100%); }
+  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__clouds { bottom: -0.625em; }
+  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__stars-container {
+    top: -100%; transform: translateY(0);
+  }
+
+  /* ===================================================================
+     Tubelight navbar
+     =================================================================== */
+  .tubelight-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    bottom: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .tubelight-nav { top: 1rem; bottom: auto; }
+  }
+  .tubelight-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem;
+    border-radius: 9999px;
+    background: rgba(10, 14, 22, 0.45);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.08),
+      inset -1px -1px 0 0 rgba(255,255,255,0.02),
+      0 20px 60px -20px rgba(0,0,0,0.7);
+  }
+  .tube-item {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(226,232,240,0.75);
+    transition: color .25s ease;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  @media (min-width: 768px) {
+    .tube-item { padding: 0.5rem 1.25rem; font-size: 0.875rem; }
+  }
+  .tube-item:hover { color: #5d8cff; }
+  .tube-item.is-active { color: #5d8cff; }
+  .tube-item .tube-label { display: none; }
+  .tube-item .tube-icon { display: inline-flex; }
+  @media (min-width: 768px) {
+    .tube-item .tube-label { display: inline; }
+    .tube-item .tube-icon { display: none; }
+  }
+  .tube-lamp-wrap {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    border-radius: 9999px;
+    background: rgba(93,140,255,0.07);
+    pointer-events: none;
+    transition: transform .45s cubic-bezier(.2,.7,.2,1.2), width .45s cubic-bezier(.2,.7,.2,1.2);
+    will-change: transform, width;
+  }
+  .tube-lamp-bar {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 2rem; height: 4px;
+    background: #5d8cff;
+    border-radius: 0 0 9999px 9999px;
+    transform-origin: center top;
+    overflow: visible;
+  }
+  .tube-lamp-bar::before,
+  .tube-lamp-bar::after {
+    content: "";
+    position: absolute;
+    border-radius: 9999px;
+    background: rgba(93,140,255,0.25);
+    filter: blur(10px);
+  }
+  .tube-lamp-bar::before { width: 3rem; height: 1.5rem; top: -0.5rem; left: -0.5rem; }
+  .tube-lamp-bar::after  { width: 2rem; height: 1.5rem; top: -0.25rem; left: 0; filter: blur(8px); }
+
+  /* Light theme adjustments for tubelight */
+  :root[data-theme="light"] .tubelight-pill {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(15,23,42,0.08);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.9),
+      0 20px 60px -25px rgba(15,23,42,0.30);
+  }
+  :root[data-theme="light"] .tube-item { color: rgba(15,23,42,0.70); }
+  :root[data-theme="light"] .tube-item:hover,
+  :root[data-theme="light"] .tube-item.is-active { color: #2563eb; }
+  :root[data-theme="light"] .tube-lamp-wrap { background: rgba(37,99,235,0.08); }
+  :root[data-theme="light"] .tube-lamp-bar { background: #2563eb; }
+  :root[data-theme="light"] .tube-lamp-bar::before,
+  :root[data-theme="light"] .tube-lamp-bar::after { background: rgba(37,99,235,0.28); }
+
+  /* ===================================================================
+     Reader (article fullscreen)
+     =================================================================== */
+  .article-card { cursor: pointer; }
+
+  .reader {
+    position: fixed; inset: 0; z-index: 100;
+    overflow-y: auto;
+    background: #000104;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s ease, visibility 0s linear .35s;
+  }
+  .reader.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .35s ease;
+  }
+  :root[data-theme="light"] .reader { background: #eef2f7; }
+
+  .reader-hero {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    min-height: 420px;
+    overflow: hidden;
+    background: #03050a;
+  }
+  .reader-hero-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    will-change: transform;
+    transform-origin: top left;
+  }
+  .reader-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,1,4,0) 30%, rgba(0,1,4,0.55) 70%, rgba(0,1,4,1) 100%);
+    pointer-events: none;
+  }
+  .reader-hero-content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 2rem 1.5rem 2.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .5s ease .35s, transform .6s cubic-bezier(.2,.7,.2,1) .35s;
+  }
+  @media (min-width: 768px) {
+    .reader-hero-content { padding: 3rem 4rem 3.5rem; }
+  }
+  .reader.is-open .reader-hero-content { opacity: 1; transform: translateY(0); }
+  .reader-tags { display: inline-flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .reader-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: #5d8cff;
+    margin-bottom: .75rem;
+  }
+  .reader-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.85rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    color: #fff;
+    max-width: 900px;
+    letter-spacing: -0.01em;
+  }
+  .reader-dek {
+    margin-top: 1rem;
+    font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+    color: rgba(255,255,255,0.85);
+    max-width: 720px;
+    line-height: 1.5;
+  }
+
+  .reader-body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .5s ease .55s, transform .6s cubic-bezier(.2,.7,.2,1) .55s;
+  }
+  @media (min-width: 768px) {
+    .reader-body { padding: 4rem 2rem 6rem; font-size: 1.1rem; }
+  }
+  .reader.is-open .reader-body { opacity: 1; transform: translateY(0); }
+  .reader-body p { margin: 0 0 1.25rem; }
+  .reader-body p.lead {
+    font-size: 1.25rem;
+    color: #e2e8f0;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+  .reader-body h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 2.5rem 0 1rem;
+    font-weight: 700;
+  }
+  .reader-body blockquote {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid #5d8cff;
+    background: rgba(93,140,255,0.05);
+    border-radius: 0 8px 8px 0;
+    color: #e2e8f0;
+    font-style: italic;
+  }
+  :root[data-theme="light"] .reader-title,
+  :root[data-theme="light"] .reader-body h2 { color: #04060d; }
+  :root[data-theme="light"] .reader-dek { color: rgba(15,23,42,0.85); }
+  :root[data-theme="light"] .reader-body { color: #1f2937; }
+  :root[data-theme="light"] .reader-body p.lead { color: #0f172a; }
+  :root[data-theme="light"] .reader-kicker { color: #1d4ed8; }
+  :root[data-theme="light"] .reader-body blockquote { background: rgba(37,99,235,0.05); color: #0f172a; border-left-color: #2563eb; }
+
+  /* Article signature */
+  .article-signature {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    text-align: center;
+  }
+  .article-signature .sig-rule {
+    display: block;
+    width: 60px;
+    height: 1px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(90deg, transparent, rgba(93,140,255,0.8), transparent);
+  }
+  .article-signature .sig-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+  .article-signature .sig-pub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: #5d8cff;
+    margin: 0.5rem 0 0;
+  }
+  :root[data-theme="light"] .article-signature .sig-name { color: #04060d; }
+  :root[data-theme="light"] .article-signature .sig-pub { color: #1d4ed8; }
+
+  .reader-close {
+    position: fixed;
+    top: 1.25rem; right: 1.25rem;
+    z-index: 110;
+    width: 44px; height: 44px;
+    border-radius: 9999px;
+    background: rgba(10,14,22,0.6);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .25s ease, transform .25s ease;
+  }
+  .reader-close:hover { background: rgba(93,140,255,0.20); transform: scale(1.05); }
+  :root[data-theme="light"] .reader-close {
+    background: rgba(255,255,255,0.7);
+    color: #0f172a;
+    border-color: rgba(15,23,42,0.10);
+  }
+
+  /* Animating image during open */
+  .article-card.is-opening .zoom-img { opacity: 0; transition: opacity .1s ease; }
+
+  /* ===================================================================
+     Light mode overrides
+     =================================================================== */
+  :root[data-theme="light"] body {
+    background:
+      radial-gradient(1200px 700px at 12% 8%, rgba(77,124,254,0.10), transparent 60%),
+      radial-gradient(1000px 800px at 88% 92%, rgba(59,130,246,0.08), transparent 60%),
+      #eef2f7;
+    color: #0f172a;
+  }
+  :root[data-theme="light"] .bg-abyss,
+  :root[data-theme="light"] .bg-deep,
+  :root[data-theme="light"] .bg-panel,
+  :root[data-theme="light"] .bg-steel { background-color: #eef2f7 !important; }
+  :root[data-theme="light"] .bg-deep\/40 { background-color: rgba(238,242,247,0.6) !important; }
+  :root[data-theme="light"] .bg-abyss\/60 { background-color: rgba(255,255,255,0.7) !important; }
+
+  :root[data-theme="light"] .text-white { color: #04060d !important; }
+  :root[data-theme="light"] .text-mist { color: #1f2937 !important; }
+  :root[data-theme="light"] .text-slate-200,
+  :root[data-theme="light"] .text-slate-300 { color: #0f172a !important; }
+  :root[data-theme="light"] .text-slate-400 { color: #1e293b !important; }
+  :root[data-theme="light"] body { color: #0b1220; }
+  :root[data-theme="light"] .placeholder\:text-mist\/60::placeholder { color: rgba(31,41,55,0.7) !important; }
+  /* Hover state on nav/footer links */
+  :root[data-theme="light"] .hover\:text-white:hover { color: #04060d !important; }
+  /* Mono captions remain readable */
+  :root[data-theme="light"] .font-mono.text-radar { color: #1d4ed8 !important; }
+
+  /* Text overlaid on images stays white (dark gradient overlay preserves contrast) */
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-white,
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-slate-200,
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-slate-300,
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-slate-400,
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-mist,
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-white,
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-slate-200,
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-slate-300,
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-slate-400,
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-mist,
+  :root[data-theme="light"] *:has(> img.object-cover) .text-white,
+  :root[data-theme="light"] *:has(> img.object-cover) .text-mist {
+    color: #ffffff !important;
+  }
+  :root[data-theme="light"] .card:has(img.zoom-img) .font-mono.text-radar,
+  :root[data-theme="light"] a:has(> img.zoom-img) .font-mono.text-radar {
+    color: #93c5fd !important;
+  }
+
+  :root[data-theme="light"] .border-white\/5,
+  :root[data-theme="light"] .border-white\/10 { border-color: rgba(15,23,42,0.10) !important; }
+  :root[data-theme="light"] .border-radar\/40 { border-color: rgba(77,124,254,0.45) !important; }
+
+  /* Glass surfaces invert */
+  :root[data-theme="light"] .glass {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(15,23,42,0.08);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.9),
+      inset -1px -1px 0 0 rgba(15,23,42,0.03),
+      0 10px 40px -15px rgba(15,23,42,0.20);
+  }
+  :root[data-theme="light"] .glass-strong {
+    background: rgba(255,255,255,0.78);
+    border-bottom: 1px solid rgba(15,23,42,0.08);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.9);
+  }
+  :root[data-theme="light"] .liquid-glass {
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(15,23,42,0.10);
+    box-shadow:
+      inset 1.5px 1.5px 0 0 rgba(255,255,255,0.9),
+      inset -1px -1px 0 0 rgba(15,23,42,0.04),
+      0 20px 60px -20px rgba(15,23,42,0.25),
+      0 0 0 1px rgba(77,124,254,0.05);
+  }
+  :root[data-theme="light"] .card {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45)),
+      rgba(255,255,255,0.5);
+    border: 1px solid rgba(15,23,42,0.08);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,0.95),
+      0 20px 50px -20px rgba(15,23,42,0.18);
+  }
+  :root[data-theme="light"] .card:hover {
+    border-color: rgba(77,124,254,0.45);
+    box-shadow:
+      inset 1px 1px 0 0 rgba(255,255,255,1),
+      0 30px 60px -20px rgba(15,23,42,0.25),
+      0 0 30px -5px rgba(77,124,254,0.20);
+  }
+
+  /* Tags / accents */
+  :root[data-theme="light"] .tag { background: rgba(77,124,254,0.10); color: #2563eb; border-color: rgba(37,99,235,0.30); }
+  :root[data-theme="light"] .text-radar { color: #2563eb; }
+  :root[data-theme="light"] .text-gradient { background: linear-gradient(180deg, #0f172a 0%, #475569 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* Hovers */
+  :root[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgba(15,23,42,0.05) !important; }
+  :root[data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(15,23,42,0.08) !important; }
+
+  /* CTA radar stays vivid; text on radar bg becomes white in light mode */
+  :root[data-theme="light"] .bg-radar { background-color: #2563eb !important; }
+  :root[data-theme="light"] .text-abyss { color: #ffffff !important; }
+  :root[data-theme="light"] .bg-abyss.w-1\.5 { background-color: #ffffff !important; }
+
+  /* Scrollbar */
+  :root[data-theme="light"] ::-webkit-scrollbar-track { background: #eef2f7; }
+  :root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+  :root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+
+  /* Cosmic hero stays dark even in light mode (it's an intro intentionally cosmic) */
+</style>
+</head>
+
+<body class="bg-abyss text-slate-200 selection:bg-radar/30 selection:text-white">
+
+<!-- Liquid glass distortion filter -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="liquid-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="9" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="2" result="softNoise"/>
+      <feDisplacementMap in="SourceGraphic" in2="softNoise" scale="60" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ============== HEADER GLASSMORPHISM ============== -->
+<header id="topbar" class="fixed top-0 inset-x-0 z-50 glass-strong">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="#accueil" class="flex items-center gap-3 group">
+      <div class="relative w-9 h-9 rounded-md bg-gradient-to-br from-steel to-deep border border-radar/30 flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-radar/5"></div>
+        <span class="font-mono text-radar text-[11px] tracking-widest">R/N</span>
+        <span class="absolute -right-0.5 -top-0.5 w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
+      </div>
+      <div class="leading-tight">
+        <p class="font-display font-bold text-sm tracking-tight text-white">Renseignons-nous</p>
+        <p class="font-mono text-[9px] tracking-[.25em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
+      </div>
+    </a>
+
+    <!-- CTA -->
+    <div class="flex items-center gap-3">
+      <label class="theme-switch" title="Basculer dark / light">
+        <input type="checkbox" class="theme-switch__checkbox" id="themeToggle" />
+        <div class="theme-switch__container">
+          <div class="theme-switch__clouds"></div>
+          <div class="theme-switch__stars-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.8313 24.0069C84.6075 23.1635 84.9956 22.1642 84.9956 21C84.9956 22.1642 85.3837 23.1635 86.1599 24.0069C86.9361 24.8503 87.8798 25.2903 89 25.3545C88.2679 25.3911 87.5976 25.602 86.9802 26.0053C86.3716 26.3995 85.8864 26.9312 85.5248 27.5913C85.172 28.2513 84.9956 28.9572 84.9956 29.7273C84.9956 28.563 84.6075 27.5546 83.8313 26.7112C83.0551 25.8587 82.1114 25.4095 81 25.3545ZM136 36.3545C137.111 36.2995 138.055 35.8503 138.831 35.0069C139.607 34.1635 139.996 33.1642 139.996 32C139.996 33.1642 140.384 34.1635 141.16 35.0069C141.936 35.8503 142.88 36.2903 144 36.3545C143.268 36.3911 142.598 36.602 141.98 37.0053C141.372 37.3995 140.886 37.9312 140.525 38.5913C140.172 39.2513 139.996 39.9572 139.996 40.7273C139.996 39.563 139.607 38.5546 138.831 37.7112C138.055 36.8587 137.111 36.4095 136 36.3545ZM101.831 49.0069C101.055 49.8503 100.111 50.2995 99 50.3545C100.111 50.4095 101.055 50.8587 101.831 51.7112C102.607 52.5546 102.996 53.563 102.996 54.7273C102.996 53.9572 103.172 53.2513 103.525 52.5913C103.886 51.9312 104.372 51.3995 104.98 51.0053C105.598 50.602 106.268 50.3911 107 50.3545C105.88 50.2903 104.936 49.8503 104.16 49.0069C103.384 48.1635 102.996 47.1642 102.996 46C102.996 47.1642 102.607 48.1635 101.831 49.0069Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="theme-switch__circle-container">
+            <div class="theme-switch__sun-moon-container">
+              <div class="theme-switch__moon">
+                <div class="theme-switch__spot"></div>
+                <div class="theme-switch__spot"></div>
+                <div class="theme-switch__spot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </label>
+      <a href="#abonnement" class="btn-glow hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-radar text-abyss text-sm font-semibold tracking-tight">
+        <span class="w-1.5 h-1.5 rounded-full bg-abyss"></span>
+        Alerte · S'abonner
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== TUBELIGHT NAVBAR ============== -->
+<nav class="tubelight-nav" aria-label="Navigation principale">
+  <div class="tubelight-pill" id="tubelightPill">
+    <span class="tube-lamp-wrap" id="tubeLamp"><span class="tube-lamp-bar"></span></span>
+    <a href="#accueil" class="tube-item is-active" data-tube data-cat-filter="all">
+      <span class="tube-label">Accueil</span>
+      <span class="tube-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5Z"/></svg>
+      </span>
+    </a>
+    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="renseignement">
+      <span class="tube-label">Renseignement</span>
+      <span class="tube-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </span>
+    </a>
+    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="defense">
+      <span class="tube-label">Défense</span>
+      <span class="tube-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3Z"/></svg>
+      </span>
+    </a>
+    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="geopolitique">
+      <span class="tube-label">Géopolitique</span>
+      <span class="tube-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+      </span>
+    </a>
+  </div>
+</nav>
+
+
+<!-- ============== COSMIC SPLASH ============== -->
+<section id="splash" class="relative">
+  <div class="cosmic-parallax-container">
+    <div id="stars"  class="cosmic-stars"></div>
+    <div id="stars2" class="cosmic-stars-medium"></div>
+    <div id="stars3" class="cosmic-stars-large"></div>
+
+    <div id="horizon"><div class="glow"></div></div>
+    <div id="earth"></div>
+
+    <div id="title">
+      <span id="titleLeft" class="title-part">RENSEIGNONS</span>
+      <span class="title-dash">—</span>
+      <span id="titleRight" class="title-part">NOUS</span>
+    </div>
+    <div id="subtitle">
+      <span class="subtitle-part-1">RENSEIGNEMENT</span>
+      <span class="subtitle-part-2">DÉFENSE</span>
+      <span class="subtitle-part-3">GÉOPOLITIQUE</span>
+    </div>
+
+    <a href="#" class="cosmic-scroll-cue" id="scrollCue" aria-label="Entrer">
+      <span>DÉFILER POUR ENTRER</span>
+      <span class="line"></span>
+    </a>
+  </div>
+</section>
+
+<!-- ============== HERO ============== -->
+<section id="accueil" class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+  <div class="absolute inset-0 bg-grid opacity-50"></div>
+  <div class="absolute inset-0 spotlight"></div>
+  <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-radar/40 to-transparent"></div>
+
+  <div class="relative max-w-7xl mx-auto px-5 lg:px-8">
+
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-end">
+
+      <!-- Titre -->
+      <div class="lg:col-span-7 reveal">
+        <p class="font-mono text-[10px] text-radar tracking-[.3em] uppercase mb-8">Renseignement · Défense · Géopolitique</p>
+
+        <h1 class="font-display font-bold tracking-tighter text-5xl sm:text-6xl lg:text-7xl xl:text-[88px] leading-[0.92] text-gradient">
+          Le monde du<br/>
+          renseignement,<br/>
+          <span class="relative inline-block">
+            <span class="text-white">expliqué.</span>
+            <span class="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-radar via-radar/60 to-transparent"></span>
+          </span>
+        </h1>
+
+        <p class="mt-8 max-w-xl text-mist text-base lg:text-lg leading-relaxed">
+          <span class="text-white font-medium">Renseignons-nous</span> est le média de référence sur le renseignement, la défense, la géopolitique et l'OSINT. Enquêtes longues, analyses sourcées, briefings hebdomadaires.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="#enquetes" class="btn-glow inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-radar text-abyss font-semibold text-sm tracking-tight">
+            Explorer les enquêtes
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Featured "À la Une" -->
+      <div class="lg:col-span-5 reveal">
+        <article data-article-id="shadow-fleet" class="article-card group block relative overflow-hidden rounded-2xl card aspect-[4/5] cursor-pointer">
+          <div class="absolute inset-0">
+            <img
+              src="shadow-fleet.jpg"
+              alt="Cargo de la flotte fantôme russe — illustration"
+              class="zoom-img w-full h-full object-cover opacity-80"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-grid opacity-30 mix-blend-overlay"></div>
+          </div>
+
+          <!-- Marker -->
+          <div class="absolute top-5 left-5">
+            <span class="tag">À la Une · Renseignement</span>
+          </div>
+
+          <!-- Content -->
+          <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
+            <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-3">08 juin 2026</p>
+            <h2 class="font-display font-bold text-2xl lg:text-3xl leading-tight text-white">
+              Sabotage des câbles en Baltique : reconstitution du « shadow fleet » russe
+            </h2>
+            <p class="mt-3 text-sm text-mist line-clamp-2">
+              Trois mois d'AIS, d'imagerie satellite et de registres maritimes pour cartographier les bâtiments suspects.
+            </p>
+            <div class="mt-6 flex items-center justify-between">
+              <span class="text-xs text-mist">Par Marc-Antoine</span>
+              <span class="inline-flex items-center gap-1 text-radar text-sm font-medium link-under">
+                Lire l'enquête
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ============== GRILLE D'INVESTIGATION (MAGAZINE) ============== -->
+<section id="enquetes" class="relative py-20 lg:py-28">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+
+    <!-- Header section -->
+    <div class="reveal flex items-end justify-between flex-wrap gap-6 mb-12">
+      <div>
+        <p class="font-mono text-[11px] text-radar tracking-[.3em] uppercase mb-3">Investigations</p>
+        <h2 class="font-display font-bold text-4xl lg:text-5xl tracking-tight text-white">Dernières enquêtes</h2>
+      </div>
+      <div class="flex items-center gap-2 glass rounded-full p-1.5">
+        <button class="filter-btn px-4 py-1.5 text-xs rounded-full bg-radar text-abyss font-semibold" data-filter="all">Tous</button>
+        <button class="filter-btn px-4 py-1.5 text-xs rounded-full hover:bg-white/5" data-filter="renseignement">Renseignement</button>
+        <button class="filter-btn px-4 py-1.5 text-xs rounded-full hover:bg-white/5" data-filter="defense">Défense</button>
+        <button class="filter-btn px-4 py-1.5 text-xs rounded-full hover:bg-white/5" data-filter="geopolitique">Géopolitique</button>
+      </div>
+    </div>
+
+    <!-- Magazine grid asymétrique -->
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-6 gap-5 lg:gap-6 auto-rows-[180px]">
+
+      <!-- Large feature -->
+      <article data-cat="geopolitique" data-article-id="taiwan-2027" class="reveal article-card md:col-span-4 row-span-2 group relative overflow-hidden rounded-2xl card">
+        <img src="https://images.unsplash.com/photo-1535139262971-c51845709a48?auto=format&fit=crop&w=1600&q=80" class="zoom-img w-full h-full object-cover opacity-70" alt="Skyline asiatique de nuit" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-5 left-5 flex gap-2"><span class="tag night">Géopolitique</span><span class="tag">Long format</span></div>
+        <div class="absolute top-5 right-5 font-mono text-[10px] text-mist tracking-[.2em]">14 MIN</div>
+        <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
+          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-3">06.06.2026 · Pacifique</p>
+          <h3 class="font-display font-bold text-2xl lg:text-3xl text-white max-w-2xl leading-tight">Le calendrier-écho : comment 2027 a survécu à sa propre révision</h3>
+          <p class="mt-3 text-sm text-mist max-w-xl">Le 19 mars 2026, l'Intelligence Community américaine a discrètement réécrit ce que cinq ans de doctrine avaient érigé en horizon central. La date n'a pas bougé.</p>
+        </div>
+      </article>
+
+      <!-- Med 1 — Rainbow Warrior -->
+      <article data-cat="renseignement" data-article-id="rainbow-warrior" class="reveal article-card md:col-span-2 row-span-1 group relative overflow-hidden rounded-2xl card">
+        <img src="rainbow-warrior.jpg" class="zoom-img w-full h-full object-cover opacity-70" alt="Le Rainbow Warrior coulé au port d'Auckland, juillet 1985 — © Greenpeace / John Miller" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Renseignement</span><span class="tag night">DGSE</span></div>
+        <div class="absolute bottom-0 inset-x-0 p-5">
+          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">10.07.1985 · Auckland</p>
+          <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">Rainbow Warrior : comment l'élite du renseignement s'est effondrée sur une caution</h3>
+        </div>
+      </article>
+
+      <!-- Med 2 -->
+      <article data-cat="defense" data-article-id="rafale-f5" class="reveal article-card md:col-span-2 row-span-1 group relative overflow-hidden rounded-2xl card">
+        <img src="rafale-f5.webp" class="zoom-img w-full h-full object-cover opacity-70" alt="Rafale en vol" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Défense</span></div>
+        <div class="absolute bottom-0 inset-x-0 p-5">
+          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">02.06.2026</p>
+          <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">Rafale F5 : la dissuasion repensée</h3>
+        </div>
+      </article>
+
+      <!-- Med 3 (small landscape) -->
+      <article data-cat="defense" data-article-id="africa-corps" class="reveal article-card md:col-span-3 row-span-1 group relative overflow-hidden rounded-2xl card">
+        <img src="africa-corps.jpg" class="zoom-img w-full h-full object-cover opacity-70" alt="Africa Corps / Wagner Group dans le Sahel" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Défense</span><span class="tag night">Sahel</span></div>
+        <div class="absolute bottom-0 inset-x-0 p-5">
+          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">31.05.2026</p>
+          <h3 class="font-display font-semibold text-lg text-white leading-snug">Africa Corps : la nouvelle architecture russe en Afrique de l'Ouest</h3>
+        </div>
+      </article>
+
+      <!-- Med 4 — Palantir -->
+      <article data-cat="renseignement" data-article-id="palantir" class="reveal article-card md:col-span-3 row-span-1 group relative overflow-hidden rounded-2xl card">
+        <img src="palantir.jpg" class="zoom-img w-full h-full object-cover opacity-70" alt="Logo Palantir Technologies" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Renseignement</span><span class="tag night">Souveraineté</span></div>
+        <div class="absolute bottom-0 inset-x-0 p-5">
+          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">15.12.2025 · DGSI</p>
+          <h3 class="font-display font-semibold text-lg text-white leading-snug">Palantir, l'entreprise qui ne se cache plus de vouloir refaire l'État</h3>
+        </div>
+      </article>
+
+      <!-- Small text-only quote card — Éditorial HubEE/ORION 26 -->
+      <article data-cat="defense" data-article-id="hubee-orion-26" class="reveal article-card md:col-span-2 row-span-2 group relative overflow-hidden rounded-2xl p-6 lg:p-8 card flex flex-col justify-between">
+        <div>
+          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-4">Éditorial · 15.01.2026</p>
+          <p class="font-display text-xl lg:text-2xl text-white leading-snug">
+            HubEE, ORION 26 : la France est <span class="text-radar">déjà en guerre</span>, mais elle ne le sait pas.
+          </p>
+          <p class="mt-4 text-sm text-mist leading-relaxed">
+            « Il coûte infiniment moins cher d'éteindre un État que de l'envahir. »
+          </p>
+        </div>
+        <div class="flex items-center justify-between mt-6">
+          <p class="text-xs text-mist">Marc-Antoine</p>
+          <span class="text-radar text-sm link-under">Lire →</span>
+        </div>
+      </article>
+
+      <!-- Bottom large -->
+      <article data-cat="geopolitique" data-article-id="caspienne-zanguezour" class="reveal article-card md:col-span-4 row-span-2 group relative overflow-hidden rounded-2xl card">
+        <img src="caspienne.webp" class="zoom-img w-full h-full object-cover opacity-75" alt="Vue aérienne de la mer Caspienne" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-5 left-5 flex gap-2"><span class="tag night">Géopolitique</span><span class="tag">Enquête</span></div>
+        <div class="absolute top-5 right-5 font-mono text-[10px] text-mist tracking-[.2em]">11 MIN</div>
+        <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
+          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-3">22.05.2026 · Caucase</p>
+          <h3 class="font-display font-bold text-2xl lg:text-3xl text-white max-w-2xl leading-tight">Arménie–Azerbaïdjan : la paix turcophone redessine la mer Caspienne</h3>
+          <p class="mt-3 text-sm text-mist max-w-xl">Le corridor de Zanguezour change la donne énergétique européenne. Cartographie et acteurs.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="reveal mt-12 flex justify-center">
+      <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 hover:border-radar/40 hover:bg-white/5 text-sm font-medium transition-all">
+        Voir toutes les enquêtes
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============== NEWSLETTER ============== -->
+<section class="relative py-20 lg:py-24 border-t border-white/5">
+  <div class="max-w-5xl mx-auto px-5 lg:px-8">
+    <div class="reveal liquid-glass rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-radar/10 blur-3xl"></div>
+      <div class="relative grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <p class="font-mono text-[11px] text-radar tracking-[.3em] uppercase mb-3">Newsletter</p>
+          <h3 class="font-display font-bold text-3xl lg:text-4xl text-white leading-tight">Soyez notifié<br/>à chaque nouvel article.</h3>
+          <p class="mt-4 text-mist text-sm">Une alerte par publication. Aucune publicité. Aucune fioriture.</p>
+        </div>
+        <form class="flex flex-col gap-3" onsubmit="event.preventDefault(); subscribe(this);">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="email" required placeholder="votre@email.com"
+              class="flex-1 px-4 py-3.5 rounded-full bg-abyss/60 border border-white/10 focus:border-radar/60 focus:outline-none text-sm placeholder:text-mist/60" />
+            <button class="btn-glow px-6 py-3.5 rounded-full bg-radar text-abyss font-semibold text-sm whitespace-nowrap">S'abonner</button>
+          </div>
+          <p class="font-mono text-[10px] text-mist tracking-[.15em]">Pas de spam. Désabonnement en un clic. RGPD-compatible.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============== FOOTER ============== -->
+<footer class="relative pt-20 pb-10 border-t border-white/5 bg-deep/40">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="grid md:grid-cols-12 gap-10 mb-12">
+      <div class="md:col-span-5">
+        <a href="#accueil" class="flex items-center gap-3 mb-5">
+          <div class="relative w-10 h-10 rounded-md bg-gradient-to-br from-steel to-deep border border-radar/30 flex items-center justify-center">
+            <span class="font-mono text-radar text-[11px] tracking-widest">R/N</span>
+            <span class="absolute -right-0.5 -top-0.5 w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
+          </div>
+          <div>
+            <p class="font-display font-bold text-white">Renseignons-nous</p>
+            <p class="font-mono text-[10px] tracking-[.25em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
+          </div>
+        </a>
+        <p class="text-sm text-mist max-w-sm leading-relaxed">Le média de référence. Renseignement, défense, géopolitique. Enquêtes longues, sources ouvertes.</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Rubriques</p>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="#enquetes" data-cat-filter="renseignement" class="link-under text-slate-300 hover:text-white">Renseignement</a></li>
+          <li><a href="#enquetes" data-cat-filter="defense"       class="link-under text-slate-300 hover:text-white">Défense</a></li>
+          <li><a href="#enquetes" data-cat-filter="geopolitique"  class="link-under text-slate-300 hover:text-white">Géopolitique</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Maison</p>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="#" class="link-under text-slate-300 hover:text-white">À propos</a></li>
+          <li><a href="#" class="link-under text-slate-300 hover:text-white">Méthodologie</a></li>
+          <li><a href="#" class="link-under text-slate-300 hover:text-white">Sources</a></li>
+          <li><a href="#" class="link-under text-slate-300 hover:text-white">Contact sécurisé</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-3">
+        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Newsletter</p>
+        <p class="text-sm text-mist leading-relaxed mb-4">Soyez notifié à chaque nouvel article. Pas de spam.</p>
+        <form class="flex flex-col gap-2" onsubmit="event.preventDefault(); subscribe(this);">
+          <input type="email" required placeholder="votre@email.com"
+            class="px-4 py-2.5 rounded-full bg-abyss/60 border border-white/10 focus:border-radar/60 focus:outline-none text-sm placeholder:text-mist/60" />
+          <button class="btn-glow px-4 py-2.5 rounded-full bg-radar text-abyss font-semibold text-sm">
+            Me notifier
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <p class="font-mono text-[11px] text-mist tracking-wider">
+        Édité par Marc-Antoine © 2026 — Renseignons-nous
+      </p>
+      <div class="flex gap-6 font-mono text-[11px] text-mist">
+        <a href="#" class="hover:text-radar transition-colors">Mentions légales</a>
+        <a href="#" class="hover:text-radar transition-colors">Confidentialité</a>
+        <a href="#" class="hover:text-radar transition-colors">Cookies</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<!-- ============== READER (article fullscreen) ============== -->
+<article class="reader" id="reader" aria-hidden="true">
+  <button class="reader-close" id="readerClose" aria-label="Fermer">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="reader-hero">
+    <img class="reader-hero-img" id="readerImg" alt=""/>
+    <div class="reader-hero-overlay"></div>
+    <div class="reader-hero-content">
+      <div class="reader-tags" id="readerTags"></div>
+      <p class="reader-kicker" id="readerKicker"></p>
+      <h1 class="reader-title" id="readerTitle"></h1>
+      <p class="reader-dek" id="readerDek"></p>
+    </div>
+  </div>
+  <div class="reader-body" id="readerBody"></div>
+</article>
+
+
+<script>
+  /* ===== Theme toggle (dark / light) ===== */
+  (function initTheme() {
+    const root = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const stored = localStorage.getItem('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initial = stored || (prefersLight ? 'light' : 'dark');
+    root.setAttribute('data-theme', initial);
+    if (toggle) {
+      toggle.checked = (initial === 'light');
+      toggle.addEventListener('change', () => {
+        const next = toggle.checked ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+    }
+  })();
+
+  /* ===== Cosmic stars generation ===== */
+  function genStarShadow(count) {
+    const out = new Array(count);
+    for (let i = 0; i < count; i++) {
+      out[i] = `${Math.floor(Math.random() * 2000)}px ${Math.floor(Math.random() * 2000)}px #FFF`;
+    }
+    return out.join(', ');
+  }
+  (function initCosmos() {
+    const s1 = document.getElementById('stars');
+    const s2 = document.getElementById('stars2');
+    const s3 = document.getElementById('stars3');
+    if (!s1) return;
+    const shadow1 = genStarShadow(700);
+    const shadow2 = genStarShadow(200);
+    const shadow3 = genStarShadow(100);
+    s1.style.boxShadow = shadow1;
+    s2.style.boxShadow = shadow2;
+    s3.style.boxShadow = shadow3;
+    // pseudo-element seamless loop
+    const sheet = document.createElement('style');
+    sheet.textContent = `
+      #stars::after  { box-shadow: ${shadow1}; }
+      #stars2::after { box-shadow: ${shadow2}; }
+      #stars3::after { box-shadow: ${shadow3}; }
+    `;
+    document.head.appendChild(sheet);
+  })();
+
+  /* ===== Scroll-to-expand splash (single fluid animation) ===== */
+  (function initScrollExpand() {
+    const overlay   = document.querySelector('.cosmic-parallax-container');
+    if (!overlay) return;
+    const titleLeft = document.getElementById('titleLeft');
+    const titleRight= document.getElementById('titleRight');
+    const titleDash = overlay.querySelector('.title-dash');
+    const subtitle  = document.getElementById('subtitle');
+    const earth     = document.getElementById('earth');
+    const horizon   = document.getElementById('horizon');
+    const stars1    = document.getElementById('stars');
+    const stars2    = document.getElementById('stars2');
+    const stars3    = document.getElementById('stars3');
+    const scrollCue = document.getElementById('scrollCue');
+
+    let progress = 0;
+    let triggered = false;
+    let touchStartY = 0;
+
+    const isMobile = () => window.innerWidth < 768;
+    // easeInOutCubic
+    const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    function applyProgress(p) {
+      const mobile = isMobile();
+      const tx = p * (mobile ? 55 : 38);
+      titleLeft.style.transform  = `translateX(-${tx}vw)`;
+      titleRight.style.transform = `translateX(${tx}vw)`;
+      if (titleDash) titleDash.style.opacity = String(Math.max(0, 0.55 - p * 1.6));
+      subtitle.style.opacity = String(Math.max(0, 1 - p * 1.9));
+      subtitle.style.transform = `translateX(-50%) translateY(${p * 28}px)`;
+      earth.style.transform = `translateX(-50%) scale(${1 + p * 1.8}) translateY(${-p * 16}vw)`;
+      earth.style.filter = `brightness(${1 + p * 0.55}) saturate(${1 + p * 0.3})`;
+      horizon.style.opacity = String(Math.max(0, 1 - p * 1.3));
+      [stars1, stars2, stars3].forEach(s => { if (s) s.style.opacity = String(Math.max(0, 1 - p * 1.1)); });
+      if (scrollCue) scrollCue.style.opacity = String(Math.max(0, 1 - p * 5));
+      const fadeEdge = Math.max(0, (p - 0.75) / 0.25);
+      overlay.style.opacity = String(Math.max(0, 1 - fadeEdge));
+    }
+
+    const lock   = () => { document.body.style.overflow = 'hidden'; document.documentElement.style.overflow = 'hidden'; };
+    const unlock = () => { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; };
+
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      const duration = 1600; // ms
+      const startTime = performance.now();
+      const startProg = progress;
+      function step(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        progress = startProg + (1 - startProg) * ease(t);
+        applyProgress(progress);
+        if (t < 1) {
+          requestAnimationFrame(step);
+        } else {
+          overlay.classList.add('is-done');
+          unlock();
+          window.scrollTo(0, 0);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    lock();
+    applyProgress(0);
+
+    window.addEventListener('wheel', (e) => {
+      if (triggered) return;
+      e.preventDefault();
+      if (e.deltaY > 0) trigger();
+    }, { passive: false });
+
+    window.addEventListener('touchstart', (e) => {
+      if (triggered) return;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (triggered || !touchStartY) return;
+      e.preventDefault();
+      const dy = touchStartY - e.touches[0].clientY;
+      if (dy > 8) trigger();
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => { touchStartY = 0; });
+
+    window.addEventListener('keydown', (e) => {
+      if (triggered) return;
+      if (['ArrowDown','PageDown',' ','Enter'].includes(e.key)) {
+        e.preventDefault();
+        trigger();
+      }
+    });
+
+    if (scrollCue) {
+      scrollCue.addEventListener('click', (e) => {
+        e.preventDefault();
+        trigger();
+      });
+    }
+  })();
+
+  /* ===== Tubelight navbar ===== */
+  (function initTubelight() {
+    const pill = document.getElementById('tubelightPill');
+    const lamp = document.getElementById('tubeLamp');
+    if (!pill || !lamp) return;
+    const items = pill.querySelectorAll('[data-tube]');
+
+    function positionLamp(target, animate = true) {
+      if (!target) return;
+      const pillRect = pill.getBoundingClientRect();
+      const r = target.getBoundingClientRect();
+      lamp.style.transition = animate ? '' : 'none';
+      lamp.style.transform = `translateX(${r.left - pillRect.left}px)`;
+      lamp.style.width = `${r.width}px`;
+      if (!animate) requestAnimationFrame(() => lamp.style.transition = '');
+    }
+
+    function setActive(el) {
+      items.forEach(i => i.classList.remove('is-active'));
+      el.classList.add('is-active');
+      positionLamp(el);
+    }
+
+    items.forEach(item => {
+      item.addEventListener('click', () => setActive(item));
+    });
+
+    // Initial position (after fonts/layout settle)
+    const active = pill.querySelector('.is-active') || items[0];
+    requestAnimationFrame(() => positionLamp(active, false));
+    window.addEventListener('resize', () => {
+      const cur = pill.querySelector('.is-active');
+      positionLamp(cur, false);
+    });
+  })();
+
+  /* ===== Reader (article open animation) ===== */
+  (function initReader() {
+    const reader = document.getElementById('reader');
+    const heroImg = document.getElementById('readerImg');
+    const closeBtn = document.getElementById('readerClose');
+    if (!reader || !heroImg) return;
+
+    const ARTICLES = {
+      'shadow-fleet': `
+<p class="lead">Le 25 décembre 2024, à 12h26 heure d'Helsinki, le câble électrique EstLink 2, qui relie depuis Inkoo en Finlande la sous-station de Püssi en Estonie, voit sa puissance transmise s'effondrer de 1 016 mégawatts à 358. À soixante-dix mètres de fond, une rupture nette. À la surface, un seul navire dans la zone : l'<em>Eagle S</em>, pétrolier sous pavillon des îles Cook, armateur indien, exploitant émirati, équipage majoritairement géorgien. Les autorités finlandaises l'arraisonnent dès le lendemain et placent sept marins sous interdiction de quitter le territoire. L'enquête, dirigée par le KRP, retient la qualification de sabotage aggravé. L'<em>Eagle S</em>, lui, est suspecté d'appartenir à la flotte fantôme russe — cet ensemble flou de navires opérés sous pavillons de complaisance et identités tournantes, conçu pour permettre à Moscou de contourner les plafonds de prix imposés par le G7 sur le pétrole russe depuis 2022.</p>
+<p>Ce que révèle l'<em>Eagle S</em>, ce n'est pas seulement le sabotage d'un câble ; c'est la transformation d'une infrastructure d'évasion économique en arme stratégique de basse intensité. La flotte fantôme n'avait été pensée, dans les chancelleries occidentales, que comme une question de sanctions à colmater. Elle s'impose désormais comme une force navale parallèle, capable d'agir contre les artères énergétiques et numériques de l'Europe avec un degré d'attribution suffisamment trouble pour interdire toute riposte symétrique. L'ambiguïté n'est plus un sous-produit : elle est devenue la fonction.</p>
+
+<h2>Un cargo, deux pavillons, un câble</h2>
+<p>La chronologie de l'incident est désormais documentée. L'<em>Eagle S</em> quitte le port de Saint-Pétersbourg le 24 décembre, traverse le golfe de Finlande, et passe au-dessus du tracé de l'EstLink 2 le 25 dans l'après-midi. Les enregistrements AIS — le système d'identification automatique que tout navire de plus de 300 tonneaux est censé maintenir en émission permanente — montrent une trajectoire conforme jusqu'au moment précis du sectionnement, puis une vitesse anormalement basse, compatible avec un ancrage traîné. La méthode est rudimentaire : laisser une ancre filer sur près de cent kilomètres, jusqu'à ce qu'elle accroche un câble, et le sectionner par la seule masse du navire. Aucune charge explosive, aucune équipe de plongeurs ; un acte de sabotage que rien, dans la silhouette d'un pétrolier, ne signale comme tel.</p>
+<p>L'<em>Eagle S</em> n'est pas un cas isolé. En novembre 2024, le câble de données BCS East-West, reliant la Lituanie à la Suède, est sectionné en moins de 24 heures avant le câble C-Lion 1 entre la Finlande et l'Allemagne. Un cargo chinois, le <em>Yi Peng 3</em>, est immédiatement identifié sur la trajectoire des deux ruptures. En 2023 déjà, le <em>Newnew Polar Bear</em> avait endommagé le gazoduc Balticconnector et un câble de télécommunication. Trois incidents, trois navires, trois pavillons différents — et un schéma désormais reconnu par l'OTAN.</p>
+
+<h2>La flotte fantôme : une économie d'évasion devenue arme stratégique</h2>
+<p>Pour comprendre le statut singulier de ces navires, il faut revenir à leur économie. Depuis l'entrée en vigueur, en décembre 2022, du plafond de prix occidental sur le pétrole russe — 60 dollars le baril —, Moscou a constitué, par achats et locations en cascade, une flotte parallèle estimée par le Kyiv School of Economics à plus de six cents bâtiments. Pavillons des îles Cook, de Gabon, du Cameroun, du Liberia ; assurances souscrites auprès de structures domiciliées dans des juridictions hors-G7 ; transbordements en pleine mer pour rompre la traçabilité de l'origine. Cette flotte n'est pas une exception : elle représente, selon les estimations britanniques, près de 70 % des exportations pétrolières russes maritimes en 2024.</p>
+<p>L'architecture, conçue pour la fraude économique, présente une vertu opérationnelle imprévue. Chaque navire est en effet, par construction, déresponsabilisé. Son propriétaire de papier est introuvable ; son équipage est rotatif ; sa juridiction d'enregistrement n'a ni capacité ni volonté d'enquête. Lorsque l'un d'eux endommage une infrastructure critique, le dispositif juridique conçu pour échapper aux sanctions le protège du même coup d'une attribution formelle. La déniabilité est devenue intégrée à l'instrument. C'est cette propriété — la fonction protectrice du désordre administratif — qui transforme une flotte d'évasion en outil de coercition.</p>
+
+<h2>Quand le sabotage cesse d'être une hypothèse</h2>
+<p>L'analyse des trois incidents — Balticconnector, C-Lion 1 / BCS East-West, EstLink 2 — fait apparaître un motif. Tous se produisent dans des fenêtres météorologiques médiocres mais navigables. Tous suivent une trajectoire qui s'inscrit dans les routes commerciales légitimes jusqu'au moment de la rupture. Tous concernent des navires dont l'historique récent comprend une escale dans un port russe ou allié. À cela s'ajoute une chronologie politique : les incidents s'intensifient à chaque jalon majeur du conflit ukrainien — escalade des frappes sur le réseau énergétique ukrainien, ratification d'aide militaire occidentale, intégration finlandaise et suédoise à l'OTAN.</p>
+<p>Désigner ce motif comme une opération coordonnée reste, au sens du renseignement, une hypothèse. Mais le seuil de plausibilité a basculé. Le Joint Expeditionary Force, regroupant dix États du Nord, a lancé fin 2024 l'opération <em>Nordic Warden</em> : surveillance automatisée, par intelligence artificielle, des bâtiments suspects en mer du Nord, en Baltique et dans l'Atlantique Nord. L'OTAN a déployé l'opération <em>Baltic Sentry</em>, mobilisant frégates et drones marins pour rendre visible ce qui s'efforce de demeurer dans la pénombre. La doctrine maritime occidentale, qui s'était construite pour deux types d'adversaires — la marine régulière étatique et la piraterie criminelle —, doit désormais composer avec un troisième : la marine para-étatique de déniabilité.</p>
+
+<h2>L'ambiguïté tactique : un produit qu'on ne peut plus consommer en silence</h2>
+<p>Il faut nommer ce que la séquence donne à voir. On désignera ici par <strong>ambiguïté tactique</strong> la condition d'un acte hostile dont l'attribution incertaine est elle-même un effet recherché — non un défaut résiduel — et qui permet à son auteur d'en tirer le bénéfice opérationnel sans en supporter le coût diplomatique. L'ambiguïté tactique se distingue de la guerre clandestine classique en ceci qu'elle ne cherche pas à dissimuler l'auteur ; elle cherche à rendre coûteuse l'attribution. Elle compte sur le fait que les démocraties hésiteront à monter une riposte tant qu'elles ne disposent pas d'une chaîne de preuve qui résiste à un contradictoire judiciaire. Et elle exploite la lenteur structurelle de cet établissement, en frappant à un rythme qui dépasse la cadence d'enquête.</p>
+<p>L'instrument répond à un calcul. Sectionner un câble électrique coûte, à Moscou, le prix d'un ancrage et la défausse d'un navire. Le réparer coûte à Helsinki et à Tallinn une cinquantaine de millions d'euros, plusieurs mois d'opération sous-marine, et une dépendance ponctuelle à des fournisseurs d'électricité alternatifs. À l'échelle d'un dispositif annuel, le rapport coût-bénéfice est sans équivalent dans les arsenaux conventionnels. Il l'est plus encore si l'on y ajoute l'effet politique : nourrir le sentiment d'une Europe vulnérable, exposée, et incapable de qualifier l'agression à laquelle elle est soumise.</p>
+
+<h2>Le réflexe européen tardif</h2>
+<p>La réponse occidentale s'organise, lentement. La Commission européenne a publié en février 2025 un plan d'action pour la sécurité des câbles sous-marins, prévoyant la création d'une réserve de câbles, d'un système de réparation accéléré, et d'un mécanisme de partage d'information avec les opérateurs. L'OTAN a constitué une <em>Critical Undersea Infrastructure Cell</em>. Le Royaume-Uni a ajouté plus d'une centaine de navires à sa liste de sanctions individuelles. La Finlande, pour la première fois, a saisi un pétrolier en haute mer hors de ses eaux territoriales — en s'appuyant sur la convention de Montego Bay et sur la doctrine de l'arrestation en cas de soupçon raisonnable de sabotage.</p>
+<p>Cette dernière décision est moins technique qu'elle n'en a l'air. Elle ouvre, pour la première fois depuis la Convention sur le droit de la mer de 1982, une brèche assumée dans le principe de la liberté de navigation. Elle déclare que, sous certaines conditions, la souveraineté maritime d'un État côtier peut s'étendre à la défense de ses infrastructures sous-marines, même au-delà de ses eaux. C'est, en pratique, une réécriture jurisprudentielle du droit de la mer. Le précédent <em>Eagle S</em> deviendra, on peut le faire l'hypothèse, l'arrêt fondateur d'une doctrine européenne d'arraisonnement préventif.</p>
+
+<h2>Le câble n'est plus un fil — c'est une artère</h2>
+<p>Le 25 décembre 2024, à soixante-dix mètres sous la mer Baltique, une ancre a coupé un câble. Six mois plus tard, ce câble est partiellement réparé ; le navire est immobilisé à Porkkala ; l'enquête finlandaise se poursuit à huis clos ; et les états-majors européens ont admis ce qu'ils avaient longtemps refusé de nommer : la flotte fantôme russe n'est pas seulement un dispositif d'évasion sanctionnaire, elle est une force navale auxiliaire, dont l'ambiguïté tactique est le principal armement. La leçon est de celles qu'on apprend mal et lentement. Les artères énergétiques et numériques de l'Europe sont son cordon ombilical ; leur cartographie est aujourd'hui un objet de renseignement militaire ; et leur défense ne peut plus relever du droit civil. Tant que l'attribution restera coûteuse, les ancres continueront de filer.</p>
+      `,
+      'rafale-f5': `
+<p class="lead">Le 18 mars 2025, sur la base aérienne 116 de Luxeuil-Saint-Sauveur, Emmanuel Macron est descendu d'un Rafale biplace pour annoncer une décision que les armées avaient préparée depuis quatre ans : la base sera réactivée comme installation nucléaire à compter du début de la décennie 2030. Deux escadrons — la 7e à compter de 2032, la 8e à compter de 2033 — y déploieront quarante Rafale au standard F5, équipés du futur missile aéroporté à tête nucléaire ASN4G. L'investissement annoncé : 1,5 milliard d'euros pour réaménager la base, restaurer sa capacité à recevoir des armes nucléaires, et accueillir un escadron de drones de combat connectés au Rafale. La décision réinscrit la dissuasion française dans une géographie qu'elle avait quittée en 2011, lorsque la 4e escadre de chasse de Luxeuil avait été dissoute.</p>
+<p>Ce que révèle l'annonce de Luxeuil, ce n'est pas seulement un investissement industriel ; c'est la première redéfinition structurelle de l'architecture de la dissuasion aérienne française depuis quarante ans. La doctrine n'a pas changé — Paris continue de défendre la stricte suffisance, la non-emploi en premier de fait, et la pleine autonomie de décision présidentielle. Mais l'instrument est entièrement reconfiguré. Sa portée s'allonge, sa vitesse se multiplie, ses lanceurs se multiplient, sa géographie s'étend vers l'Est, et son énoncé public prend, depuis le discours de Macron à l'École de guerre en mars 2025, une couleur ouvertement européenne. Le Rafale F5 ne sera pas un avion de plus. Il sera le premier vecteur d'une dissuasion française dont la fonction implicite déborde, pour la première fois assumée, ses frontières strictement nationales.</p>
+
+<h2>Une base réactivée, une géographie nucléaire qui se rééquilibre</h2>
+<p>Depuis la décision présidentielle de 2008, la composante aéroportée de la dissuasion française était logée à Saint-Dizier — la base 113 — pour la mise en œuvre du missile ASMP-A sur Rafale. Luxeuil, démantelée comme installation nucléaire, ne conservait qu'une vocation de défense aérienne conventionnelle. La réactivation de 2032-2033 redessine cette géographie : deux pôles nucléaires sur le quart nord-est de l'Hexagone, l'un consolidé, l'autre nouveau, à 350 kilomètres l'un de l'autre, à proximité d'un axe Strasbourg-Belfort qui se trouve être, sur la carte, le point le plus avancé d'Europe occidentale face à l'arc oriental.</p>
+<p>La géographie n'est jamais innocente dans la doctrine de dissuasion. L'État-Major a pris soin d'éviter toute déclaration officielle qui relierait le choix de Luxeuil au déplacement du centre de gravité stratégique européen depuis 2022. Mais il n'est pas indifférent que la composante aéroportée se rapproche du théâtre central — celui où, depuis l'agression russe contre l'Ukraine, l'OTAN concentre ses dispositifs d'alerte avancée. Le geste reste implicite ; il est lisible.</p>
+
+<h2>ASN4G : du sous-le-radar au sur-vol des défenses</h2>
+<p>La rupture la plus profonde n'est ni dans la base ni dans l'avion ; elle est dans le missile. L'ASN4G — air-sol nucléaire de quatrième génération — est en développement depuis 2014 à l'ONERA et chez MBDA. Il succèdera à l'ASMP-A, en service depuis 2009, dont l'arsenal sera retiré au milieu de la décennie 2030. Sa portée, qui dépasserait 1 000 kilomètres contre 500 pour l'ASMP-A, modifie le profil opérationnel. Sa vitesse, annoncée par les industriels à Mach 6 ou 7, le place dans la catégorie des armes hypersoniques. Sa trajectoire, manœuvrante, est conçue pour défaire les défenses anti-aériennes modernes — non plus par la pénétration basse altitude qu'imposait l'ASMP-A, mais par la combinaison de l'altitude et de la vitesse, doublée d'une capacité de changement de cap.</p>
+<p>La conséquence doctrinale est considérable. Une dissuasion crédible repose sur la conviction de l'adversaire qu'aucune défense ne saurait intercepter le vecteur. L'ASMP-A reposait sur la pénétration basse — un missile filant à Mach 3 à quelques dizaines de mètres du sol, profitant des reliefs et de la courbure terrestre pour échapper à la détection. L'ASN4G repose sur la pénétration hyper — un vecteur trop rapide pour être suivi, manœuvrant assez pour défaire les calculs d'interception. Les deux logiques ne s'opposent pas, elles se succèdent : la défense anti-aérienne des années 2030 — S-500, NASAMS, Aster B1NT — rendait progressivement l'ASMP-A vulnérable. L'ASN4G la rend, à son tour, insuffisante.</p>
+
+<h2>Le drone d'accompagnement, ou la fin du chasseur seul</h2>
+<p>Le Rafale F5 ne sera pas le successeur du F4. Il sera son orchestrateur. Le standard prévoit l'intégration d'un drone de combat connecté — désigné loyal wingman dans la doctrine américaine, et provisoirement <em>UCAS</em> dans la terminologie française — capable de voler en formation, de porter des armements offensifs ou des charges de guerre électronique, et d'agir comme leurre, capteur déporté ou éclaireur. Le programme, accéléré après le retrait français du programme Eurodrone à l'été 2025, repose désormais sur Dassault et sur Safran, avec un objectif d'entrée en service simultané au F5.</p>
+<p>Cette architecture modifie le métier du pilote chasseur. Elle suppose une bande passante embarquée que les versions antérieures du Rafale n'ont pas conçue ; elle suppose une intelligence artificielle de gestion d'essaim, capable d'assigner des cibles, de coordonner les retraits, de protéger l'appareil habité ; elle suppose, enfin, une logique de cloud de combat, où chaque appareil partage ses senseurs avec les autres. La dissuasion française n'avait pas, jusqu'ici, intégré ces dimensions. Elle les intègre désormais — et il faut le mesurer : l'arme nucléaire française est en passe de devenir l'arme nucléaire d'un système de combat distribué, et non plus d'un vecteur isolé.</p>
+
+<h2>L'extension fonctionnelle : la dissuasion qui déborde sa frontière sans le dire</h2>
+<p>Il faut nommer ce mouvement. On désignera ici par <strong>extension fonctionnelle</strong> le phénomène par lequel un outil de souveraineté nationale acquiert, par modernisation technique, une portée géographique et politique excédant le cadre dans lequel il a été conçu — sans que le discours officiel ne formalise cette nouvelle fonction. L'extension fonctionnelle se distingue de la doctrine élargie en ce qu'elle laisse intacte la grammaire juridique de la souveraineté tout en transformant son rayonnement effectif. Le Rafale F5 est conçu, légalement, pour défendre les intérêts vitaux de la France ; il sera capable, techniquement, de couvrir la totalité du flanc oriental européen depuis Luxeuil.</p>
+<p>Cette extension est lisible dans le discours, mais à demi-mot. Depuis l'École de guerre, en mars 2025, le président de la République évoque le caractère « européen » des intérêts vitaux français. Le terme n'a aucune valeur juridique ; il n'en a pas moins une fonction politique. Il signale aux capitales européennes — et à Moscou — que l'arsenal français ne se réduit plus à la défense d'un périmètre métropolitain. Il signale aussi qu'aucun traité, aucun accord, aucune coordination institutionnelle ne sera négociée pour formaliser cette extension. L'autonomie de décision restera française. Le bénéfice partagé sera, lui, européen.</p>
+
+<h2>Le coût d'une décennie de transition</h2>
+<p>La transition est lourde. Les industriels — Dassault, Safran, MBDA, Thales, l'ONERA — devront tenir un calendrier qui ne tolère aucun glissement majeur. Le retrait de la France du programme Eurodrone à l'été 2025, opéré pour libérer du budget en faveur du F5, illustre les arbitrages serrés. Les escadrons devront former de nouveaux pilotes, qualifier de nouveaux mécaniciens nucléaires, certifier de nouvelles procédures. La Cour des comptes, comme à chaque grand programme, alertera sur les dépassements probables. La loi de programmation militaire 2024-2030 a inscrit les crédits — 413 milliards d'euros sur sept ans —, mais la marge sur les dépassements pluriannuels n'est pas considérable.</p>
+<p>À ces contraintes industrielles s'ajoutent des contraintes doctrinales. L'arrivée du F5 coïncide avec celle du SCAF — l'avion de combat franco-allemand-espagnol prévu pour 2040 —, dont les premiers démonstrateurs sont retardés. Le F5 devra donc, plus longtemps que prévu, assurer la transition vers un programme qui, si les négociations européennes piétinent, pourrait ne jamais atteindre son standard initial. La doctrine française devra composer avec un Rafale qui sera, pendant peut-être trente ans, le seul vecteur aérien nucléaire crédible — un horizon de longévité que peu de plateformes occidentales ont jamais connu.</p>
+
+<h2>Luxeuil, ou la dissuasion qu'on ne déclare pas</h2>
+<p>Le 18 mars 2025, à Luxeuil, le président de la République a annoncé une base. Au-delà du calendrier industriel, ce qu'il a annoncé est un geste doctrinal sans équivalent depuis le tournant pris par François Mitterrand en 1992. La France redéploie sa dissuasion vers l'Est, la modernise dans toutes ses dimensions, la double d'une architecture de drones connectés, et lui donne — sans la nommer comme telle — une portée continentale. L'extension fonctionnelle est en marche. Elle est en marche dans une langue diplomatique précautionneuse, dans une géographie déplacée à 350 kilomètres, dans un missile qui n'existe pas encore et dans une base que personne, en 2011, n'imaginait revoir nucléarisée. La leçon que l'épisode dépose est de celles que les analystes apprécient : c'est le détail technique qui trahit le déplacement stratégique, longtemps avant que le discours ne le formalise. Quand un État investit 1,5 milliard pour rapprocher ses armes nucléaires de l'arc oriental, c'est qu'il a déjà décidé, sans le dire, ce que dissuasion européenne veut dire.</p>
+      `,
+      'africa-corps': `
+<p class="lead">Le 6 juin 2025, sur la chaîne Telegram historique du Wagner Group, paraît un message bref, signé du commandement opérationnel africain de l'organisation : la mission au Mali est terminée, les unités rentrent. Quelques jours plus tard, des convois russes quittent Kidal et Gao en direction des frontières, laissant derrière eux des caches d'armement, un hélicoptère endommagé et la signature d'un retrait organisé. À Bamako, la junte de transition publie un communiqué de remerciement à ses « partenaires russes ». Aucune lacune opérationnelle, pourtant, n'est admise : les mêmes positions, les mêmes infrastructures, les mêmes véhicules blindés restent occupés. Seul change le pavillon. Là où flottait, depuis 2021, l'étendard noir de Wagner, flotte désormais l'insigne d'une nouvelle structure — l'Africa Corps, créée par le ministère russe de la Défense fin 2023 et placée sous l'autorité du GRU.</p>
+<p>Ce que révèle ce changement, ce n'est pas seulement un rebranding militaire ; c'est l'étatisation assumée d'un outil de guerre asymétrique que Moscou avait, pendant dix ans, soigneusement préservé hors du périmètre régalien. La distinction n'est pas cosmétique. Elle reconfigure les régimes de responsabilité, les chaînes de commandement, les marges d'action diplomatique, et le rapport entre la Russie et ses clients africains. Elle déplace, surtout, la question qu'on devra désormais poser à chaque opération : non plus qui paie pour quoi, mais qui répond de quoi.</p>
+
+<h2>Du privé au régalien : la décompression d'un instrument</h2>
+<p>Il faut rappeler la nature exacte de la rupture. Wagner, dans le dispositif russe, n'était pas une simple armée privée. C'était un sas — un instrument qui permettait à Moscou d'exercer une influence militaire dans des zones sensibles sans engager juridiquement, ni diplomatiquement, l'État russe. Lorsque les hommes de Prigojine tuaient des civils à Moura en mars 2022, lorsqu'ils torturaient des opposants en Centrafrique, lorsqu'ils sécurisaient des mines d'or au Soudan, la chancellerie russe pouvait répondre avec une parfaite plausibilité qu'elle n'avait ni la responsabilité, ni le contrôle, ni même la connaissance fine de ces opérations. Le tradecraft du Kremlin, sur ce point, était maîtrisé : la déniabilité était l'instrument premier, l'efficacité militaire le second.</p>
+<p>L'incident du 23 juin 2023 a brisé l'équilibre. La marche de Wagner sur Rostov, l'humiliation publique infligée à Choïgou et à Guérassimov, la mort de Prigojine deux mois plus tard dans le crash de son jet près de Tver — l'enchaînement n'a laissé au Kremlin que deux options : démanteler purement et simplement le réseau africain, ou en reprendre la propriété étatique. Vladimir Poutine a choisi la seconde. La création de l'Africa Corps, annoncée fin 2023, formalise cette absorption. Le ministère de la Défense pilote, le GRU encadre, les officiers réguliers commandent. Les mercenaires sont conservés — il faut bien les payer —, mais le commandement est désormais russe au sens strict du terme.</p>
+
+<h2>Une efficacité moindre, un coût politique moindre</h2>
+<p>Les premiers résultats opérationnels de l'Africa Corps sont, par tous les rapports concordants, inférieurs à ceux de Wagner. Les analyses du Robert Lansing Institute, de l'Africa Defense Forum et du Carnegie Endowment convergent : la transition a entraîné une baisse de la disponibilité opérationnelle, une réduction du tempo des opérations contre les groupes djihadistes affiliés à l'État islamique et à al-Qaïda, et un retrait partiel des positions les plus exposées. L'attaque d'Intahaka, au nord du Mali, en juillet 2024, avait déjà mis en lumière la vulnérabilité des dispositifs russes lorsque la profondeur des relais locaux faisait défaut. L'inversion qualitative est lente, mais documentée.</p>
+<p>Cette baisse d'efficacité paraît, à première vue, paradoxale. Un instrument étatisé, doté de matériels plus lourds et de procédures plus régulières, devrait l'emporter sur une milice privée. La logique est inverse — et profondément révélatrice. Ce qui faisait l'efficacité de Wagner n'était pas la qualité militaire de ses hommes : c'était sa souplesse hors-droit. Wagner n'avait pas à rendre compte aux Nations unies, ne signait pas de Statut des forces, ne respectait aucune règle d'engagement opposable. Lorsque cette licence est partiellement réintégrée dans la chaîne ministérielle russe, elle perd une partie de son arête tactique. La déniabilité, en se réduisant, réduit aussi le levier opérationnel qu'elle autorisait.</p>
+
+<h2>L'uranium, la migration, les consortiums miniers</h2>
+<p>La dimension économique du dispositif demeure, et se renforce. Le retrait des forces françaises de l'opération Barkhane, en 2022-2023, a libéré, au Mali, au Burkina Faso et au Niger, un espace de captation de ressources que la Russie occupe méthodiquement. Au Niger, le coup d'État de juillet 2023 a entraîné la rupture du contrat d'exploitation de l'uranium d'Imouraren confié à Orano ; les autorités de Niamey ont ouvert depuis lors des négociations avec Rosatom et avec un consortium minier basé à Saint-Pétersbourg. Au Mali, les concessions aurifères du nord de Gao et de la région de Sikasso ont été transférées à des structures liées à Vassili Aleksandrov, ancien responsable financier du réseau Prigojine.</p>
+<p>Cette captation n'est pas une rente : c'est un financement de la projection. L'or, dans le dispositif sahélien russe, ne rapporte pas au budget fédéral. Il rémunère la projection elle-même — solde des mercenaires, achat de matériel, entretien des infrastructures, transferts à des relais locaux. L'instrument est devenu auto-finançable, ce qui en réduit la vulnérabilité aux sanctions occidentales et augmente la difficulté d'attribution comptable. À cela s'ajoute, depuis 2024, une dimension qu'aucun rapport occidental n'avait clairement nommée : la gestion des routes migratoires. Les contrats informels passés entre l'Africa Corps et certains groupes contrôlant le passage transsaharien donnent à Moscou un levier inédit sur le flux migratoire vers l'Europe — un instrument qui, par sa nature, ne se monnaie pas dans un communiqué officiel.</p>
+
+<h2>La déchargeabilité diplomatique : nommer pour comprendre</h2>
+<p>Il faut désigner le mécanisme à l'œuvre. On nommera ici <strong>déchargeabilité diplomatique</strong> la capacité d'un État à attribuer, ou à nier, une opération militaire selon le coût politique de l'instant, en raison d'une architecture d'instruments à statut juridique flou. La déchargeabilité diplomatique se distingue de la simple déniabilité en ce qu'elle ne se limite pas à dissimuler l'auteur : elle permet d'en assumer ou d'en désavouer le geste à volonté, selon que la séquence diplomatique récompense l'un ou l'autre choix. Wagner offrait à Moscou une déniabilité forte mais figée. L'Africa Corps offre une déchargeabilité plus modulable : il est désormais possible, par communiqué ministériel, d'inscrire une opération dans la responsabilité russe — ou de l'en exclure.</p>
+<p>Ce gain de modularité est central. Il permet à Moscou d'apparaître officiellement, lorsque cela renforce un partenariat — par exemple devant la junte malienne, qui valorise la légitimation étatique de ses appuis. Il permet aussi de s'effacer, lorsque la séquence devient embarrassante — par exemple lors d'une exaction documentée par une enquête internationale. La déchargeabilité diplomatique est, dans la grammaire stratégique russe, l'équivalent fonctionnel de ce que la finance appelle l'optionalité : un instrument que l'on peut activer ou neutraliser selon que l'environnement valorise l'un ou l'autre. La transition de Wagner à l'Africa Corps n'a pas réduit l'intervention russe ; elle en a augmenté la flexibilité politique.</p>
+
+<h2>Ce que l'Europe devrait lire à Kidal</h2>
+<p>Pour les capitales européennes — Paris au premier rang —, la séquence dépose une leçon stratégique. La déchargeabilité diplomatique russe complique toute riposte symétrique. Sanctionner Wagner, c'était sanctionner une structure ; sanctionner l'Africa Corps, c'est sanctionner un ministère — geste possible mais politiquement plus lourd, et qui appelle une réciprocité d'une autre nature. La politique africaine de la France, qui peinait déjà à reconstruire ses relations après le double échec du Mali et du Niger, doit désormais composer avec un adversaire devenu étatique sans avoir cessé d'être opérationnel comme une milice. Cette ambivalence est, en soi, un avantage stratégique pour Moscou — et un défi diplomatique pour Paris.</p>
+<p>Le 6 juin 2025, à Kidal, des convois russes ont quitté le théâtre. Quelques semaines plus tard, d'autres y sont arrivés, sous un autre drapeau et sous un autre statut juridique, occupant les mêmes positions. Les analystes auront été tentés de lire ce changement comme un retrait. Il est l'inverse : une consolidation, sous un régime juridique qui rend la projection plus modulable et la rente plus stable. La déchargeabilité diplomatique a été testée au Sahel ; elle sera, à l'avenir, l'un des principaux instruments de la politique étrangère russe partout où elle peut s'exercer. Et les démocraties européennes, qui se sont longtemps formées à combattre des armées ou des milices, devront apprendre à combattre des structures à géométrie variable, dont la responsabilité juridique se déplace selon que l'on regarde le titre d'une mission ou son exécution sur le terrain.</p>
+      `,
+      'caspienne-zanguezour': `
+<p class="lead">Le 8 août 2025, dans la East Room de la Maison-Blanche, le président américain Donald Trump signe, en présence du président azerbaïdjanais Ilham Aliev et du Premier ministre arménien Nikol Pachinian, un accord bilatéral de paix mettant un terme formel à trente-cinq ans de conflit du Haut-Karabagh. Le document est court — neuf articles, paraphés en quelques minutes — mais il enveloppe un texte d'une autre portée, signé le même jour : la concession aux États-Unis, pour une durée de quatre-vingt-dix-neuf ans, des droits exclusifs de développement, d'exploitation et de sécurisation du futur corridor de Zanguezour, rebaptisé pour l'occasion <em>Trump Route for International Peace and Prosperity</em>, dans son acronyme officiel TRIPP. La route, longue d'une quarantaine de kilomètres, traverse la province arménienne du Syunik et relie l'Azerbaïdjan à son exclave du Nakhitchevan — et au-delà à la Turquie et à l'Asie centrale.</p>
+<p>Ce que révèle TRIPP, ce n'est pas seulement la signature d'un accord bilatéral ; c'est la première internationalisation d'un corridor caucasien sous gestion privée américaine, et l'apparition, dans une région où trois empires se sont disputés pendant deux siècles, d'un quatrième acteur — extra-régional, transactionnel, contractuel — dont la présence reconfigure les calculs énergétiques, militaires et identitaires du voisinage immédiat. À Bakou, on parle de victoire diplomatique. À Erevan, de compromis indispensable. À Téhéran, d'humiliation stratégique. À Moscou, d'un effacement supplémentaire de l'influence russe dans un Caucase que la guerre d'Ukraine occupait jusque-là tout entière.</p>
+
+<h2>Le mètre étalon du Caucase : ce que Zanguezour change pour quatre frontières</h2>
+<p>La géographie du corridor n'est pas anodine. Le tracé, qui passe par Meghri et longe l'Arax, suit la frontière irano-arménienne sur quelques dizaines de kilomètres. Sa mise en service ferme, pour l'Iran, l'un des deux derniers axes de connexion ouverte avec un partenaire chrétien — l'Arménie ayant longtemps servi de soupape commerciale et diplomatique à la République islamique. Elle ouvre, pour la Turquie, un accès terrestre direct à l'Azerbaïdjan, au Turkménistan, à l'Ouzbékistan et au Kazakhstan, sans passer par l'Iran ni par la Géorgie. Elle inscrit, pour l'Azerbaïdjan, l'unification physique d'un territoire que la guerre de 1992-1994 avait coupé en deux. Et elle déplace, pour l'Arménie, la définition même de sa souveraineté méridionale, sur un segment de cinq cents mètres de large dont la gestion ne lui appartient plus.</p>
+<p>Cette dernière dimension est sous-estimée par le commentaire médiatique. La législation arménienne, dans la version paraphée à Washington, reconnaît la pleine souveraineté de la République sur le territoire traversé — mais en exclut l'administration. La gestion des passages, la sécurité du couloir, le contrôle douanier et la surveillance vidéo sont confiés au consortium américain pour la durée du bail. C'est une formule administrative inédite dans le droit international post-1945. On y retrouve, à des éléments près, l'esprit des concessions zonales du XIXe siècle — celles que l'Empire ottoman concédait aux puissances européennes le long du Bosphore, ou celles que la Chine impériale avait été contrainte d'accorder à Hong Kong.</p>
+
+<h2>Quatre-vingt-dix-neuf ans : la souveraineté louée</h2>
+<p>La durée du bail n'est pas anecdotique. Elle reprend exactement la longueur des baux historiques de Hong Kong (1898-1997) et de Guantanamo (1903-indéterminé), avec une précision qui n'est pas un hasard. Le négociateur américain — Steve Witkoff, envoyé spécial du président Trump pour la région — a confirmé, dans plusieurs interviews postérieures, que la durée avait été calibrée pour signifier la pérennité de l'engagement sans engager juridiquement la pleine perpétuité.</p>
+<p>Le mécanisme est élégant. Le bail permet de déclarer la souveraineté inchangée — argument décisif pour faire accepter le texte par le Parlement arménien et par l'opposition à Pachinian. Il permet de garantir, dans les faits, une présence stratégique américaine sur un siècle — durée largement suffisante pour rentabiliser les investissements en infrastructures, sécuriser les flux énergétiques et imposer un précédent. Il permet, enfin, de désinciter toute renégociation : un État partie qui voudrait, dans vingt ans, rompre le bail s'exposerait à des contentieux d'arbitrage international d'une ampleur qui rendrait l'exercice ruineux. La souveraineté est juridiquement préservée. Elle est politiquement louée.</p>
+
+<h2>L'externalisation territoriale : nommer un mécanisme</h2>
+<p>Il faut désigner ce que TRIPP institue. On nommera ici <strong>externalisation territoriale</strong> le procédé par lequel un État partie à un accord conserve la souveraineté juridique sur une portion de son territoire mais en transfère, par bail long, l'administration effective à un consortium privé étranger, en l'inscrivant dans un régime contractuel qui prime sur le droit interne. L'externalisation territoriale se distingue de la cession en ce qu'elle préserve le drapeau ; elle se distingue de la zone franche en ce qu'elle ne concerne pas seulement la fiscalité mais l'ensemble des fonctions administratives ; elle se distingue, enfin, de la concession traditionnelle en ce qu'elle est portée par un acteur extra-régional et qu'elle s'étend sur un siècle.</p>
+<p>Le mécanisme présente une triple propriété. Il rassure les opinions intérieures, qui peuvent contempler une carte inchangée. Il rassure les opinions extérieures, qui peuvent investir dans un cadre juridique stable. Il offre, surtout, à la puissance gestionnaire — ici les États-Unis — une présence durable sans aucun coût d'occupation militaire formelle. Il s'agit, à proprement parler, d'une innovation diplomatique : la capacité à occuper un théâtre stratégique sans en occuper le sol, par la seule magie d'un contrat de gestion qui survit aux alternances politiques. TRIPP n'est pas le premier dispositif de ce genre — l'accord OPIC sur le canal de Suez, en 1956, en avait esquissé la forme —, mais il est, depuis la décolonisation, le plus assumé.</p>
+
+<h2>Téhéran, Moscou, Pékin : trois perdants nommés</h2>
+<p>Trois capitales perdent à TRIPP, et le disent avec des intensités différentes. Téhéran perd le plus. L'Iran, depuis la révolution de 1979, considérait l'Arménie comme un partenaire indispensable — non par alignement idéologique, mais par nécessité géographique : c'était le seul axe de relation commerciale ouverte avec un pays chrétien hors de l'orbite occidentale. Cette ouverture se ferme, ou s'amincit. Pour l'Iran, c'est aussi une question stratégique : la frontière commune entre l'Arménie et l'Iran, qui constituait une zone tampon, devient à présent une frontière directe entre l'Iran et un dispositif gestionnaire américain. C'est, en pratique, une américanisation du voisinage immédiat — celle même que la révolution iranienne avait été conçue pour empêcher.</p>
+<p>Moscou perd moins frontalement, mais perd structurellement. La Russie, pendant trois décennies, avait organisé l'équilibre du Caucase sur un principe simple : un Azerbaïdjan ami, une Arménie alliée, une médiation russe permanente. TRIPP désintermédie le rôle russe. Le pari de Vladimir Poutine, depuis 2020 — assister, sans réagir, à la victoire azerbaïdjanaise pour conserver de bonnes relations avec Bakou —, se révèle perdant : Aliev a préféré la sécurisation américaine à la garantie russe. Pékin, enfin, perd dans une moindre mesure : le projet de Belt and Road, qui ambitionnait de relier la Chine à l'Europe par un axe ferroviaire et routier passant par le Kazakhstan, le Turkménistan et la Caspienne, devra désormais composer avec une gestion américaine du dernier maillon caucasien.</p>
+
+<h2>L'autre Caspienne : ce qui se joue pour l'Europe</h2>
+<p>L'Union européenne, pour sa part, observe sans y être conviée. Elle hérite pourtant de certaines des conséquences les plus importantes de l'accord. Le Caspian Pipeline Consortium et le Trans-Anatolian Natural Gas Pipeline forment, avec TRIPP, un faisceau d'infrastructures qui peut potentiellement diversifier l'approvisionnement énergétique européen — gaz turkmène acheminé par câble sous-marin caspien jusqu'à Bakou, puis vers la Turquie via Tbilissi et désormais vers l'Europe orientale par le Sud-Caucase. La quantité reste modeste à court terme. Le précédent juridique, lui, est considérable.</p>
+<p>Pour Paris et Bruxelles, la séquence dépose une question doctrinale. Si une infrastructure stratégique majeure peut être placée, dans un État souverain reconnu, sous la gestion privée d'un consortium ressortissant d'un pays tiers pendant un siècle, alors la définition même de souveraineté énergétique européenne devra être réexaminée. Le précédent TRIPP est extensible — à d'autres corridors, à d'autres câbles, à d'autres terminaux. La doctrine d'autonomie stratégique européenne, formulée depuis 2017, présupposait que la souveraineté infrastructurelle se défendait au cas par cas, par investissement public, et qu'elle ne se louait pas. Le précédent du 8 août 2025 ouvre une autre voie.</p>
+
+<h2>La Caspienne, ou la fin d'un équilibre triséculaire</h2>
+<p>Le 8 août 2025, à Washington, trois signatures ont scellé la fin d'un équilibre dont l'origine remonte au traité de Turkmantchaï de 1828. Depuis ce traité, la frontière entre l'Empire perse et l'Empire russe passait par les fleuves Aras et Kour ; la rive sud de la Caspienne appartenait à l'Iran, la rive nord aux puissances qui se succédaient à Saint-Pétersbourg, à Moscou puis à Téhéran et à Bakou. Trois empires s'étaient répartis l'espace, et l'avaient gelé. Le corridor de Zanguezour, sous gestion américaine pour quatre-vingt-dix-neuf ans, brise cette tripartition. Il introduit un quatrième acteur, sans aucune frontière dans la région, sans aucun précédent colonial, sans aucune doctrine d'occupation — et qui s'installe par contrat. L'externalisation territoriale fonctionne comme cheval de Troie diplomatique : elle préserve les apparences pour mieux reconfigurer les fondations. À ceux qui voudront, à Erevan, à Téhéran ou à Bruxelles, mesurer ce qui s'est joué, on rappellera qu'une concession de quatre-vingt-dix-neuf ans dure plus longtemps qu'une plupart des régimes politiques qui la signent, et qu'une souveraineté louée n'est pas reprise — elle est, au mieux, rachetée.</p>
+      `,
+      'hubee-orion-26': `
+<p class="lead">Le 15 janvier 2026, la plateforme HubEE — l'infrastructure numérique qui permet aux administrations françaises de dialoguer entre elles — a été compromise. Des milliers de données ont fuité. Aucune sirène n'a retenti, aucun avion n'a décollé, aucun communiqué n'a parlé d'attaque. Et c'est précisément ce silence qui dit le mieux la nature du conflit dans lequel la France est désormais engagée, sans avoir, pour autant, déclaré la guerre à qui que ce soit. L'épisode n'a rien d'une anecdote technique. Il s'inscrit dans une séquence longue, dont les principaux jalons — sabotages de câbles sous-marins en Baltique, paralysie de réseaux logistiques, attaques contre des hôpitaux européens — dessinent une géographie nouvelle de la conflictualité. Une géographie où le champ de bataille n'est plus une frontière, mais une infrastructure ; et où la victime n'est plus un soldat, mais un système.</p>
+<h2>Le déplacement silencieux du fait guerrier</h2>
+<p>Pendant trois décennies, les doctrines occidentales ont rangé le cyber dans la catégorie des outils d'appoint. Espionnage, renseignement d'origine technique, perturbation marginale : on lui prêtait un rôle de soutien, jamais de fer de lance. La guerre, la vraie, restait l'affaire des chars et des frégates. Cette représentation est en train d'imploser sous nos yeux. Ce que révèle l'attaque contre HubEE, ce n'est pas seulement la vulnérabilité d'une plateforme administrative ; c'est l'inversion d'une hiérarchie.</p>
+<p>Le cyber n'est plus l'accessoire du conflit, il en est devenu le préalable. À quoi bon mobiliser une brigade pour conquérir un territoire dont on peut, à un coût marginal, paralyser les services d'urgence, désorganiser le réseau ferré et neutraliser les administrations ? La nouvelle économie de la guerre repose sur un calcul aussi froid qu'efficace : il coûte infiniment moins cher d'éteindre un État que de l'envahir. Cette mutation porte un nom, encore peu employé dans le débat public mais déjà central dans les états-majors : la fonctionnalisation du chaos. On n'attaque plus une cible, on attaque la capacité de l'ensemble du système à fonctionner. La cible ultime n'est plus matérielle, elle est systémique.</p>
+<h2>ORION 26, ou la guerre dont la première phase est numérique</h2>
+<p>L'État-Major français n'a pas attendu HubEE pour acter cette bascule. L'exercice ORION 26, qui mobilise actuellement les armées dans un scénario de haute intensité, en porte la signature. Ce qui frappe, dans le déroulé public de l'exercice, ce n'est pas l'ampleur des moyens conventionnels engagés. C'est l'ordre dans lequel ils interviennent. La phase initiale du scénario, celle qui précède tout déploiement terrestre, est presque exclusivement numérique. Brouillage des communications, neutralisation des satellites, intrusion dans les systèmes de commandement : la guerre, telle que les armées françaises s'entraînent à la mener en 2026, commence dans l'invisible.</p>
+<p>Ce séquençage n'est pas un choix esthétique. Il dérive d'une lecture stratégique simple : un adversaire de niveau étatique frappera d'abord les nœuds invisibles, parce qu'il sait qu'une armée privée de communication est une armée sourde, et qu'une armée sourde est, à brève échéance, une armée vaincue. L'intégration de la Lutte Informatique Offensive (LIO) au cœur d'ORION 26 traduit cette conviction : le soldat de 2026 dépend autant de sa bande passante que de ses munitions. Et la première bataille de la prochaine guerre se livrera dans des câbles, des relais et des serveurs, longtemps avant qu'un seul drapeau ne soit planté.</p>
+<h2>Quand l'administration devient un objectif militaire</h2>
+<p>Reste la part la plus inconfortable du dossier, celle qui touche à nos vies de citoyens. Car la cible de janvier n'était ni une caserne ni un centre de commandement. C'était une plateforme administrative. Autrement dit : le quotidien. C'est dans cette translation que se joue la véritable rupture. La guerre hybride, telle qu'elle s'invente sous nos yeux, a effacé la ligne qui séparait l'objectif militaire de l'objectif civil. Une mairie, un hôpital, un opérateur ferroviaire, un fournisseur d'énergie pèsent désormais autant, dans le rapport de force entre États, qu'une garnison.</p>
+<p>Frapper la confiance d'une population dans ses institutions, paralyser ses gestes administratifs les plus banals, c'est entamer un État sans avoir à l'affronter — et, surtout, sans avoir à en assumer le coût politique. Ce déplacement reconfigure en profondeur la mission du renseignement français. Sa fonction ne se borne plus à surveiller les puissances rivales : elle inclut désormais la protection du tissu économique, social et numérique national. Les services intérieurs, qui historiquement traquaient l'espion ou le terroriste, doivent à présent défendre des serveurs, des plateformes et des chaînes logistiques. La souveraineté numérique n'est plus un dossier technique : elle est devenue la condition matérielle de la souveraineté tout court.</p>
+<h2>Un présent permanent</h2>
+<p>L'erreur serait de croire que la cyberguerre est un horizon — un sujet pour livres blancs et auditions parlementaires. Elle est un présent permanent, à bas bruit, qui ne se déclare pas et ne se signe pas. Elle n'a ni front, ni armistice, ni vainqueur identifiable. Elle se mène par à-coups, dans des angles morts, contre des cibles qui ne savent pas toujours, sur le moment, qu'elles sont la ligne de front. Pour la France, l'enjeu n'est plus de se demander si elle est en guerre. Il est d'accepter qu'elle l'est déjà, et que chaque administration, chaque entreprise, chaque hôpital constitue, qu'il le veuille ou non, un avant-poste de la défense nationale. C'est sans doute la leçon la plus dérangeante de l'affaire HubEE : il aura suffi d'une intrusion silencieuse pour rappeler à un pays tout entier qu'il est, depuis longtemps déjà, en première ligne.</p>
+      `,
+      'rainbow-warrior': `
+<p class="lead">Il existe, dans l'histoire de la DGSE, une nuit que les instructeurs continuent de raconter aux jeunes recrues. Celle du 10 juillet 1985, dans le port d'Auckland. Cette nuit-là, deux mines magnétiques fixées par des nageurs de combat français font sombrer en quelques minutes le <em>Rainbow Warrior</em>, navire amiral de Greenpeace. Tactiquement, l'opération est une réussite. Politiquement, elle marque l'un des plus retentissants désastres diplomatiques de la Ve République. Et techniquement, elle s'effondre quelques jours plus tard sur un détail qui n'aurait jamais dû peser dans une opération clandestine : la récupération d'une caution de location de véhicule. C'est ce paradoxe qui, quarante ans après les faits, donne à l'affaire son statut singulier. Ni la qualité des hommes engagés, ni la sophistication du dispositif n'ont pu compenser un défaut culturel beaucoup plus profond, dont les services français ne se sont, en réalité, jamais totalement remis.</p>
+<h2>Une logique d'État construite sur une assimilation troublante</h2>
+<p>Pour comprendre comment une telle opération a pu être autorisée, il faut s'arracher au regard contemporain et se replacer dans la mentalité stratégique de 1985. La France est encore en pleine guerre froide, et sa doctrine de défense repose entièrement sur la dissuasion nucléaire. Les essais réalisés sur l'atoll de Mururoa, au sein du Centre d'expérimentation du Pacifique, ne sont pas un sujet de débat public ; ils sont tenus, au sommet de l'État, pour un pilier intouchable de la souveraineté. Dans cette grille de lecture, Greenpeace n'est pas perçue comme une ONG militante, mais comme un acteur de guerre asymétrique.</p>
+<p>Le <em>Rainbow Warrior</em>, navire amiral de l'organisation, inquiète. On le soupçonne, à Paris, de vouloir perturber les essais à venir et, plus discrètement, d'embarquer des capteurs susceptibles de recueillir des données sensibles sur les explosions françaises. L'ordre venu du politique tient en une phrase : ce bateau ne doit pas appareiller. Cette décision dit déjà beaucoup, sans rien dire encore de la suite. Elle révèle un État qui assimile la contestation environnementale à un risque stratégique, et qui s'autorise, pour la neutraliser, des moyens d'ordinaire réservés aux adversaires militaires. C'est dans cette confusion initiale — entre opposant politique et ennemi d'État — que s'installe, en germe, la matrice du désastre.</p>
+<h2>Une architecture irréprochable, des opérateurs d'élite</h2>
+<p>L'exécution n'est pas confiée à l'armée régulière, mais à la Direction générale de la sécurité extérieure, via son Service Action. Ses opérateurs sont des militaires d'élite — nageurs de combat, parachutistes — formés au sabotage, à l'élimination ciblée, à l'exfiltration en milieu hostile. Sur le papier, ils représentent ce que la France produit alors de plus discret et de plus aguerri. L'opération, baptisée <em>Satanique</em>, suit les canons du métier. Elle est cloisonnée en trois équipes étanches, pour éviter qu'une éventuelle compromission n'entraîne la chute de l'ensemble.</p>
+<p>L'éclaireur, d'abord, avec Christine Cabon — alias Frédérique Bonlieu — infiltrée chez Greenpeace pour cartographier les habitudes du navire et de son équipage. La logistique, ensuite, assurée par le yacht <em>Ouvéa</em>, chargé d'acheminer depuis la Nouvelle-Calédonie les explosifs et le matériel de plongée. L'action, enfin, avec les nageurs Jean-Luc Kister et Jean Cammas, qui doivent poser les mines, et le couple de soutien au sol, Alain Mafart et Dominique Prieur, en mission sous l'identité des « époux Turenge ». Sur le plan tactique, l'architecture est exemplaire. Elle deviendra, dans les jours qui suivent, le décor d'un effondrement.</p>
+<h2>Une réussite militaire, un drame humain, une bascule juridique</h2>
+<p>La nuit du 10 juillet, le plan se déroule comme prévu. Deux mines magnétiques sont fixées sur la coque. À 23h38, une première explosion mineure doit créer la panique, vider le navire, prévenir toute victime. À 23h45, une seconde charge, plus puissante, doit couler le bateau. Le calcul est froid, mais cohérent : neutraliser sans tuer. Le navire coule en quelques minutes. Cependant, Fernando Pereira, photographe de l'expédition, est remonté à bord entre les deux déflagrations pour récupérer son matériel.</p>
+<p>Il est piégé par la seconde explosion, et se noie. C'est cette mort, qui n'était pas dans le plan, qui transforme un acte de sabotage en homicide involontaire — et une opération clandestine en affaire pénale internationale. La frontière, ténue, entre une mission « propre » et un fiasco moral, s'est jouée en sept minutes.</p>
+<h2>Quand le tradecraft tient à une caution non rendue</h2>
+<p>C'est à ce moment que l'affaire bascule, du registre du sabotage à celui de l'étude de cas. Et ce que révèle l'enquête néo-zélandaise, conduite avec un sérieux dont la DGSE ne soupçonnait pas la possibilité, c'est moins une faute opérationnelle qu'un défaut culturel. Les agents français ont multiplié les imprudences parce qu'ils n'imaginaient pas, fondamentalement, devoir en payer le prix. La récupération des nageurs s'effectue dans une baie placée sous surveillance officieuse, à la suite de vols de bateaux récents.</p>
+<p>Des vigiles civils, attentifs, notent la plaque d'immatriculation du van des Turenge. Le véhicule, lui, a été loué sous une trace administrative limpide, sans réseau de couverture sérieux. Et lorsqu'il s'agit, deux jours plus tard, de récupérer la caution — un détail comptable que les manuels d'opérations spéciales citent désormais comme contre-exemple canonique — les agents rapportent le van à l'agence. Ils y seront cueillis sans difficulté. La couverture elle-même ne tient pas davantage. Le couple Turenge est censé être suisse, mais leur accent est français, leurs passeports manifestement récents, et leur comportement de « jeunes mariés » sonne faux dès les premières heures d'interrogatoire.</p>
+<p>Pire encore : alors qu'ils sont encore en liberté provisoire à leur hôtel, Alain Mafart compose un numéro de secours à Paris pour avertir sa hiérarchie. La police néo-zélandaise trace l'appel sans difficulté. Il aboutit, en clair, au standard du ministère de la Défense, rue Saint-Dominique. Ce qui devait être une opération à l'identité « lavable » en quelques heures se transforme en piste téléphonique pointant directement vers le pouvoir politique. La leçon, pour qui veut bien la lire, est brutale : l'excellence tactique des opérateurs ne suffit pas si la culture du tradecraft — c'est-à-dire l'ensemble des micro-réflexes qui rendent un agent invisible — n'a pas été intégrée à chaque maillon de la chaîne. Or, en 1985, le Service Action travaille encore comme un commando ; il faudra ce désastre pour qu'il apprenne à travailler comme un service.</p>
+<h2>Un déni d'État qui aggrave l'opération initiale</h2>
+<p>À Paris, la première réaction du pouvoir est celle, classique, du déni. Le rapport Tricot, commandé en urgence, blanchit la DGSE et affirme que ses agents n'étaient là que pour « surveiller » le navire. La version ne résiste pas longtemps. Elle s'effondre sous le double feu des preuves accumulées par la police néo-zélandaise et des enquêtes de presse françaises, au premier rang desquelles celles d'Edwy Plenel dans <em>Le Monde</em>, qui mettent au jour l'existence de la troisième équipe — celle des nageurs.</p>
+<p>Le 20 septembre 1985, le ministre de la Défense, Charles Hernu, démissionne. Le 22 septembre, Laurent Fabius, Premier ministre, livre à la télévision l'un des aveux les plus inhabituels de la Ve République : « La vérité est cruelle […]. Ce sont des agents de la DGSE qui ont coulé ce bateau. » Cette séquence est révélatrice d'un autre échec, plus profond que le premier. Les démocraties supportent mal le mensonge d'État, surtout lorsqu'il s'effondre en direct, sous les caméras. En tentant de couvrir une opération mal exécutée, le pouvoir politique a transformé une faute technique en crise de régime. C'est, au fond, la double peine du renseignement français cette année-là : il a échoué dans la mission, et le pouvoir a échoué dans la couverture.</p>
+<h2>Un héritage qui a refondé un métier</h2>
+<p>Sur le terrain judiciaire, Mafart et Prieur plaident coupable d'homicide involontaire, sont condamnés à dix ans de prison, puis exilés sur l'atoll de Hao au terme d'une négociation longue et humiliante pour Paris. Sur le plan financier, la France verse plusieurs millions de dollars à la Nouvelle-Zélande et à Greenpeace. Sur le plan symbolique, l'attentat offre à l'ONG une notoriété mondiale qu'aucun <em>Rainbow Warrior</em> intact ne lui aurait jamais procurée. L'atoll de Mururoa cessera d'être utilisé pour les essais nucléaires une décennie plus tard.</p>
+<p>Mais l'héritage le plus durable se joue à l'intérieur même des services. Le dossier Satanique a précipité une réforme structurelle de la DGSE et, plus particulièrement, du Service Action : fin de l'autonomie opérationnelle quasi totale dont il jouissait, renforcement du contrôle politique, professionnalisation des procédures de couverture et d'exfiltration, refonte des doctrines de cloisonnement. Le renseignement français, en 1985, a appris dans la douleur ce qu'il refusait d'admettre dans l'orgueil : aucune opération, si élitiste soit-elle, ne survit longtemps à une caution non rendue, à un appel téléphonique mal placé et à un accent qui sonne faux. C'est sans doute pour cela que, quarante ans plus tard, les instructeurs continuent de raconter cette nuit-là à leurs recrues. Non pas comme un exploit, ni même comme un échec. Mais comme la leçon fondatrice d'un métier qui, ce soir d'Auckland, a découvert ce qu'il avait à apprendre.</p>
+      `,
+      'palantir': `
+<p class="lead">Le 15 décembre 2025, dans un communiqué sobre, Palantir Technologies a annoncé le renouvellement, pour trois ans supplémentaires, de son contrat avec la Direction générale de la sécurité intérieure (DGSI). La firme américaine équipera donc les services de renseignement intérieur français jusqu'en 2028 — soit douze ans, au total, depuis la signature initiale, intervenue à chaud dans l'après-13-Novembre. Le communiqué était court, le débat parisien fut bref, et la nouvelle a été noyée, en quelques heures, dans le flux ordinaire des actualités de fin d'année.</p>
+<p>C'est précisément ce qui en fait, à la réflexion, l'un des événements les plus importants de l'année passée. Car derrière cette signature presque banale se joue une question qui dépasse de très loin le périmètre d'un contrat public : celle de savoir ce que devient un État qui délègue, à une entreprise privée étrangère, une partie du traitement de ses données les plus sensibles. Et, plus encore, ce que devient cet État lorsque l'entreprise en question revendique, désormais explicitement, un projet politique.</p>
+<h2>Une firme qui ne ressemble à aucune autre</h2>
+<p>Palantir n'est pas une entreprise de service du numérique (ESN) comme les autres, et il faut commencer par le rappeler, parce qu'une partie du débat français peine encore à intégrer cette singularité. L'entreprise, cofondée en 2003 par Peter Thiel et Alex Karp, s'est construite avec un capital de la CIA (via le fonds In-Q-Tel) et un objectif explicite : doter les services de renseignement américains d'un outil capable de croiser, à grande vitesse, des volumes de données jusque-là intraitables. Sa plateforme Gotham, déployée à la DGSI, est conçue pour le métier du renseignement.</p>
+<p>Sa plateforme Foundry est déclinée pour le monde de l'entreprise et de l'administration. Ses outils d'IA prédictive équipent aujourd'hui le Pentagone, l'armée israélienne, la police fédérale de l'immigration américaine, mais aussi Airbus, la Société Générale ou plusieurs grandes administrations occidentales. À la Bourse de New York, le marché a parfaitement compris ce que cette implantation signifie : l'action a progressé de 142 % en 2025, et l'entreprise est désormais valorisée à un niveau qui dépasse Lockheed Martin. Les investisseurs ne misent pas sur un éditeur de logiciels. Ils misent sur la conviction qu'une part croissante de la souveraineté des États passera, dans les prochaines décennies, par les outils que produit Palantir.</p>
+<h2>Le tournant idéologique de 2025</h2>
+<p>Jusqu'à récemment, Palantir cultivait une certaine discrétion sur ses propres intentions. Ses dirigeants se présentaient en techniciens au service de la sécurité nationale, vendeurs d'un produit, indifférents aux débats politiques que celui-ci suscitait. Cette posture est en train de tomber. En 2025, Alex Karp a publié <em>La République technologique</em>, ouvrage programmatique dans lequel il défend une thèse simple, et plus radicale qu'il n'y paraît : les démocraties occidentales sont devenues trop lentes, trop bureaucratiques, trop hésitantes pour gagner les conflits du XXIe siècle ; il revient donc aux ingénieurs et aux entrepreneurs de la Silicon Valley de fournir aux États les outils qui leur permettront de retrouver leur supériorité — quitte à reconfigurer en profondeur la manière dont ces États fonctionnent.</p>
+<p>Le propos rejoint, sans surprise, les positions de longue date de Peter Thiel, qui théorise depuis vingt ans la nécessité de remplacer la rationalité administrative classique par des dispositifs algorithmiques plus efficaces, et qui finance par ailleurs une partie de l'écosystème politique trumpiste. Cette articulation n'est pas anecdotique. Sous la seconde administration Trump, Palantir s'est imposée comme le partenaire technologique central de plusieurs agences fédérales, dont l'ICE — la police fédérale de l'immigration — pour laquelle elle développe une plateforme de suivi des reconduites à la frontière. Amnesty International dénonce un outil qui « automatise un processus déjà très faillible et opaque ». L'entreprise rejette les accusations, mais l'objet du débat n'est plus seulement technique : il est politique.</p>
+<h2>Le coût discret d'une dépendance qui s'installe</h2>
+<p>C'est dans ce contexte que la DGSI reconduit son contrat. La justification française est connue, et elle est honnête : l'outil fonctionne, ses équipes maîtrisent désormais la plateforme, et aucune solution souveraine n'est arrivée à maturité dans les délais espérés. Le directeur de la DGSI de 2019 expliquait déjà, à l'époque, que le partenariat était « transitoire » et qu'il s'agissait de laisser le temps à Thales, Sopra Steria et Dassault Systèmes de monter en gamme. Six ans plus tard, la transition n'a pas eu lieu, et le caractère « transitoire » du contrat ressemble désormais à une convention de langage.</p>
+<p>Un rapport parlementaire récent sur les dépendances numériques de la France a remis le sujet sur la table, en soulignant ce que cette installation dans la durée fait peser sur l'indépendance stratégique du pays. Les services français assurent — et c'est probablement vrai — que les données traitées restent sur leur réseau interne, à l'abri de toute exfiltration. Mais la question de la souveraineté ne se résume pas à celle de la confidentialité immédiate. Elle inclut aussi la dépendance technique, le savoir-faire qui ne se développe pas chez nous parce qu'il se développe ailleurs, et la position de négociation que l'on perd lorsqu'on s'installe, durablement, dans la position d'acheteur.</p>
+<p>L'épisode est d'autant plus instructif qu'il n'est pas isolé. En coulisses des Jeux olympiques de Paris 2024, l'équipe française de Palantir a, selon les propres mots d'Alex Karp, « accompagné la DGSI » dans la gestion du dispositif de sécurité. Lors des grands événements sportifs, dans la lutte antiterroriste, dans certaines opérations sensibles, l'outil est devenu un partenaire de fait. Et c'est précisément cette présence devenue ordinaire qui rend la question d'autant plus difficile : on ne sort pas d'une dépendance que l'on a cessé de percevoir comme telle.</p>
+<h2>Ni paranoïa, ni naïveté</h2>
+<p>Il faut, sur ce sujet, refuser deux pentes faciles. La première consisterait à diaboliser Palantir, à en faire la matrice secrète d'un complot américain visant à réduire la souveraineté française à néant. Cette lecture sous-estime la complexité du partenariat : la firme américaine a permis, depuis 2016, des avancées opérationnelles réelles dans la lutte antiterroriste, et plusieurs cadres des services rendent hommage, en privé, à la qualité de son accompagnement. La seconde pente, symétrique, serait de banaliser l'épisode en y voyant un choix technologique sans portée politique.</p>
+<p>Ce serait ignorer que Palantir, en 2026, n'est plus seulement un outil. C'est un acteur — qui pense, qui publie, qui prend position, et qui s'inscrit dans une vision particulière du rapport entre la technologie, la sécurité et l'État. La voie raisonnable est ailleurs, dans une exigence simple : que la France assume politiquement le choix qu'elle fait. Si la DGSI utilise Palantir, qu'on le dise. Si une dépendance s'installe, qu'on la nomme. Si la souveraineté souffre, qu'on en tire les conséquences industrielles. C'est, au fond, le seul reproche que l'on peut formuler aujourd'hui à la stratégie française : non pas d'avoir choisi Palantir — ce qui peut se défendre — mais de ne jamais s'être donné les moyens, en dix ans, de ne plus avoir à le choisir.</p>
+<h2>Une question qui dépasse Palantir</h2>
+<p>Car le débat, à dire vrai, dépasse cette seule entreprise. Palantir n'est que la forme la plus visible d'une question plus vaste : celle de la place que les démocraties européennes consentent à laisser aux acteurs privés extra-européens dans des fonctions régaliennes. Le renseignement aujourd'hui, peut-être la justice prédictive demain, l'identification biométrique après-demain — chaque maillon de l'État moderne devient un marché possible, et chaque marché trouve son fournisseur. Que ces fournisseurs soient brillants, efficaces, et souvent indispensables ne change rien à la nature du problème : un État qui n'a plus la main sur ses outils n'a plus tout à fait la main sur lui-même.</p>
+<p>À l'heure où Alex Karp lui-même parle ouvertement de « refaire la République » par la technologie, il y aurait quelque chose de paradoxal à ce que les démocraties européennes refusent de voir, dans cette ambition, autre chose qu'une rhétorique commerciale. La firme américaine, elle, ne se cache plus. Il revient désormais aux États, et d'abord à la France, de décider s'ils veulent rester maîtres du jeu — ou simplement clients d'un système qu'ils ne contrôlent plus.</p>
+      `,
+      'taiwan-2027': `
+        <p class="lead">Le 19 mars 2026, dans une salle du Capitole bien plus discrète que les amphithéâtres qui accueillent l'audition annuelle de la communauté du renseignement, les sénateurs du Senate Select Committee on Intelligence ont pris connaissance d'une révision. Selon ce que rapportait le même jour <em>USNI News</em>, le dernier rapport classifié de l'Intelligence Community concluait que les dirigeants chinois n'avaient pas, à ce stade, décidé d'exécuter une invasion de Taïwan en 2027 ; ils n'avaient même pas, indiquait le document, fixé d'échéance précise pour la réunification. L'année que cinq ans de doctrine américaine avaient érigée en horizon central venait de perdre, dans une note interne, son statut d'invariant.</p>
+        <p>Ce que révèle cette inflexion, ce n'est pas seulement un ajustement de probabilité ; c'est l'autonomie acquise par un calendrier dont l'invalidation ne suffit plus à défaire ce qu'il a déjà construit. La date a survécu à sa révision. Elle continue d'organiser les budgets du Pacific Deterrence Initiative, le séquencement des livraisons à Taipei, les rotations de groupes amphibies vers la mer de Chine, la planification d'exercices alliés ; et, du côté de Pékin, elle continue de fournir aux dirigeants chinois la preuve qu'un horizon hostile a été dressé contre eux. Toute analyse sérieuse de la question taïwanaise commence par cette question : qui est encore obligé par 2027, et au nom de quoi ?</p>
+
+        <h2>Un horizon construit à Washington, lu à Pékin</h2>
+        <p>L'origine de la date est connue ; elle est attribuée à un seul témoignage. Le 9 mars 2021, l'amiral Philip Davidson, alors commandant de l'INDOPACOM, déclarait devant le Senate Armed Services Committee que la menace chinoise sur Taïwan se manifesterait « durant cette décennie, en fait dans les six prochaines années ». La fenêtre fut aussitôt nommée — <em>Davidson window</em> — et inscrite dans la cartographie stratégique américaine. Deux ans plus tard, le directeur de la CIA William Burns confirmait publiquement que, « en tant que renseignement », le président Xi Jinping avait ordonné à l'Armée populaire de libération d'être prête à conduire une invasion en 2027. Le même Burns ajoutait, dans une phrase moins citée, que cette préparation « ne signifiait pas que Xi avait pris la décision d'envahir en 2027, ni à aucune autre date ». La distinction, déterminante pour le métier d'analyste, fut effacée par la machine politique et budgétaire qui s'empara de la date.</p>
+        <p>Le commandement du Pacifique entérina la propagation de l'horizon. En mars 2024, l'amiral John Aquilino, successeur de Davidson à l'INDOPACOM, déclarait devant le Congrès que « toutes les indications convergent vers le respect par l'APL de la directive de Xi Jinping d'être prête à envahir Taïwan d'ici 2027 ». La trajectoire bureaucratique de la date était scellée : un cadrage temporel posé par un commandant militaire, confirmé par un chef de service, répété par son successeur, encodé dans la planification des forces. À Pékin, l'effet miroir fut symétrique. Le calendrier importé devint preuve d'intention hostile, justifiant des manœuvres dont l'amplitude renforçait, en retour, la conviction américaine d'un dispositif en accélération.</p>
+
+        <h2>Préparer n'est pas décider — la distinction qui change l'arbitrage</h2>
+        <p>Le rapport annuel du Pentagone sur la puissance militaire chinoise, publié le 23 décembre 2025, maintient une formulation prudente : l'APL « continue de progresser de manière soutenue vers ses objectifs de 2027 », qui comprennent une « victoire stratégique décisive » sur Taïwan et une « contre-balance stratégique » face aux États-Unis. Mais le texte indique aussi, sans ambiguïté, que les dirigeants chinois eux-mêmes « demeurent incertains quant à la capacité de l'armée à saisir l'île tout en contrant une intervention américaine ou alliée ». Le rapport conclut que, dans l'arbitrage actuel, « les risques et les coûts d'une réunification forcée continuent probablement de dépasser les bénéfices ». La Defense Intelligence Agency, dans son <em>Annual Threat Assessment</em> 2025, formule la même prudence en termes de doctrine : l'APL prépare un éventail d'options allant des actions coercitives en deçà de la guerre jusqu'à une campagne de débarquement insulaire conjointe.</p>
+        <p>Cette gradation est cruciale. Elle dit que la lecture binaire — invasion ou non en 2027 — appartient au commentaire ; les services, eux, travaillent sur un continuum dont chaque palier est une opération. C'est précisément cette gradation que les exercices PLA des dernières années — <em>Joint Sword</em>, <em>Strait Thunder</em>, les rotations dans le détroit, les survols répétés de la ligne médiane — ont matérialisée. La doctrine chinoise distingue la coercition de la décision ; on serait avisé d'en faire autant.</p>
+
+        <h2>Le calendrier-écho : quand une date survit à sa révision</h2>
+        <p>Il faut nommer ce mécanisme. On désignera ici par <strong>calendrier-écho</strong> la persistance d'un horizon temporel après son invalidation par le service qui l'avait initialement posé. Le calendrier-écho fonctionne par inertie organisationnelle : une fois qu'une date a structuré des lignes budgétaires sur cinq ans, des programmes d'armement, des contrats industriels, des rotations de personnel et des commandes parlementaires, sa réfutation par une note interne ne suffit pas à défaire l'appareil qu'elle a contribué à construire. Il continue de tourner, attaché à une horloge dont les aiguilles ont été remplacées mais dont le cadran reste lisible pour tous les acteurs périphériques — alliés, adversaires, opinion publique.</p>
+        <p>Le calendrier-écho présente une seconde propriété : il est lu par l'adversaire indépendamment de ce que l'émetteur croit en avoir révisé. La Chine n'a aucune obligation d'enregistrer la note de mars 2026 ; elle continue de regarder le dispositif militaire qui a été constitué sous l'hypothèse de 2027, et de calibrer ses propres mesures en fonction de ce dispositif. La révision est invisible à qui regarde l'appareil, et seule la visibilité de l'appareil compte dans le calcul stratégique de Pékin. La date a quitté le statut de prédiction pour endosser celui de fait matériel.</p>
+
+        <h2>Coercition sans bataille — ce que les wargames ne modélisent pas</h2>
+        <p>Le Center for Strategic and International Studies a profondément structuré l'imaginaire occidental d'un affrontement par ses simulations. Son rapport « <em>The First Battle of the Next War</em> », publié en janvier 2023, modélise vingt-quatre itérations d'une invasion amphibie chinoise contre Taïwan ; dans la majorité des scénarios, Taipei préserve son indépendance, mais au prix d'environ 10 000 pertes côté chinois, de la destruction de la majeure partie des 534 avions de combat taïwanais et de la perte de 38 bâtiments majeurs. En juillet 2025, le même CSIS publiait « <em>Lights Out? Wargaming a Chinese Blockade of Taiwan</em> », vingt-six itérations consacrées non plus à un débarquement mais à un blocus.</p>
+        <p>La bascule mérite d'être notée. La doctrine chinoise, dans la lecture américaine la plus récente, ne se réduit plus à l'hypothèse d'une bataille frontale ; elle se déploie dans l'espace des coercitions qui n'engagent pas la décision. Quarantaine sanitaire, interdictions de pavillon, perturbations de câbles sous-marins, brouillages GPS, manœuvres prolongées de garde-côtes : autant de modalités qui appartiennent au registre de la pression et non à celui de la guerre, mais qui transforment l'économie de l'île plus sûrement qu'un débarquement. L'IRSEM, dans l'étude d'Hugo Tierny consacrée aux dilemmes défensifs taïwano-américains, identifie cette zone grise comme le véritable terrain de la décennie ; l'IFRI parvient à un constat voisin dans ses analyses récentes des deux Chine.</p>
+
+        <h2>Ce que Paris regarde dans cette horloge</h2>
+        <p>L'horizon 2027 n'est pas qu'un objet américain. <em>Le Grand Continent</em> a consacré, depuis 2023, plusieurs livraisons à la question — « Le plan chinois pour envahir Taïwan », « Taïwan se prépare à une invasion chinoise en 2027 », « Si la Chine envahit Taïwan » — qui ont introduit dans le débat francophone l'idée qu'une crise majeure dans le détroit entraînerait une perte d'environ 10 % du PIB mondial. Le chiffre, repris d'une étude de Bloomberg Economics, n'est pas une projection martiale : c'est la mesure du degré auquel une économie ouverte est exposée à un calendrier qu'elle n'a pas posé.</p>
+        <p>Pour la France, l'inflexion de mars 2026 ne change donc pas la donne stratégique ; elle expose plutôt une dépendance plus ancienne. La planification industrielle, énergétique et numérique d'une partie de l'Union s'est arrimée à un horizon temporel américain. Si cet horizon vacille, c'est l'arrimage qui devient lisible. L'autonomie stratégique européenne, longtemps formulée en termes industriels, prend ici un contenu temporel : être autonome, c'est d'abord ne pas dépendre du calendrier de quelqu'un d'autre.</p>
+
+        <h2>Une date n'est pas une probabilité — c'est une infrastructure</h2>
+        <p>Le 19 mars 2026, à Washington, un rapport interne a révisé une date. Aucun communiqué officiel n'a été publié ; les médias spécialisés en ont fait état dans la journée ; les marchés n'ont pas frémi ; la planification militaire américaine, elle, a continué de tourner sur ses cadres. Le calendrier-écho a fonctionné parfaitement : la note a été lue par ceux qui rédigent les notes, et l'appareil n'a pas eu à en prendre acte. Pour les analystes, l'épisode dépose une leçon précise. Une date imposée par un service à son adversaire ne s'évanouit pas quand le service l'efface ; elle ne disparaît qu'au rythme où s'usent les budgets, les programmes et les habitudes qu'elle a engendrés. À Taipei comme à Bruxelles, on serait avisé de considérer que 2027 ne désigne plus une probabilité ; elle désigne une infrastructure. Et une infrastructure ne se révise pas en mars d'une seule année.</p>
+
+      `,
+    };
+
+    function buildBody(title, articleId) {
+      if (articleId && ARTICLES[articleId]) return ARTICLES[articleId];
+      return `
+        <p class="lead">${title} — un dossier en cours de rédaction. Le contenu intégral de cette enquête sera publié prochainement.</p>
+        <p>Les sources sont en train d'être recoupées : doctrines officielles, rapports parlementaires, presse spécialisée, archives. La publication suivra le rythme du fact-checking, non celui de l'actualité.</p>
+        <p>Pour être notifié dès la mise en ligne, inscrivez-vous à la newsletter en pied de page.</p>
+      `;
+    }
+
+    let openingCard = null;
+
+    function openReader(card) {
+      const cardImg = card.querySelector('img');
+      const title = card.querySelector('h3')?.textContent?.trim() || 'Éditorial';
+      const kicker = card.querySelector('.font-mono.text-radar')?.textContent?.trim() || '';
+      const dek = card.querySelector('p.text-mist')?.textContent?.trim() || '';
+      const tags = [...card.querySelectorAll('.tag')]
+        .map(t => `<span class="tag${t.classList.contains('night') ? ' night' : ''}${t.classList.contains('alert') ? ' alert' : ''}">${t.textContent.trim()}</span>`)
+        .join('');
+
+      document.getElementById('readerTags').innerHTML = tags;
+      document.getElementById('readerKicker').textContent = kicker;
+      document.getElementById('readerTitle').textContent = title;
+      document.getElementById('readerDek').textContent = dek;
+      document.getElementById('readerBody').innerHTML = buildBody(title, card.dataset.articleId) + `
+        <div class="article-signature">
+          <span class="sig-rule"></span>
+          <p class="sig-name">Marc-Antoine Galand</p>
+          <p class="sig-pub">Renseignons-nous</p>
+        </div>`;
+      heroImg.src = cardImg?.src || '';
+      heroImg.alt = cardImg?.alt || '';
+
+      reader.scrollTop = 0;
+      reader.setAttribute('aria-hidden', 'false');
+      reader.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      openingCard = card;
+
+      if (!cardImg) return;
+
+      const sr = cardImg.getBoundingClientRect();
+      const tr = heroImg.getBoundingClientRect();
+      if (tr.width === 0 || tr.height === 0) return;
+
+      const dx = sr.left - tr.left;
+      const dy = sr.top - tr.top;
+      const sx = sr.width / tr.width;
+      const sy = sr.height / tr.height;
+
+      card.classList.add('is-opening');
+      heroImg.style.transition = 'none';
+      heroImg.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+      heroImg.style.opacity = '1';
+
+      requestAnimationFrame(() => {
+        heroImg.style.transition = 'transform .85s cubic-bezier(.2,.7,.2,1), opacity .6s ease';
+        heroImg.style.transform = 'translate(0,0) scale(1,1)';
+        heroImg.style.opacity = '0.85';
+      });
+    }
+
+    function closeReader() {
+      reader.classList.remove('is-open');
+      reader.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (openingCard) {
+        openingCard.classList.remove('is-opening');
+        openingCard = null;
+      }
+      heroImg.style.transition = 'none';
+      heroImg.style.transform = '';
+    }
+
+    document.querySelectorAll('.article-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return; // let inline links work
+        openReader(card);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeReader);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && reader.classList.contains('is-open')) closeReader();
+    });
+  })();
+
+  /* ===== Reveal on scroll ===== */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ===== Header shadow on scroll ===== */
+  const topbar = document.getElementById('topbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 12) topbar.classList.add('shadow-2xl', 'shadow-radar/5');
+    else topbar.classList.remove('shadow-2xl', 'shadow-radar/5');
+  });
+
+  /* ===== Filtres grille ===== */
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => { b.classList.remove('bg-radar','text-abyss','font-semibold'); b.classList.add('hover:bg-white/5'); });
+      btn.classList.add('bg-radar','text-abyss','font-semibold');
+      btn.classList.remove('hover:bg-white/5');
+      const f = btn.dataset.filter;
+      document.querySelectorAll('.article-card').forEach(card => {
+        const cat = card.dataset.cat;
+        const show = f === 'all' || cat === f;
+        card.style.transition = 'opacity .4s ease, transform .4s ease';
+        card.style.opacity = show ? '1' : '0.15';
+        card.style.pointerEvents = show ? 'auto' : 'none';
+        card.style.transform = show ? 'scale(1)' : 'scale(0.98)';
+      });
+    });
+  });
+
+  /* ===== Nav category links → trigger grid filter ===== */
+  document.querySelectorAll('a[data-cat-filter]').forEach(a => {
+    a.addEventListener('click', () => {
+      const cat = a.dataset.catFilter;
+      const btn = document.querySelector(`.filter-btn[data-filter="${cat}"]`);
+      if (btn) setTimeout(() => btn.click(), 350);
+    });
+  });
+
+  /* ===== Phone 3D scroll animation + slides rotation ===== */
+  (function initPhoneScroll() {
+    const phone   = document.getElementById('phoneCard');
+    const section = document.getElementById('tiktok');
+    if (!phone || !section) return;
+
+    const isMobile = () => window.innerWidth <= 768;
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    let rafId = null;
+    function update() {
+      rafId = null;
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Progress: 0 when section just enters viewport (rect.top = vh),
+      // 1 when section's center reaches the middle of viewport.
+      const total = vh + rect.height * 0.4;
+      const p = clamp((vh - rect.top) / total, 0, 1);
+
+      const mobile = isMobile();
+      const rotateX = lerp(20, 0, p);
+      const scale   = mobile ? lerp(0.85, 0.95, p) : lerp(1.05, 1, p);
+      const ty      = lerp(60, 0, p);
+
+      phone.style.transform = `translateY(${ty}px) rotateX(${rotateX}deg) scale(${scale})`;
+    }
+    function onScroll() {
+      if (rafId == null) rafId = requestAnimationFrame(update);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+
+    // Auto-rotating slides with progress bars
+    const slides   = phone.querySelectorAll('.phone-slide');
+    const fills    = phone.querySelectorAll('.phone-progress-fill');
+    if (!slides.length) return;
+    const slideDuration = 4200; // ms per slide
+    let current = 0;
+    let stepStart = performance.now();
+
+    function setActive(i) {
+      slides.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+      fills.forEach((f, idx) => { f.style.transition = 'none'; f.style.width = idx < i ? '100%' : '0%'; });
+      // re-enable transition on next frame for the active one
+      requestAnimationFrame(() => {
+        if (fills[i]) { fills[i].style.transition = `width ${slideDuration}ms linear`; fills[i].style.width = '100%'; }
+      });
+    }
+    setActive(0);
+    setInterval(() => {
+      current = (current + 1) % slides.length;
+      if (current === 0) fills.forEach(f => { f.style.transition = 'none'; f.style.width = '0%'; });
+      setActive(current);
+    }, slideDuration);
+  })();
+
+  /* ===== Newsletter ===== */
+  function subscribe(form) {
+    const input = form.querySelector('input[type=email]');
+    const btn = form.querySelector('button');
+    btn.textContent = '✓ Confirmé';
+    btn.classList.remove('bg-radar', 'text-abyss');
+    btn.classList.add('bg-white/10', 'text-radar');
+    input.value = '';
+    input.placeholder = 'Brief activé — surveillez votre boîte.';
+    setTimeout(() => {
+      btn.textContent = "S'abonner";
+      btn.classList.add('bg-radar', 'text-abyss');
+      btn.classList.remove('bg-white/10', 'text-radar');
+      input.placeholder = 'votre@email.com';
+    }, 4000);
+  }
+</script>
+</body>
+</html>
