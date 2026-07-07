@@ -9,7 +9,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
 <script>
   tailwind.config = {
@@ -26,9 +26,11 @@
           night:   '#3b82f6',
         },
         fontFamily: {
-          sans: ['Inter', 'system-ui', 'sans-serif'],
-          display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          display: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
           mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+          editorial: ['"Instrument Serif"', 'Georgia', 'serif'],
         },
       }
     }
@@ -43,23 +45,22 @@
       radial-gradient(1000px 800px at 88% 92%, rgba(59,130,246,0.06), transparent 60%),
       #000104;
     color: #e2e8f0;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
 
-  /* Texture radar / grain */
+  /* Accessibility + typographic hygiene */
+  :focus-visible { outline: 2px solid rgba(93,140,255,.65); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { text-wrap: balance; }
+
+  /* Texture radar */
   .bg-grid {
     background-image:
       linear-gradient(rgba(77,124,254,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(77,124,254,0.04) 1px, transparent 1px);
     background-size: 56px 56px;
-  }
-  .bg-noise::after {
-    content: "";
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.30 0 0 0 0 0.49 0 0 0 0 1.00 0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.4'/></svg>");
-    opacity: 0.08; pointer-events: none; mix-blend-mode: overlay;
   }
 
   /* ===== Liquid Glass system ===== */
@@ -82,7 +83,7 @@
     box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
   }
 
-  /* Liquid glass — refractive distortion via SVG filter */
+  /* Panneau verre premium (statique, sans distortion) */
   .liquid-glass {
     position: relative;
     overflow: hidden;
@@ -96,15 +97,6 @@
       inset -1px -1px 0 0 rgba(255,255,255,0.03),
       0 20px 60px -20px rgba(0,0,0,0.8),
       0 0 0 1px rgba(93,140,255,0.04);
-  }
-  .liquid-glass::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    backdrop-filter: url(#liquid-distortion) blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    pointer-events: none;
   }
   .liquid-glass::after {
     content: "";
@@ -129,6 +121,51 @@
   }
   .btn-glow:hover::before { opacity: 1; }
   .btn-glow:hover { transform: translateY(-1px); }
+  .btn-glow:active { transform: translateY(0) scale(.97); }
+
+  /* Bouton thème sobre */
+  .theme-btn {
+    width: 36px; height: 36px;
+    border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #8a98ad;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: color .3s ease, border-color .3s ease, transform .3s cubic-bezier(.32,.72,0,1);
+  }
+  .theme-btn:hover { color: #e2e8f0; border-color: rgba(93,140,255,.35); }
+  .theme-btn:active { transform: scale(.92); }
+  .theme-btn .icon-sun { display: none; }
+  .theme-btn .icon-moon { display: block; }
+  :root[data-theme="light"] .theme-btn { color: #475569; border-color: rgba(15,23,42,.12); background: rgba(15,23,42,.03); }
+  :root[data-theme="light"] .theme-btn:hover { color: #0f172a; border-color: rgba(37,99,235,.4); }
+  :root[data-theme="light"] .theme-btn .icon-sun { display: block; }
+  :root[data-theme="light"] .theme-btn .icon-moon { display: none; }
+
+  /* Avion en transit — détail animé discret du hero */
+  .hero-plane {
+    position: absolute;
+    top: 16%; left: 0;
+    width: 100%; height: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero-plane svg {
+    width: 120px; height: auto;
+    color: #9db9ff;
+    opacity: .14;
+    animation: plane-cross 75s linear infinite;
+    will-change: transform;
+  }
+  @keyframes plane-cross {
+    from { transform: translateX(-140px); }
+    to   { transform: translateX(calc(100vw + 140px)); }
+  }
+  :root[data-theme="light"] .hero-plane svg { color: #1d4ed8; opacity: .10; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-plane svg { animation: none; opacity: 0; }
+  }
 
   /* Radar pulse */
   @keyframes pulse-radar {
@@ -138,20 +175,36 @@
   }
   .pulse-dot { animation: pulse-radar 2.4s infinite; }
 
-  /* Marquee */
-  @keyframes ticker {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+  /* Hover zoom image — desaturation éditoriale au repos, couleur au survol */
+  .zoom-img {
+    filter: saturate(.88) contrast(1.02);
+    transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter .7s ease;
   }
-  .ticker-track { animation: ticker 45s linear infinite; }
+  .group:hover .zoom-img { transform: scale(1.06); filter: saturate(1.12) contrast(1.05); }
 
-  /* Hover zoom image */
-  .zoom-img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter .6s ease; }
-  .group:hover .zoom-img { transform: scale(1.08); filter: saturate(1.1) contrast(1.05); }
+  /* Filter pills */
+  .filter-btn { transition: all .4s cubic-bezier(.32,.72,0,1); }
+  .filter-btn:active { transform: scale(.95); }
 
-  /* Reveal on scroll */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+  /* Reveal on scroll — heavy cinematic fade-up */
+  .reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    filter: blur(7px);
+    transition:
+      opacity 1s cubic-bezier(.32,.72,0,1),
+      transform 1s cubic-bezier(.32,.72,0,1),
+      filter .85s ease;
+    transition-delay: var(--rd, 0s);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+  /* Staggered cascade inside the magazine grid */
+  #grid > *:nth-child(2).reveal { --rd: .07s; }
+  #grid > *:nth-child(3).reveal { --rd: .14s; }
+  #grid > *:nth-child(4).reveal { --rd: .07s; }
+  #grid > *:nth-child(5).reveal { --rd: .14s; }
+  #grid > *:nth-child(6).reveal { --rd: .21s; }
+  #grid > *:nth-child(7).reveal { --rd: .1s; }
 
   /* Gradient text */
   .text-gradient {
@@ -179,181 +232,27 @@
       radial-gradient(700px 600px at 85% 70%, rgba(59,130,246,.10), transparent 60%);
   }
 
-  /* Tag */
+  /* Tag — fond sombre translucide pour rester lisible posé sur image */
   .tag {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: .18em;
     text-transform: uppercase;
-    padding: 4px 8px;
-    border: 1px solid rgba(77,124,254,.25);
-    color: #4d7cfe;
-    background: rgba(77,124,254,.06);
-    border-radius: 4px;
+    padding: 4px 9px;
+    border: 1px solid rgba(93,140,255,.30);
+    color: #9db9ff;
+    background: rgba(4,8,18,.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 5px;
   }
-  .tag.alert { border-color: rgba(239,68,82,.35); color: #ef4452; background: rgba(239,68,82,.06); }
-  .tag.night { border-color: rgba(59,130,246,.35); color: #93c5fd; background: rgba(59,130,246,.06); }
-
-  /* ===== Cosmic parallax ===== */
-  :root { --animation-iteration: infinite; }
-
-  .cosmic-parallax-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    min-height: 100dvh;
-    background: radial-gradient(ellipse at bottom, #0b1730 0%, #03060d 75%);
-    overflow: hidden;
-    isolation: isolate;
-    z-index: 40;
-    transition: opacity .9s cubic-bezier(.2,.7,.2,1);
-    will-change: opacity, transform;
-  }
-  .cosmic-parallax-container.is-done {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-  }
-  .cosmic-stars,
-  .cosmic-stars-medium,
-  .cosmic-stars-large {
-    position: absolute;
-    top: 0; left: 0;
-    width: 1px; height: 1px;
-    background: transparent;
-    animation: animStar 50s linear var(--animation-iteration);
-  }
-  .cosmic-stars-medium { width: 2px; height: 2px; animation-duration: 100s; }
-  .cosmic-stars-large  { width: 3px; height: 3px; animation-duration: 150s; }
-  .cosmic-stars::after,
-  .cosmic-stars-medium::after,
-  .cosmic-stars-large::after {
-    content: ""; position: absolute; top: 2000px; left: 0;
-    width: inherit; height: inherit; background: transparent;
-    box-shadow: inherit;
-  }
-
-  #horizon {
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #4d7cfe 50%, transparent);
-    box-shadow: 0 0 16px 2px rgba(77,124,254,0.55);
-  }
-  #horizon .glow {
-    position: absolute;
-    bottom: -2px; left: 50%;
-    transform: translateX(-50%);
-    width: 90%; height: 220px;
-    background: radial-gradient(ellipse at bottom, rgba(77,124,254,0.55) 0%, rgba(77,124,254,0.15) 35%, transparent 70%);
-    filter: blur(28px);
-    pointer-events: none;
-  }
-  #earth {
-    position: absolute;
-    bottom: -65vw; left: 50%;
-    transform: translateX(-50%);
-    width: 130vw; height: 130vw;
-    max-width: 1600px; max-height: 1600px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 30%, #050810 0%, #02040a 70%, #000 100%);
-    box-shadow: 0 -20px 80px rgba(77,124,254,0.35);
-  }
-
-  #title {
-    position: absolute;
-    top: 42%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.22em;
-    color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: clamp(2.4rem, 7vw, 5.5rem);
-    letter-spacing: 0.18em;
-    text-align: center;
-    white-space: nowrap;
-    text-shadow: 0 0 32px rgba(77,124,254,0.45);
-    z-index: 5;
-  }
-  .title-part {
-    display: inline-block;
-    will-change: transform;
-  }
-  .title-dash {
-    display: inline-block;
-    font-weight: 300;
-    opacity: 0.55;
-    transition: opacity .25s ease;
-  }
-  #subtitle {
-    position: absolute;
-    top: 54%; left: 50%;
-    transform: translateX(-50%);
-    display: flex; flex-wrap: wrap; justify-content: center;
-    gap: clamp(1rem, 3vw, 2.5rem);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(0.7rem, 1.1vw, 0.95rem);
-    color: rgba(255,255,255,0.85);
-    letter-spacing: 0.35em;
-    text-align: center;
-    width: max-content; max-width: 92vw;
-    z-index: 5;
-  }
-  #subtitle span { display: inline-block; opacity: 0; }
-  #subtitle .subtitle-part-1 { animation: animGravity 4.5s ease-in-out var(--animation-iteration); }
-  #subtitle .subtitle-part-2 { animation: animLet     4.5s ease-in-out var(--animation-iteration); }
-  #subtitle .subtitle-part-3 { animation: animGo      4.5s ease-in-out var(--animation-iteration); }
-
-  .cosmic-scroll-cue {
-    position: absolute;
-    bottom: 32px; left: 50%;
-    transform: translateX(-50%);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: .35em;
-    color: rgba(255,255,255,0.55);
-    z-index: 5;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-  }
-  .cosmic-scroll-cue .line {
-    width: 1px; height: 36px;
-    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.6));
-    animation: scrollPulse 2.6s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: .3; transform: scaleY(.6); transform-origin: top; }
-    50%      { opacity: 1;  transform: scaleY(1);   transform-origin: top; }
-  }
-
-  @keyframes animStar {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-2000px); }
-  }
-  @keyframes animGravity {
-    0%             { transform: translateY(-26px); opacity: 0; letter-spacing: .2em; }
-    30%, 80%       { transform: translateY(0);    opacity: 1; letter-spacing: .55em; }
-    92%, 100%      { transform: translateY(-4px); opacity: 0; letter-spacing: .5em; }
-  }
-  @keyframes animLet {
-    0%, 25%        { transform: translateY(-26px); opacity: 0; }
-    45%, 80%       { transform: translateY(0);    opacity: 1; }
-    92%, 100%      { transform: translateY(-4px); opacity: 0; }
-  }
-  @keyframes animGo {
-    0%, 35%        { transform: translateY(-26px); opacity: 0; }
-    55%, 80%       { transform: translateY(0);    opacity: 1; }
-    92%, 100%      { transform: translateY(-4px); opacity: 0; }
-  }
+  .tag.alert { border-color: rgba(239,68,82,.40); color: #ff7a85; background: rgba(24,4,8,.55); }
+  .tag.night { border-color: rgba(59,130,246,.40); color: #93c5fd; background: rgba(4,10,24,.55); }
 
   /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: #05070a; }
-  ::-webkit-scrollbar-thumb { background: #1a2230; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb { background: #161e2c; border-radius: 999px; border: 2px solid #05070a; }
   ::-webkit-scrollbar-thumb:hover { background: #4d7cfe; }
 
   /* Underline link */
@@ -390,244 +289,22 @@
       0 30px 60px -20px rgba(0,0,0,0.85),
       0 0 30px -5px rgba(93,140,255,0.15);
   }
-
-  /* Mobile menu */
-  .mobile-panel { transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .4s ease; }
-
-  /* Phone 3D scroll animation */
-  .phone-perspective {
-    perspective: 1400px;
-    perspective-origin: 50% 30%;
-  }
-  .phone-3d {
-    transform-origin: 50% 50%;
-    transform-style: preserve-3d;
-    will-change: transform;
-    transition: box-shadow .4s ease;
-  }
-  .phone-3d::before {
+  /* Double-bezel : cadre intérieur concentrique (façon instrument de précision) */
+  .card::after {
     content: "";
     position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: linear-gradient(180deg, rgba(77,124,254,0.35), transparent 40%, transparent 60%, rgba(77,124,254,0.15));
-    z-index: -1;
-    filter: blur(14px);
-    opacity: 0.7;
-  }
-  .phone-slide {
-    opacity: 0;
-    transform: scale(1.04);
-    transition: opacity .8s ease, transform 4s ease;
+    inset: 7px;
+    border-radius: calc(1rem - 7px);
+    border: 1px solid rgba(255,255,255,0.07);
     pointer-events: none;
+    z-index: 5;
+    mix-blend-mode: screen;
+    transition: border-color .5s ease;
   }
-  .phone-slide.is-active {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .phone-progress-fill {
-    transition: width .25s linear;
-  }
+  .card:hover::after { border-color: rgba(93,140,255,0.28); }
+  :root[data-theme="light"] .card::after { border-color: rgba(15,23,42,0.07); mix-blend-mode: normal; }
+  :root[data-theme="light"] .card:hover::after { border-color: rgba(37,99,235,0.30); }
 
-  /* ===================================================================
-     Sky toggle — dark / light
-     =================================================================== */
-  .theme-switch {
-    --toggle-size: 16px;
-    --container-width: 5.625em;
-    --container-height: 2.5em;
-    --container-radius: 6.25em;
-    --container-light-bg: #3D7EAE;
-    --container-night-bg: #1D1F2C;
-    --circle-container-diameter: 3.375em;
-    --sun-moon-diameter: 2.125em;
-    --sun-bg: #ECCA2F;
-    --moon-bg: #C4C9D1;
-    --spot-color: #959DB1;
-    --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1);
-    --stars-color: #fff;
-    --clouds-color: #F3FDFF;
-    --back-clouds-color: #AACADF;
-    --transition: .5s cubic-bezier(0, -0.02, 0.4, 1.25);
-    --circle-transition: .3s cubic-bezier(0, -0.02, 0.35, 1.17);
-    display: inline-block;
-  }
-  .theme-switch, .theme-switch *, .theme-switch *::before, .theme-switch *::after {
-    box-sizing: border-box; margin: 0; padding: 0; font-size: var(--toggle-size);
-  }
-  .theme-switch__container {
-    width: var(--container-width); height: var(--container-height);
-    background-color: var(--container-night-bg);
-    border-radius: var(--container-radius); overflow: hidden; cursor: pointer;
-    box-shadow: 0em -0.062em 0.062em rgba(0,0,0,0.25), 0em 0.062em 0.125em rgba(255,255,255,0.94);
-    transition: var(--transition); position: relative;
-  }
-  .theme-switch__container::before {
-    content: ""; position: absolute; z-index: 1; inset: 0;
-    box-shadow: 0em 0.05em 0.187em rgba(0,0,0,0.25) inset, 0em 0.05em 0.187em rgba(0,0,0,0.25) inset;
-    border-radius: var(--container-radius);
-  }
-  .theme-switch__checkbox { display: none; }
-  .theme-switch__circle-container {
-    width: var(--circle-container-diameter); height: var(--circle-container-diameter);
-    background-color: rgba(255,255,255,0.1); position: absolute;
-    left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter));
-    top: var(--circle-container-offset); border-radius: var(--container-radius);
-    box-shadow: inset 0 0 0 3.375em rgba(255,255,255,0.1), inset 0 0 0 3.375em rgba(255,255,255,0.1), 0 0 0 0.625em rgba(255,255,255,0.1), 0 0 0 1.25em rgba(255,255,255,0.1);
-    display: flex; transition: var(--circle-transition); pointer-events: none;
-  }
-  .theme-switch__sun-moon-container {
-    pointer-events: auto; position: relative; z-index: 2;
-    width: var(--sun-moon-diameter); height: var(--sun-moon-diameter);
-    margin: auto; border-radius: var(--container-radius); background-color: var(--sun-bg);
-    box-shadow: 0.062em 0.062em 0.062em 0em rgba(254,255,239,0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
-    filter: drop-shadow(0.062em 0.125em 0.125em rgba(0,0,0,0.25)) drop-shadow(0em 0.062em 0.125em rgba(0,0,0,0.25));
-    overflow: hidden; transition: var(--transition);
-  }
-  .theme-switch__moon {
-    transform: translate(0); width: 100%; height: 100%;
-    background-color: var(--moon-bg); border-radius: inherit;
-    box-shadow: 0.062em 0.062em 0.062em 0em rgba(254,255,239,0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
-    transition: var(--transition); position: relative;
-  }
-  .theme-switch__spot {
-    position: absolute; top: 0.75em; left: 0.312em;
-    width: 0.75em; height: 0.75em; border-radius: var(--container-radius);
-    background-color: var(--spot-color);
-    box-shadow: 0em 0.0312em 0.062em rgba(0,0,0,0.25) inset;
-  }
-  .theme-switch__spot:nth-of-type(2) { width: 0.375em; height: 0.375em; top: 0.937em; left: 1.375em; }
-  .theme-switch__spot:nth-last-of-type(3) { width: 0.25em; height: 0.25em; top: 0.312em; left: 0.812em; }
-  .theme-switch__clouds {
-    width: 1.25em; height: 1.25em; background-color: var(--clouds-color);
-    border-radius: var(--container-radius); position: absolute;
-    bottom: -4.062em; left: 0.312em;
-    box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
-    transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
-  }
-  .theme-switch__stars-container {
-    position: absolute; color: var(--stars-color);
-    top: 50%; transform: translateY(-50%); left: 0.312em;
-    width: 2.75em; height: auto; transition: var(--transition);
-  }
-  /* Light (checked) state */
-  .theme-switch__checkbox:checked + .theme-switch__container { background-color: var(--container-light-bg); }
-  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container {
-    left: var(--circle-container-offset);
-  }
-  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__circle-container:hover {
-    left: calc(var(--circle-container-offset) + 0.187em);
-  }
-  .theme-switch__circle-container:hover {
-    left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter) - 0.187em);
-  }
-  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__moon { transform: translateX(100%); }
-  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__clouds { bottom: -0.625em; }
-  .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__stars-container {
-    top: -100%; transform: translateY(0);
-  }
-
-  /* ===================================================================
-     Tubelight navbar
-     =================================================================== */
-  .tubelight-nav {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
-    bottom: 1.25rem;
-  }
-  @media (min-width: 768px) {
-    .tubelight-nav { top: 1rem; bottom: auto; }
-  }
-  .tubelight-pill {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.375rem;
-    border-radius: 9999px;
-    background: rgba(10, 14, 22, 0.45);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,0.08),
-      inset -1px -1px 0 0 rgba(255,255,255,0.02),
-      0 20px 60px -20px rgba(0,0,0,0.7);
-  }
-  .tube-item {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.85rem;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgba(226,232,240,0.75);
-    transition: color .25s ease;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-  @media (min-width: 768px) {
-    .tube-item { padding: 0.5rem 1.25rem; font-size: 0.875rem; }
-  }
-  .tube-item:hover { color: #5d8cff; }
-  .tube-item.is-active { color: #5d8cff; }
-  .tube-item .tube-label { display: none; }
-  .tube-item .tube-icon { display: inline-flex; }
-  @media (min-width: 768px) {
-    .tube-item .tube-label { display: inline; }
-    .tube-item .tube-icon { display: none; }
-  }
-  .tube-lamp-wrap {
-    position: absolute;
-    top: 0; left: 0;
-    height: 100%;
-    border-radius: 9999px;
-    background: rgba(93,140,255,0.07);
-    pointer-events: none;
-    transition: transform .45s cubic-bezier(.2,.7,.2,1.2), width .45s cubic-bezier(.2,.7,.2,1.2);
-    will-change: transform, width;
-  }
-  .tube-lamp-bar {
-    position: absolute;
-    top: -8px; left: 50%;
-    transform: translateX(-50%);
-    width: 2rem; height: 4px;
-    background: #5d8cff;
-    border-radius: 0 0 9999px 9999px;
-    transform-origin: center top;
-    overflow: visible;
-  }
-  .tube-lamp-bar::before,
-  .tube-lamp-bar::after {
-    content: "";
-    position: absolute;
-    border-radius: 9999px;
-    background: rgba(93,140,255,0.25);
-    filter: blur(10px);
-  }
-  .tube-lamp-bar::before { width: 3rem; height: 1.5rem; top: -0.5rem; left: -0.5rem; }
-  .tube-lamp-bar::after  { width: 2rem; height: 1.5rem; top: -0.25rem; left: 0; filter: blur(8px); }
-
-  /* Light theme adjustments for tubelight */
-  :root[data-theme="light"] .tubelight-pill {
-    background: rgba(255,255,255,0.6);
-    border: 1px solid rgba(15,23,42,0.08);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,0.9),
-      0 20px 60px -25px rgba(15,23,42,0.30);
-  }
-  :root[data-theme="light"] .tube-item { color: rgba(15,23,42,0.70); }
-  :root[data-theme="light"] .tube-item:hover,
-  :root[data-theme="light"] .tube-item.is-active { color: #2563eb; }
-  :root[data-theme="light"] .tube-lamp-wrap { background: rgba(37,99,235,0.08); }
-  :root[data-theme="light"] .tube-lamp-bar { background: #2563eb; }
-  :root[data-theme="light"] .tube-lamp-bar::before,
-  :root[data-theme="light"] .tube-lamp-bar::after { background: rgba(37,99,235,0.28); }
 
   /* ===================================================================
      Reader (article fullscreen)
@@ -702,50 +379,88 @@
   }
   .reader-dek {
     margin-top: 1rem;
-    font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: clamp(1rem, 1.35vw, 1.2rem);
     color: rgba(255,255,255,0.85);
     max-width: 720px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .reader-body {
-    max-width: 720px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 3rem 1.5rem 6rem;
-    color: #cbd5e1;
-    font-size: 1.05rem;
-    line-height: 1.75;
+    color: #c9d3e2;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.85;
     opacity: 0;
     transform: translateY(24px);
     transition: opacity .5s ease .55s, transform .6s cubic-bezier(.2,.7,.2,1) .55s;
   }
   @media (min-width: 768px) {
-    .reader-body { padding: 4rem 2rem 6rem; font-size: 1.1rem; }
+    .reader-body { padding: 4.5rem 2rem 7rem; font-size: 1.17rem; }
   }
   .reader.is-open .reader-body { opacity: 1; transform: translateY(0); }
-  .reader-body p { margin: 0 0 1.25rem; }
+  .reader-body p { margin: 0 0 1.6rem; }
   .reader-body p.lead {
-    font-size: 1.25rem;
-    color: #e2e8f0;
-    font-weight: 500;
-    line-height: 1.5;
-    margin-bottom: 2rem;
+    font-size: 1.34rem;
+    color: #eef2f8;
+    font-weight: 400;
+    line-height: 1.62;
+    margin-bottom: 2.5rem;
+  }
+  /* Lettrine éditoriale */
+  .reader-body p.lead::first-letter {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 3.9em;
+    line-height: .78;
+    float: left;
+    padding: .1em .14em 0 0;
+    color: #fff;
   }
   .reader-body h2 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
+    letter-spacing: -0.015em;
     color: #fff;
-    margin: 2.5rem 0 1rem;
+    margin: 3.2rem 0 1.1rem;
     font-weight: 700;
   }
+  /* Marqueur de section avant chaque intertitre */
+  .reader-body h2::before {
+    content: "";
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-bottom: .9rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #5d8cff, transparent);
+  }
+  .reader-body em { color: #e6ecf5; }
+  .reader-body strong { color: #fff; font-weight: 600; }
   .reader-body blockquote {
-    margin: 2rem 0;
-    padding: 1.25rem 1.5rem;
-    border-left: 3px solid #5d8cff;
+    margin: 2.25rem 0;
+    padding: 1.4rem 1.75rem;
+    border-left: 2px solid #5d8cff;
     background: rgba(93,140,255,0.05);
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 12px 12px 0;
     color: #e2e8f0;
     font-style: italic;
+    font-size: 1.1em;
+  }
+
+  /* Barre de progression de lecture */
+  .reader-progress {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, #5d8cff, #9db9ff);
+    box-shadow: 0 0 14px rgba(93,140,255,.55);
+    z-index: 115;
+    pointer-events: none;
   }
   :root[data-theme="light"] .reader-title,
   :root[data-theme="light"] .reader-body h2 { color: #04060d; }
@@ -754,6 +469,10 @@
   :root[data-theme="light"] .reader-body p.lead { color: #0f172a; }
   :root[data-theme="light"] .reader-kicker { color: #1d4ed8; }
   :root[data-theme="light"] .reader-body blockquote { background: rgba(37,99,235,0.05); color: #0f172a; border-left-color: #2563eb; }
+  :root[data-theme="light"] .reader-body { color: #243044; }
+  :root[data-theme="light"] .reader-body p.lead::first-letter { color: #04060d; }
+  :root[data-theme="light"] .reader-body em { color: #111827; }
+  :root[data-theme="light"] .reader-body strong { color: #04060d; }
 
   /* Article signature */
   .article-signature {
@@ -909,6 +628,13 @@
 
   /* Tags / accents */
   :root[data-theme="light"] .tag { background: rgba(77,124,254,0.10); color: #2563eb; border-color: rgba(37,99,235,0.30); }
+  /* …mais les tags posés sur une image sombre gardent leur style nuit */
+  :root[data-theme="light"] .card:has(img.zoom-img) .tag,
+  :root[data-theme="light"] .reader-tags .tag {
+    background: rgba(4,8,18,.55);
+    color: #9db9ff;
+    border-color: rgba(93,140,255,.30);
+  }
   :root[data-theme="light"] .text-radar { color: #2563eb; }
   :root[data-theme="light"] .text-gradient { background: linear-gradient(180deg, #0f172a 0%, #475569 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
@@ -926,22 +652,11 @@
   :root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
   :root[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
 
-  /* Cosmic hero stays dark even in light mode (it's an intro intentionally cosmic) */
 </style>
 </head>
 
 <body class="bg-abyss text-slate-200 selection:bg-radar/30 selection:text-white">
 
-<!-- Liquid glass distortion filter -->
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-  <defs>
-    <filter id="liquid-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
-      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="9" result="noise"/>
-      <feGaussianBlur in="noise" stdDeviation="2" result="softNoise"/>
-      <feDisplacementMap in="SourceGraphic" in2="softNoise" scale="60" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </defs>
-</svg>
 
 <!-- ============== HEADER GLASSMORPHISM ============== -->
 <header id="topbar" class="fixed top-0 inset-x-0 z-50 glass-strong">
@@ -960,95 +675,31 @@
       </div>
     </a>
 
+    <!-- Rubriques -->
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium" aria-label="Rubriques">
+      <a href="#enquetes" data-cat-filter="renseignement" class="link-under text-slate-300 hover:text-white">Renseignement</a>
+      <a href="#enquetes" data-cat-filter="defense" class="link-under text-slate-300 hover:text-white">Défense</a>
+      <a href="#enquetes" data-cat-filter="geopolitique" class="link-under text-slate-300 hover:text-white">Géopolitique</a>
+    </nav>
+
     <!-- CTA -->
     <div class="flex items-center gap-3">
-      <label class="theme-switch" title="Basculer dark / light">
-        <input type="checkbox" class="theme-switch__checkbox" id="themeToggle" />
-        <div class="theme-switch__container">
-          <div class="theme-switch__clouds"></div>
-          <div class="theme-switch__stars-container">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.8313 24.0069C84.6075 23.1635 84.9956 22.1642 84.9956 21C84.9956 22.1642 85.3837 23.1635 86.1599 24.0069C86.9361 24.8503 87.8798 25.2903 89 25.3545C88.2679 25.3911 87.5976 25.602 86.9802 26.0053C86.3716 26.3995 85.8864 26.9312 85.5248 27.5913C85.172 28.2513 84.9956 28.9572 84.9956 29.7273C84.9956 28.563 84.6075 27.5546 83.8313 26.7112C83.0551 25.8587 82.1114 25.4095 81 25.3545ZM136 36.3545C137.111 36.2995 138.055 35.8503 138.831 35.0069C139.607 34.1635 139.996 33.1642 139.996 32C139.996 33.1642 140.384 34.1635 141.16 35.0069C141.936 35.8503 142.88 36.2903 144 36.3545C143.268 36.3911 142.598 36.602 141.98 37.0053C141.372 37.3995 140.886 37.9312 140.525 38.5913C140.172 39.2513 139.996 39.9572 139.996 40.7273C139.996 39.563 139.607 38.5546 138.831 37.7112C138.055 36.8587 137.111 36.4095 136 36.3545ZM101.831 49.0069C101.055 49.8503 100.111 50.2995 99 50.3545C100.111 50.4095 101.055 50.8587 101.831 51.7112C102.607 52.5546 102.996 53.563 102.996 54.7273C102.996 53.9572 103.172 53.2513 103.525 52.5913C103.886 51.9312 104.372 51.3995 104.98 51.0053C105.598 50.602 106.268 50.3911 107 50.3545C105.88 50.2903 104.936 49.8503 104.16 49.0069C103.384 48.1635 102.996 47.1642 102.996 46C102.996 47.1642 102.607 48.1635 101.831 49.0069Z" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="theme-switch__circle-container">
-            <div class="theme-switch__sun-moon-container">
-              <div class="theme-switch__moon">
-                <div class="theme-switch__spot"></div>
-                <div class="theme-switch__spot"></div>
-                <div class="theme-switch__spot"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </label>
-      <a href="#abonnement" class="btn-glow hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-radar text-abyss text-sm font-semibold tracking-tight">
-        <span class="w-1.5 h-1.5 rounded-full bg-abyss"></span>
+      <button id="themeToggle" class="theme-btn" aria-label="Basculer le thème clair / sombre" title="Thème clair / sombre">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 14.2A8.6 8.6 0 0 1 9.8 3.4a8.6 8.6 0 1 0 10.8 10.8Z"/></svg>
+      </button>
+      <a href="#abonnement" class="btn-glow group hidden sm:inline-flex items-center gap-2.5 pl-4 pr-1.5 py-1.5 rounded-full bg-radar text-abyss text-sm font-semibold tracking-tight">
         Alerte · S'abonner
+        <span class="w-7 h-7 rounded-full bg-abyss/15 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(.32,.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </span>
       </a>
     </div>
   </div>
 </header>
 
-<!-- ============== TUBELIGHT NAVBAR ============== -->
-<nav class="tubelight-nav" aria-label="Navigation principale">
-  <div class="tubelight-pill" id="tubelightPill">
-    <span class="tube-lamp-wrap" id="tubeLamp"><span class="tube-lamp-bar"></span></span>
-    <a href="#accueil" class="tube-item is-active" data-tube data-cat-filter="all">
-      <span class="tube-label">Accueil</span>
-      <span class="tube-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5Z"/></svg>
-      </span>
-    </a>
-    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="renseignement">
-      <span class="tube-label">Renseignement</span>
-      <span class="tube-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </span>
-    </a>
-    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="defense">
-      <span class="tube-label">Défense</span>
-      <span class="tube-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3Z"/></svg>
-      </span>
-    </a>
-    <a href="#enquetes" class="tube-item" data-tube data-cat-filter="geopolitique">
-      <span class="tube-label">Géopolitique</span>
-      <span class="tube-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
-      </span>
-    </a>
-  </div>
-</nav>
 
 
-<!-- ============== COSMIC SPLASH ============== -->
-<section id="splash" class="relative">
-  <div class="cosmic-parallax-container">
-    <div id="stars"  class="cosmic-stars"></div>
-    <div id="stars2" class="cosmic-stars-medium"></div>
-    <div id="stars3" class="cosmic-stars-large"></div>
-
-    <div id="horizon"><div class="glow"></div></div>
-    <div id="earth"></div>
-
-    <div id="title">
-      <span id="titleLeft" class="title-part">RENSEIGNONS</span>
-      <span class="title-dash">—</span>
-      <span id="titleRight" class="title-part">NOUS</span>
-    </div>
-    <div id="subtitle">
-      <span class="subtitle-part-1">RENSEIGNEMENT</span>
-      <span class="subtitle-part-2">DÉFENSE</span>
-      <span class="subtitle-part-3">GÉOPOLITIQUE</span>
-    </div>
-
-    <a href="#" class="cosmic-scroll-cue" id="scrollCue" aria-label="Entrer">
-      <span>DÉFILER POUR ENTRER</span>
-      <span class="line"></span>
-    </a>
-  </div>
-</section>
 
 <!-- ============== HERO ============== -->
 <section id="accueil" class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
@@ -1056,20 +707,31 @@
   <div class="absolute inset-0 spotlight"></div>
   <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-radar/40 to-transparent"></div>
 
+  <!-- Avion en transit (détail animé) -->
+  <div class="hero-plane" aria-hidden="true">
+    <svg viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 12h64" stroke="currentColor" stroke-width="1" stroke-dasharray="2 7" opacity=".55"/>
+      <path d="M118 12c-2.1-.8-6.4-2-9-2.2l-12.4-.9-14.1-6.8c-.9-.4-1.8-.5-2.8-.4l-1.5.3 10.4 8.2-12 .3-4.8-3.2h-2.9l3 4.7-3 4.7h2.9l4.8-3.2 12 .3-10.4 8.2 1.5.3c1 .2 1.9 0 2.8-.4l14.1-6.8 12.4-.9c2.6-.2 6.9-1.4 9-2.2Z" fill="currentColor"/>
+    </svg>
+  </div>
+
   <div class="relative max-w-7xl mx-auto px-5 lg:px-8">
 
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-end">
 
       <!-- Titre -->
       <div class="lg:col-span-7 reveal">
-        <p class="font-mono text-[10px] text-radar tracking-[.3em] uppercase mb-8">Renseignement · Défense · Géopolitique</p>
+        <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-8">
+          <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
+          <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Renseignement · Défense · Géopolitique</span>
+        </div>
 
         <h1 class="font-display font-bold tracking-tighter text-5xl sm:text-6xl lg:text-7xl xl:text-[88px] leading-[0.92] text-gradient">
           Le monde du<br/>
           renseignement,<br/>
           <span class="relative inline-block">
-            <span class="text-white">expliqué.</span>
-            <span class="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-radar via-radar/60 to-transparent"></span>
+            <span class="font-editorial italic font-normal tracking-normal text-white">expliqué.</span>
+            <span class="absolute -bottom-2 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-radar via-radar/50 to-transparent"></span>
           </span>
         </h1>
 
@@ -1078,10 +740,27 @@
         </p>
 
         <div class="mt-10 flex flex-wrap items-center gap-4">
-          <a href="#enquetes" class="btn-glow inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-radar text-abyss font-semibold text-sm tracking-tight">
+          <a href="#enquetes" class="btn-glow group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-radar text-abyss font-semibold text-sm tracking-tight">
             Explorer les enquêtes
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            <span class="w-8 h-8 rounded-full bg-abyss/15 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(.32,.72,0,1)] group-hover:translate-x-0.5 group-hover:scale-105">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </span>
           </a>
+        </div>
+
+        <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3">
+          <span class="flex items-center gap-2">
+            <span class="w-1 h-1 rounded-full bg-radar"></span>
+            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">Enquêtes long format</span>
+          </span>
+          <span class="flex items-center gap-2">
+            <span class="w-1 h-1 rounded-full bg-radar"></span>
+            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">100 % sources ouvertes</span>
+          </span>
+          <span class="flex items-center gap-2">
+            <span class="w-1 h-1 rounded-full bg-radar"></span>
+            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">Zéro publicité</span>
+          </span>
         </div>
 
       </div>
@@ -1137,8 +816,11 @@
     <!-- Header section -->
     <div class="reveal flex items-end justify-between flex-wrap gap-6 mb-12">
       <div>
-        <p class="font-mono text-[11px] text-radar tracking-[.3em] uppercase mb-3">Investigations</p>
-        <h2 class="font-display font-bold text-4xl lg:text-5xl tracking-tight text-white">Dernières enquêtes</h2>
+        <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
+          <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Investigations</span>
+        </div>
+        <h2 class="font-display font-bold text-4xl lg:text-6xl tracking-tight text-white">Dernières <span class="font-editorial italic font-normal tracking-normal">enquêtes</span></h2>
       </div>
       <div class="flex items-center gap-2 glass rounded-full p-1.5">
         <button class="filter-btn px-4 py-1.5 text-xs rounded-full bg-radar text-abyss font-semibold" data-filter="all">Tous</button>
@@ -1240,10 +922,12 @@
 
     </div>
 
-    <div class="reveal mt-12 flex justify-center">
-      <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 hover:border-radar/40 hover:bg-white/5 text-sm font-medium transition-all">
+    <div class="reveal mt-14 flex justify-center">
+      <a href="#" class="group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full border border-white/10 hover:border-radar/40 hover:bg-white/5 text-sm font-medium transition-all duration-500 ease-[cubic-bezier(.32,.72,0,1)] active:scale-[.98]">
         Voir toutes les enquêtes
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-radar flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(.32,.72,0,1)] group-hover:translate-x-0.5 group-hover:scale-105">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
       </a>
     </div>
 
@@ -1252,14 +936,17 @@
 
 
 <!-- ============== NEWSLETTER ============== -->
-<section class="relative py-20 lg:py-24 border-t border-white/5">
+<section id="abonnement" class="relative py-24 lg:py-32 border-t border-white/5">
   <div class="max-w-5xl mx-auto px-5 lg:px-8">
-    <div class="reveal liquid-glass rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+    <div class="reveal liquid-glass rounded-[2rem] p-8 lg:p-14 relative overflow-hidden">
       <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-radar/10 blur-3xl"></div>
       <div class="relative grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <p class="font-mono text-[11px] text-radar tracking-[.3em] uppercase mb-3">Newsletter</p>
-          <h3 class="font-display font-bold text-3xl lg:text-4xl text-white leading-tight">Soyez notifié<br/>à chaque nouvel article.</h3>
+          <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-4">
+            <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
+            <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Newsletter</span>
+          </div>
+          <h3 class="font-display font-bold text-3xl lg:text-4xl text-white leading-tight">Soyez <span class="font-editorial italic font-normal tracking-normal">notifié</span><br/>à chaque nouvel article.</h3>
           <p class="mt-4 text-mist text-sm">Une alerte par publication. Aucune publicité. Aucune fioriture.</p>
         </div>
         <form class="flex flex-col gap-3" onsubmit="event.preventDefault(); subscribe(this);">
@@ -1342,6 +1029,7 @@
 
 <!-- ============== READER (article fullscreen) ============== -->
 <article class="reader" id="reader" aria-hidden="true">
+  <div class="reader-progress" id="readerProgress" aria-hidden="true"></div>
   <button class="reader-close" id="readerClose" aria-label="Fermer">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
@@ -1369,181 +1057,12 @@
     const initial = stored || (prefersLight ? 'light' : 'dark');
     root.setAttribute('data-theme', initial);
     if (toggle) {
-      toggle.checked = (initial === 'light');
-      toggle.addEventListener('change', () => {
-        const next = toggle.checked ? 'light' : 'dark';
+      toggle.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         root.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
       });
     }
-  })();
-
-  /* ===== Cosmic stars generation ===== */
-  function genStarShadow(count) {
-    const out = new Array(count);
-    for (let i = 0; i < count; i++) {
-      out[i] = `${Math.floor(Math.random() * 2000)}px ${Math.floor(Math.random() * 2000)}px #FFF`;
-    }
-    return out.join(', ');
-  }
-  (function initCosmos() {
-    const s1 = document.getElementById('stars');
-    const s2 = document.getElementById('stars2');
-    const s3 = document.getElementById('stars3');
-    if (!s1) return;
-    const shadow1 = genStarShadow(700);
-    const shadow2 = genStarShadow(200);
-    const shadow3 = genStarShadow(100);
-    s1.style.boxShadow = shadow1;
-    s2.style.boxShadow = shadow2;
-    s3.style.boxShadow = shadow3;
-    // pseudo-element seamless loop
-    const sheet = document.createElement('style');
-    sheet.textContent = `
-      #stars::after  { box-shadow: ${shadow1}; }
-      #stars2::after { box-shadow: ${shadow2}; }
-      #stars3::after { box-shadow: ${shadow3}; }
-    `;
-    document.head.appendChild(sheet);
-  })();
-
-  /* ===== Scroll-to-expand splash (single fluid animation) ===== */
-  (function initScrollExpand() {
-    const overlay   = document.querySelector('.cosmic-parallax-container');
-    if (!overlay) return;
-    const titleLeft = document.getElementById('titleLeft');
-    const titleRight= document.getElementById('titleRight');
-    const titleDash = overlay.querySelector('.title-dash');
-    const subtitle  = document.getElementById('subtitle');
-    const earth     = document.getElementById('earth');
-    const horizon   = document.getElementById('horizon');
-    const stars1    = document.getElementById('stars');
-    const stars2    = document.getElementById('stars2');
-    const stars3    = document.getElementById('stars3');
-    const scrollCue = document.getElementById('scrollCue');
-
-    let progress = 0;
-    let triggered = false;
-    let touchStartY = 0;
-
-    const isMobile = () => window.innerWidth < 768;
-    // easeInOutCubic
-    const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    function applyProgress(p) {
-      const mobile = isMobile();
-      const tx = p * (mobile ? 55 : 38);
-      titleLeft.style.transform  = `translateX(-${tx}vw)`;
-      titleRight.style.transform = `translateX(${tx}vw)`;
-      if (titleDash) titleDash.style.opacity = String(Math.max(0, 0.55 - p * 1.6));
-      subtitle.style.opacity = String(Math.max(0, 1 - p * 1.9));
-      subtitle.style.transform = `translateX(-50%) translateY(${p * 28}px)`;
-      earth.style.transform = `translateX(-50%) scale(${1 + p * 1.8}) translateY(${-p * 16}vw)`;
-      earth.style.filter = `brightness(${1 + p * 0.55}) saturate(${1 + p * 0.3})`;
-      horizon.style.opacity = String(Math.max(0, 1 - p * 1.3));
-      [stars1, stars2, stars3].forEach(s => { if (s) s.style.opacity = String(Math.max(0, 1 - p * 1.1)); });
-      if (scrollCue) scrollCue.style.opacity = String(Math.max(0, 1 - p * 5));
-      const fadeEdge = Math.max(0, (p - 0.75) / 0.25);
-      overlay.style.opacity = String(Math.max(0, 1 - fadeEdge));
-    }
-
-    const lock   = () => { document.body.style.overflow = 'hidden'; document.documentElement.style.overflow = 'hidden'; };
-    const unlock = () => { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; };
-
-    function trigger() {
-      if (triggered) return;
-      triggered = true;
-      const duration = 1600; // ms
-      const startTime = performance.now();
-      const startProg = progress;
-      function step(now) {
-        const t = Math.min(1, (now - startTime) / duration);
-        progress = startProg + (1 - startProg) * ease(t);
-        applyProgress(progress);
-        if (t < 1) {
-          requestAnimationFrame(step);
-        } else {
-          overlay.classList.add('is-done');
-          unlock();
-          window.scrollTo(0, 0);
-        }
-      }
-      requestAnimationFrame(step);
-    }
-
-    lock();
-    applyProgress(0);
-
-    window.addEventListener('wheel', (e) => {
-      if (triggered) return;
-      e.preventDefault();
-      if (e.deltaY > 0) trigger();
-    }, { passive: false });
-
-    window.addEventListener('touchstart', (e) => {
-      if (triggered) return;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: false });
-
-    window.addEventListener('touchmove', (e) => {
-      if (triggered || !touchStartY) return;
-      e.preventDefault();
-      const dy = touchStartY - e.touches[0].clientY;
-      if (dy > 8) trigger();
-    }, { passive: false });
-
-    window.addEventListener('touchend', () => { touchStartY = 0; });
-
-    window.addEventListener('keydown', (e) => {
-      if (triggered) return;
-      if (['ArrowDown','PageDown',' ','Enter'].includes(e.key)) {
-        e.preventDefault();
-        trigger();
-      }
-    });
-
-    if (scrollCue) {
-      scrollCue.addEventListener('click', (e) => {
-        e.preventDefault();
-        trigger();
-      });
-    }
-  })();
-
-  /* ===== Tubelight navbar ===== */
-  (function initTubelight() {
-    const pill = document.getElementById('tubelightPill');
-    const lamp = document.getElementById('tubeLamp');
-    if (!pill || !lamp) return;
-    const items = pill.querySelectorAll('[data-tube]');
-
-    function positionLamp(target, animate = true) {
-      if (!target) return;
-      const pillRect = pill.getBoundingClientRect();
-      const r = target.getBoundingClientRect();
-      lamp.style.transition = animate ? '' : 'none';
-      lamp.style.transform = `translateX(${r.left - pillRect.left}px)`;
-      lamp.style.width = `${r.width}px`;
-      if (!animate) requestAnimationFrame(() => lamp.style.transition = '');
-    }
-
-    function setActive(el) {
-      items.forEach(i => i.classList.remove('is-active'));
-      el.classList.add('is-active');
-      positionLamp(el);
-    }
-
-    items.forEach(item => {
-      item.addEventListener('click', () => setActive(item));
-    });
-
-    // Initial position (after fonts/layout settle)
-    const active = pill.querySelector('.is-active') || items[0];
-    requestAnimationFrame(() => positionLamp(active, false));
-    window.addEventListener('resize', () => {
-      const cur = pill.querySelector('.is-active');
-      positionLamp(cur, false);
-    });
   })();
 
   /* ===== Reader (article open animation) ===== */
@@ -1551,7 +1070,15 @@
     const reader = document.getElementById('reader');
     const heroImg = document.getElementById('readerImg');
     const closeBtn = document.getElementById('readerClose');
+    const progress = document.getElementById('readerProgress');
     if (!reader || !heroImg) return;
+
+    if (progress) {
+      reader.addEventListener('scroll', () => {
+        const max = reader.scrollHeight - reader.clientHeight;
+        progress.style.transform = `scaleX(${max > 0 ? reader.scrollTop / max : 0})`;
+      }, { passive: true });
+    }
 
     const ARTICLES = {
       'shadow-fleet': `
@@ -1745,7 +1272,66 @@
       `,
     };
 
-    function buildBody(title, articleId) {
+    /* ===== Back-office WordPress.com (source des futurs articles) =====
+       Créer un site gratuit sur wordpress.com, puis remplacer la valeur
+       ci-dessous par son adresse (ex. 'monsite.wordpress.com'). Tant que
+       ce n'est pas fait, cette section ne fait rien — le site fonctionne
+       à l'identique avec les articles codés en dur ci-dessus. */
+    const WP_SITE = ''; // ex: 'renseignons-nous.wordpress.com'
+    const WP_POSTS_COUNT = 6;
+    const wpPostsCache = {};
+
+    function stripHtml(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html || '';
+      return (tmp.textContent || '').trim();
+    }
+
+    function formatWpDate(iso) {
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
+    }
+
+    function wpCardHTML(post) {
+      const title = post.title?.rendered || 'Sans titre';
+      const dek = stripHtml(post.excerpt?.rendered || '');
+      const img = post.jetpack_featured_media_url || 'https://images.unsplash.com/photo-1509280758083-6a2e01f8d0d0?auto=format&fit=crop&w=1200&q=80';
+      const terms = (post._embedded?.['wp:term'] || []).flat().filter(t => t && t.name && t.name !== 'Non classé');
+      const tags = terms.slice(0, 2).map((t, i) => `<span class="tag${i === 1 ? ' night' : ''}">${t.name}</span>`).join('');
+      const cat = terms.find(t => ['renseignement', 'defense', 'geopolitique'].includes(t.slug))?.slug || '';
+      return `
+      <article data-wp-id="${post.id}" data-cat="${cat}" class="article-card md:col-span-2 row-span-1 group relative overflow-hidden rounded-2xl card">
+        <img src="${img}" class="zoom-img w-full h-full object-cover opacity-70" alt="${title}" loading="lazy"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
+        <div class="absolute top-4 left-4 flex gap-2">${tags}</div>
+        <div class="absolute bottom-0 inset-x-0 p-5">
+          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">${formatWpDate(post.date)}</p>
+          <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">${title}</h3>
+          <p class="mt-2 text-sm text-mist hidden">${dek}</p>
+        </div>
+      </article>`;
+    }
+
+    async function loadWpPosts() {
+      if (!WP_SITE) return;
+      try {
+        const res = await fetch(`https://public-api.wordpress.com/wp/v2/sites/${WP_SITE}/posts?per_page=${WP_POSTS_COUNT}&_embed`);
+        if (!res.ok) throw new Error('WP API ' + res.status);
+        const posts = await res.json();
+        const grid = document.getElementById('grid');
+        if (!grid) return;
+        posts.forEach(post => {
+          wpPostsCache[post.id] = post;
+          grid.insertAdjacentHTML('afterbegin', wpCardHTML(post));
+        });
+      } catch (err) {
+        console.warn('Chargement WordPress impossible :', err);
+      }
+    }
+
+    function buildBody(title, articleId, wpId) {
+      if (wpId && wpPostsCache[wpId]) return wpPostsCache[wpId].content?.rendered || '';
       if (articleId && ARTICLES[articleId]) return ARTICLES[articleId];
       return `
         <p class="lead">${title} — un dossier en cours de rédaction. Le contenu intégral de cette enquête sera publié prochainement.</p>
@@ -1758,9 +1344,9 @@
 
     function openReader(card) {
       const cardImg = card.querySelector('img');
-      const title = card.querySelector('h3')?.textContent?.trim() || 'Éditorial';
-      const kicker = card.querySelector('.font-mono.text-radar')?.textContent?.trim() || '';
-      const dek = card.querySelector('p.text-mist')?.textContent?.trim() || '';
+      const title = card.querySelector('h3, h2')?.textContent?.trim() || 'Éditorial';
+      const kicker = card.querySelector('.font-mono.text-radar, p.font-mono.text-mist')?.textContent?.trim() || '';
+      const dek = card.querySelector('p.text-mist:not(.font-mono)')?.textContent?.trim() || '';
       const tags = [...card.querySelectorAll('.tag')]
         .map(t => `<span class="tag${t.classList.contains('night') ? ' night' : ''}${t.classList.contains('alert') ? ' alert' : ''}">${t.textContent.trim()}</span>`)
         .join('');
@@ -1769,7 +1355,7 @@
       document.getElementById('readerKicker').textContent = kicker;
       document.getElementById('readerTitle').textContent = title;
       document.getElementById('readerDek').textContent = dek;
-      document.getElementById('readerBody').innerHTML = buildBody(title, card.dataset.articleId) + `
+      document.getElementById('readerBody').innerHTML = buildBody(title, card.dataset.articleId, card.dataset.wpId) + `
         <div class="article-signature">
           <span class="sig-rule"></span>
           <p class="sig-name">Marc-Antoine Galand</p>
@@ -1779,6 +1365,7 @@
       heroImg.alt = cardImg?.alt || '';
 
       reader.scrollTop = 0;
+      if (progress) progress.style.transform = 'scaleX(0)';
       reader.setAttribute('aria-hidden', 'false');
       reader.classList.add('is-open');
       document.body.style.overflow = 'hidden';
@@ -1819,12 +1406,14 @@
       heroImg.style.transform = '';
     }
 
-    document.querySelectorAll('.article-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('a')) return; // let inline links work
-        openReader(card);
-      });
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.article-card');
+      if (!card) return;
+      if (e.target.closest('a')) return; // let inline links work
+      openReader(card);
     });
+
+    loadWpPosts();
 
     closeBtn.addEventListener('click', closeReader);
     document.addEventListener('keydown', (e) => {
@@ -1874,64 +1463,6 @@
       if (btn) setTimeout(() => btn.click(), 350);
     });
   });
-
-  /* ===== Phone 3D scroll animation + slides rotation ===== */
-  (function initPhoneScroll() {
-    const phone   = document.getElementById('phoneCard');
-    const section = document.getElementById('tiktok');
-    if (!phone || !section) return;
-
-    const isMobile = () => window.innerWidth <= 768;
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-
-    let rafId = null;
-    function update() {
-      rafId = null;
-      const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // Progress: 0 when section just enters viewport (rect.top = vh),
-      // 1 when section's center reaches the middle of viewport.
-      const total = vh + rect.height * 0.4;
-      const p = clamp((vh - rect.top) / total, 0, 1);
-
-      const mobile = isMobile();
-      const rotateX = lerp(20, 0, p);
-      const scale   = mobile ? lerp(0.85, 0.95, p) : lerp(1.05, 1, p);
-      const ty      = lerp(60, 0, p);
-
-      phone.style.transform = `translateY(${ty}px) rotateX(${rotateX}deg) scale(${scale})`;
-    }
-    function onScroll() {
-      if (rafId == null) rafId = requestAnimationFrame(update);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
-
-    // Auto-rotating slides with progress bars
-    const slides   = phone.querySelectorAll('.phone-slide');
-    const fills    = phone.querySelectorAll('.phone-progress-fill');
-    if (!slides.length) return;
-    const slideDuration = 4200; // ms per slide
-    let current = 0;
-    let stepStart = performance.now();
-
-    function setActive(i) {
-      slides.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
-      fills.forEach((f, idx) => { f.style.transition = 'none'; f.style.width = idx < i ? '100%' : '0%'; });
-      // re-enable transition on next frame for the active one
-      requestAnimationFrame(() => {
-        if (fills[i]) { fills[i].style.transition = `width ${slideDuration}ms linear`; fills[i].style.width = '100%'; }
-      });
-    }
-    setActive(0);
-    setInterval(() => {
-      current = (current + 1) % slides.length;
-      if (current === 0) fills.forEach(f => { f.style.transition = 'none'; f.style.width = '0%'; });
-      setActive(current);
-    }, slideDuration);
-  })();
 
   /* ===== Newsletter ===== */
   function subscribe(form) {
