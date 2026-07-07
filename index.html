@@ -1265,7 +1265,10 @@
     function wpCardHTML(post) {
       const title = post.title?.rendered || 'Sans titre';
       const dek = stripHtml(post.excerpt?.rendered || '');
-      const img = post.jetpack_featured_media_url || 'https://images.unsplash.com/photo-1509280758083-6a2e01f8d0d0?auto=format&fit=crop&w=1200&q=80';
+      const img =
+        post._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
+        post.jetpack_featured_media_url ||
+        'https://images.unsplash.com/photo-1509280758083-6a2e01f8d0d0?auto=format&fit=crop&w=1200&q=80';
       const terms = (post._embedded?.['wp:term'] || []).flat().filter(t => t && t.name && t.name !== 'Non classé');
       const tags = terms.slice(0, 2).map((t, i) => `<span class="tag${i === 1 ? ' night' : ''}">${t.name}</span>`).join('');
       const cat = terms.find(t => ['renseignement', 'defense', 'geopolitique'].includes(t.slug))?.slug || '';
@@ -1299,8 +1302,21 @@
       }
     }
 
+    function styleWpContent(html) {
+      // Applique la mise en forme éditoriale (lettrine sur le chapô) au HTML
+      // brut sorti de l'éditeur WordPress.
+      try {
+        const doc = new DOMParser().parseFromString(html || '', 'text/html');
+        const firstP = doc.body.querySelector('p');
+        if (firstP && firstP.textContent.trim()) firstP.classList.add('lead');
+        return doc.body.innerHTML;
+      } catch (e) {
+        return html || '';
+      }
+    }
+
     function buildBody(title, articleId, wpId) {
-      if (wpId && wpPostsCache[wpId]) return wpPostsCache[wpId].content?.rendered || '';
+      if (wpId && wpPostsCache[wpId]) return styleWpContent(wpPostsCache[wpId].content?.rendered || '');
       if (articleId && ARTICLES[articleId]) return ARTICLES[articleId];
       return `
         <p class="lead">${title} — un dossier en cours de rédaction. Le contenu intégral de cette enquête sera publié prochainement.</p>
