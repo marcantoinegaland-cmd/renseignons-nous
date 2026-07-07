@@ -40,10 +40,7 @@
 <style>
   html { scroll-behavior: smooth; }
   body {
-    background:
-      radial-gradient(1200px 700px at 12% 8%, rgba(93,140,255,0.07), transparent 60%),
-      radial-gradient(1000px 800px at 88% 92%, rgba(59,130,246,0.06), transparent 60%),
-      #000104;
+    background: #06080d;
     color: #e2e8f0;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -55,13 +52,8 @@
   :focus-visible { outline: 2px solid rgba(93,140,255,.65); outline-offset: 3px; border-radius: 4px; }
   h1, h2, h3 { text-wrap: balance; }
 
-  /* Texture radar */
-  .bg-grid {
-    background-image:
-      linear-gradient(rgba(77,124,254,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(77,124,254,0.04) 1px, transparent 1px);
-    background-size: 56px 56px;
-  }
+  /* Grille de fond retirée pour un rendu presse épuré */
+  .bg-grid { background-image: none; }
 
   /* ===== Liquid Glass system ===== */
   .glass {
@@ -109,19 +101,13 @@
     mix-blend-mode: screen;
   }
 
-  /* Glow CTA */
+  /* CTA sobre (sans glow) */
   .btn-glow {
     position: relative;
-    transition: all .35s cubic-bezier(.2,.7,.2,1);
+    transition: background-color .25s ease, transform .25s ease, opacity .25s ease;
   }
-  .btn-glow::before {
-    content:""; position:absolute; inset:-2px; border-radius:inherit;
-    background: radial-gradient(60% 100% at 50% 50%, rgba(77,124,254,.55), transparent 70%);
-    opacity:0; transition: opacity .35s ease; z-index:-1; filter: blur(14px);
-  }
-  .btn-glow:hover::before { opacity: 1; }
-  .btn-glow:hover { transform: translateY(-1px); }
-  .btn-glow:active { transform: translateY(0) scale(.97); }
+  .btn-glow:hover { opacity: .92; }
+  .btn-glow:active { transform: scale(.98); }
 
   /* Bouton thème sobre */
   .theme-btn {
@@ -144,37 +130,29 @@
   :root[data-theme="light"] .theme-btn .icon-moon { display: none; }
 
 
-  /* Radar pulse */
-  @keyframes pulse-radar {
-    0%   { box-shadow: 0 0 0 0 rgba(77,124,254,.55); }
-    70%  { box-shadow: 0 0 0 14px rgba(77,124,254,0); }
-    100% { box-shadow: 0 0 0 0 rgba(77,124,254,0); }
-  }
-  .pulse-dot { animation: pulse-radar 2.4s infinite; }
+  /* Pastille statique (plus de pulsation radar) */
+  .pulse-dot { animation: none; }
 
-  /* Hover zoom image — desaturation éditoriale au repos, couleur au survol */
+  /* Image d'article — zoom léger et discret au survol, sans filtre */
   .zoom-img {
-    filter: saturate(.88) contrast(1.02);
-    transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter .7s ease;
+    transition: transform .9s cubic-bezier(.2,.7,.2,1);
   }
-  .group:hover .zoom-img { transform: scale(1.06); filter: saturate(1.12) contrast(1.05); }
+  .group:hover .zoom-img { transform: scale(1.03); }
 
   /* Filter pills */
   .filter-btn { transition: all .4s cubic-bezier(.32,.72,0,1); }
   .filter-btn:active { transform: scale(.95); }
 
-  /* Reveal on scroll — heavy cinematic fade-up */
+  /* Reveal on scroll — fondu sobre, sans flou */
   .reveal {
     opacity: 0;
-    transform: translateY(34px);
-    filter: blur(7px);
+    transform: translateY(18px);
     transition:
-      opacity 1s cubic-bezier(.32,.72,0,1),
-      transform 1s cubic-bezier(.32,.72,0,1),
-      filter .85s ease;
+      opacity .7s ease,
+      transform .7s cubic-bezier(.2,.7,.2,1);
     transition-delay: var(--rd, 0s);
   }
-  .reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
   /* Staggered cascade inside the magazine grid */
   #grid > *:nth-child(2).reveal { --rd: .07s; }
   #grid > *:nth-child(3).reveal { --rd: .14s; }
@@ -188,49 +166,32 @@
     background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .text-radar { color: #4d7cfe; }
+  .text-radar { color: #6c93ff; }
 
-  /* Classified stamp */
-  .stamp {
-    border: 1.5px solid currentColor;
-    padding: 4px 10px;
-    letter-spacing: .22em;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    transform: rotate(-2deg);
-    display: inline-block;
-  }
+  /* Spotlight hero retiré (rendu plat, sobre) */
+  .spotlight { background: none; }
 
-  /* Hero spotlight */
-  .spotlight {
-    background:
-      radial-gradient(800px 500px at 18% 30%, rgba(77,124,254,.10), transparent 60%),
-      radial-gradient(700px 600px at 85% 70%, rgba(59,130,246,.10), transparent 60%);
-  }
-
-  /* Tag — fond sombre translucide pour rester lisible posé sur image */
+  /* Label rubrique — étiquette presse sobre */
   .tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: .18em;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
     text-transform: uppercase;
-    padding: 4px 9px;
-    border: 1px solid rgba(93,140,255,.30);
-    color: #9db9ff;
-    background: rgba(4,8,18,.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 5px;
+    padding: 3px 9px;
+    border: 0;
+    color: #fff;
+    background: rgba(6,10,18,.72);
+    border-radius: 3px;
   }
-  .tag.alert { border-color: rgba(239,68,82,.40); color: #ff7a85; background: rgba(24,4,8,.55); }
-  .tag.night { border-color: rgba(59,130,246,.40); color: #93c5fd; background: rgba(4,10,24,.55); }
+  .tag.alert { background: #c8323f; color: #fff; }
+  .tag.night { background: rgba(6,10,18,.72); color: #fff; }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: #05070a; }
   ::-webkit-scrollbar-thumb { background: #161e2c; border-radius: 999px; border: 2px solid #05070a; }
-  ::-webkit-scrollbar-thumb:hover { background: #4d7cfe; }
+  ::-webkit-scrollbar-thumb:hover { background: #6c93ff; }
 
   /* Underline link */
   .link-under {
@@ -242,45 +203,18 @@
   }
   .link-under:hover { background-size: 100% 1px; }
 
-  /* Card — liquid glass */
+  /* Carte article — surface mate, sobre */
   .card {
     position: relative;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
-      rgba(7, 10, 17, 0.55);
-    border: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,0.06),
-      inset -1px -1px 0 0 rgba(255,255,255,0.02),
-      0 20px 50px -20px rgba(0,0,0,0.7);
-    transition: border-color .4s ease, transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .4s ease;
+    background: #0b0f16;
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6);
+    transition: border-color .3s ease, transform .35s cubic-bezier(.2,.7,.2,1);
   }
   .card:hover {
-    border-color: rgba(93,140,255,0.30);
-    transform: translateY(-4px);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,0.10),
-      inset -1px -1px 0 0 rgba(255,255,255,0.03),
-      0 30px 60px -20px rgba(0,0,0,0.85),
-      0 0 30px -5px rgba(93,140,255,0.15);
+    border-color: rgba(255,255,255,0.16);
+    transform: translateY(-3px);
   }
-  /* Double-bezel : cadre intérieur concentrique (façon instrument de précision) */
-  .card::after {
-    content: "";
-    position: absolute;
-    inset: 7px;
-    border-radius: calc(1rem - 7px);
-    border: 1px solid rgba(255,255,255,0.07);
-    pointer-events: none;
-    z-index: 5;
-    mix-blend-mode: screen;
-    transition: border-color .5s ease;
-  }
-  .card:hover::after { border-color: rgba(93,140,255,0.28); }
-  :root[data-theme="light"] .card::after { border-color: rgba(15,23,42,0.07); mix-blend-mode: normal; }
-  :root[data-theme="light"] .card:hover::after { border-color: rgba(37,99,235,0.30); }
 
 
   /* ===================================================================
@@ -554,9 +488,9 @@
   :root[data-theme="light"] *:has(> img.object-cover) .text-mist {
     color: #ffffff !important;
   }
-  :root[data-theme="light"] .card:has(img.zoom-img) .font-mono.text-radar,
-  :root[data-theme="light"] a:has(> img.zoom-img) .font-mono.text-radar {
-    color: #93c5fd !important;
+  :root[data-theme="light"] .card:has(img.zoom-img) .text-radar,
+  :root[data-theme="light"] a:has(> img.zoom-img) .text-radar {
+    color: #cdd9ff !important;
   }
 
   :root[data-theme="light"] .border-white\/5,
@@ -587,31 +521,15 @@
       0 0 0 1px rgba(77,124,254,0.05);
   }
   :root[data-theme="light"] .card {
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45)),
-      rgba(255,255,255,0.5);
-    border: 1px solid rgba(15,23,42,0.08);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,0.95),
-      0 20px 50px -20px rgba(15,23,42,0.18);
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.10);
+    box-shadow: 0 10px 30px -20px rgba(15,23,42,0.18);
   }
   :root[data-theme="light"] .card:hover {
-    border-color: rgba(77,124,254,0.45);
-    box-shadow:
-      inset 1px 1px 0 0 rgba(255,255,255,1),
-      0 30px 60px -20px rgba(15,23,42,0.25),
-      0 0 30px -5px rgba(77,124,254,0.20);
+    border-color: rgba(15,23,42,0.22);
   }
 
-  /* Tags / accents */
-  :root[data-theme="light"] .tag { background: rgba(77,124,254,0.10); color: #2563eb; border-color: rgba(37,99,235,0.30); }
-  /* …mais les tags posés sur une image sombre gardent leur style nuit */
-  :root[data-theme="light"] .card:has(img.zoom-img) .tag,
-  :root[data-theme="light"] .reader-tags .tag {
-    background: rgba(4,8,18,.55);
-    color: #9db9ff;
-    border-color: rgba(93,140,255,.30);
-  }
+  /* Labels rubrique : mêmes puces sobres en clair (fond sombre sur photo) */
   :root[data-theme="light"] .text-radar { color: #2563eb; }
   :root[data-theme="light"] .text-gradient { background: linear-gradient(180deg, #0f172a 0%, #475569 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
@@ -648,7 +566,7 @@
       </div>
       <div class="leading-tight">
         <p class="font-display font-bold text-sm tracking-tight text-white">Renseignons-nous</p>
-        <p class="font-mono text-[9px] tracking-[.25em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
+        <p class="text-[9px] font-medium tracking-[.12em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
       </div>
     </a>
 
@@ -692,7 +610,7 @@
       <div class="lg:col-span-7 reveal">
         <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-8">
           <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
-          <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Renseignement · Défense · Géopolitique</span>
+          <span class="text-[10px] text-radar font-semibold tracking-[.14em] uppercase">Renseignement · Défense · Géopolitique</span>
         </div>
 
         <h1 class="font-display font-bold tracking-tighter text-5xl sm:text-6xl lg:text-7xl xl:text-[88px] leading-[0.92] text-gradient">
@@ -720,15 +638,15 @@
         <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3">
           <span class="flex items-center gap-2">
             <span class="w-1 h-1 rounded-full bg-radar"></span>
-            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">Enquêtes long format</span>
+            <span class="text-[10px] font-medium tracking-[.1em] uppercase text-mist">Enquêtes long format</span>
           </span>
           <span class="flex items-center gap-2">
             <span class="w-1 h-1 rounded-full bg-radar"></span>
-            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">100 % sources ouvertes</span>
+            <span class="text-[10px] font-medium tracking-[.1em] uppercase text-mist">100 % sources ouvertes</span>
           </span>
           <span class="flex items-center gap-2">
             <span class="w-1 h-1 rounded-full bg-radar"></span>
-            <span class="font-mono text-[10px] tracking-[.22em] uppercase text-mist">Zéro publicité</span>
+            <span class="text-[10px] font-medium tracking-[.1em] uppercase text-mist">Zéro publicité</span>
           </span>
         </div>
 
@@ -744,18 +662,18 @@
               class="zoom-img w-full h-full object-cover opacity-80"
               loading="lazy"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-transparent"></div>
-            <div class="absolute inset-0 bg-grid opacity-30 mix-blend-overlay"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/55 to-transparent"></div>
           </div>
 
           <!-- Marker -->
-          <div class="absolute top-5 left-5">
-            <span class="tag">À la Une · Renseignement</span>
+          <div class="absolute top-5 left-5 flex gap-2">
+            <span class="tag">À la Une</span>
+            <span class="tag night">Renseignement</span>
           </div>
 
           <!-- Content -->
           <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
-            <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-3">08 juin 2026</p>
+            <p class="text-[11px] text-slate-300 font-medium tracking-wide mb-3">8 juin 2026</p>
             <h2 class="font-display font-bold text-2xl lg:text-3xl leading-tight text-white">
               Sabotage des câbles en Baltique : reconstitution du « shadow fleet » russe
             </h2>
@@ -787,7 +705,7 @@
       <div>
         <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-4">
           <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
-          <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Investigations</span>
+          <span class="text-[10px] text-radar font-semibold tracking-[.14em] uppercase">Investigations</span>
         </div>
         <h2 class="font-display font-bold text-4xl lg:text-6xl tracking-tight text-white">Dernières <span class="font-editorial italic font-normal tracking-normal">enquêtes</span></h2>
       </div>
@@ -807,9 +725,9 @@
         <img src="https://images.unsplash.com/photo-1535139262971-c51845709a48?auto=format&fit=crop&w=1600&q=80" class="zoom-img w-full h-full object-cover opacity-70" alt="Skyline asiatique de nuit" loading="lazy"/>
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-5 left-5 flex gap-2"><span class="tag night">Géopolitique</span><span class="tag">Long format</span></div>
-        <div class="absolute top-5 right-5 font-mono text-[10px] text-mist tracking-[.2em]">14 MIN</div>
+        <div class="absolute top-5 right-5 text-[11px] text-slate-300 font-medium tracking-wide">14 min</div>
         <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
-          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-3">06.06.2026 · Pacifique</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-3">06.06.2026 · Pacifique</p>
           <h3 class="font-display font-bold text-2xl lg:text-3xl text-white max-w-2xl leading-tight">Le calendrier-écho : comment 2027 a survécu à sa propre révision</h3>
           <p class="mt-3 text-sm text-mist max-w-xl">Le 19 mars 2026, l'Intelligence Community américaine a discrètement réécrit ce que cinq ans de doctrine avaient érigé en horizon central. La date n'a pas bougé.</p>
         </div>
@@ -821,7 +739,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Renseignement</span><span class="tag night">DGSE</span></div>
         <div class="absolute bottom-0 inset-x-0 p-5">
-          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">10.07.1985 · Auckland</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-2">10.07.1985 · Auckland</p>
           <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">Rainbow Warrior : comment l'élite du renseignement s'est effondrée sur une caution</h3>
         </div>
       </article>
@@ -832,7 +750,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Défense</span></div>
         <div class="absolute bottom-0 inset-x-0 p-5">
-          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">02.06.2026</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-2">02.06.2026</p>
           <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">Rafale F5 : la dissuasion repensée</h3>
         </div>
       </article>
@@ -843,7 +761,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Défense</span><span class="tag night">Sahel</span></div>
         <div class="absolute bottom-0 inset-x-0 p-5">
-          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">31.05.2026</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-2">31.05.2026</p>
           <h3 class="font-display font-semibold text-lg text-white leading-snug">Africa Corps : la nouvelle architecture russe en Afrique de l'Ouest</h3>
         </div>
       </article>
@@ -854,7 +772,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-4 left-4 flex gap-2"><span class="tag">Renseignement</span><span class="tag night">Souveraineté</span></div>
         <div class="absolute bottom-0 inset-x-0 p-5">
-          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">15.12.2025 · DGSI</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-2">15.12.2025 · DGSI</p>
           <h3 class="font-display font-semibold text-lg text-white leading-snug">Palantir, l'entreprise qui ne se cache plus de vouloir refaire l'État</h3>
         </div>
       </article>
@@ -862,7 +780,7 @@
       <!-- Small text-only quote card — Éditorial HubEE/ORION 26 -->
       <article data-cat="defense" data-article-id="hubee-orion-26" class="reveal article-card md:col-span-2 row-span-2 group relative overflow-hidden rounded-2xl p-6 lg:p-8 card flex flex-col justify-between">
         <div>
-          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-4">Éditorial · 15.01.2026</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-4">Éditorial · 15.01.2026</p>
           <p class="font-display text-xl lg:text-2xl text-white leading-snug">
             HubEE, ORION 26 : la France est <span class="text-radar">déjà en guerre</span>, mais elle ne le sait pas.
           </p>
@@ -881,9 +799,9 @@
         <img src="caspienne.webp" class="zoom-img w-full h-full object-cover opacity-75" alt="Vue aérienne de la mer Caspienne" loading="lazy"/>
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-5 left-5 flex gap-2"><span class="tag night">Géopolitique</span><span class="tag">Enquête</span></div>
-        <div class="absolute top-5 right-5 font-mono text-[10px] text-mist tracking-[.2em]">11 MIN</div>
+        <div class="absolute top-5 right-5 text-[11px] text-slate-300 font-medium tracking-wide">11 min</div>
         <div class="absolute bottom-0 inset-x-0 p-6 lg:p-8">
-          <p class="font-mono text-[10px] text-radar tracking-[.25em] uppercase mb-3">22.05.2026 · Caucase</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-3">22.05.2026 · Caucase</p>
           <h3 class="font-display font-bold text-2xl lg:text-3xl text-white max-w-2xl leading-tight">Arménie–Azerbaïdjan : la paix turcophone redessine la mer Caspienne</h3>
           <p class="mt-3 text-sm text-mist max-w-xl">Le corridor de Zanguezour change la donne énergétique européenne. Cartographie et acteurs.</p>
         </div>
@@ -913,7 +831,7 @@
         <div>
           <div class="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 mb-4">
             <span class="w-1.5 h-1.5 rounded-full bg-radar pulse-dot"></span>
-            <span class="font-mono text-[10px] text-radar tracking-[.3em] uppercase">Newsletter</span>
+            <span class="text-[10px] text-radar font-semibold tracking-[.14em] uppercase">Newsletter</span>
           </div>
           <h3 class="font-display font-bold text-3xl lg:text-4xl text-white leading-tight">Soyez <span class="font-editorial italic font-normal tracking-normal">notifié</span><br/>à chaque nouvel article.</h3>
           <p class="mt-4 text-mist text-sm">Une alerte par publication. Aucune publicité. Aucune fioriture.</p>
@@ -924,7 +842,7 @@
               class="flex-1 px-4 py-3.5 rounded-full bg-abyss/60 border border-white/10 focus:border-radar/60 focus:outline-none text-sm placeholder:text-mist/60" />
             <button class="btn-glow px-6 py-3.5 rounded-full bg-radar text-abyss font-semibold text-sm whitespace-nowrap">S'abonner</button>
           </div>
-          <p class="font-mono text-[10px] text-mist tracking-[.15em]">Pas de spam. Désabonnement en un clic. RGPD-compatible.</p>
+          <p class="text-[11px] text-mist">Pas de spam. Désabonnement en un clic. RGPD-compatible.</p>
         </form>
       </div>
     </div>
@@ -944,14 +862,14 @@
           </div>
           <div>
             <p class="font-display font-bold text-white">Renseignons-nous</p>
-            <p class="font-mono text-[10px] tracking-[.25em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
+            <p class="text-[10px] font-medium tracking-[.12em] text-mist uppercase">Renseignement · Défense · Géopolitique</p>
           </div>
         </a>
         <p class="text-sm text-mist max-w-sm leading-relaxed">Le média de référence. Renseignement, défense, géopolitique. Enquêtes longues, sources ouvertes.</p>
       </div>
 
       <div class="md:col-span-2">
-        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Rubriques</p>
+        <p class="text-[10px] text-mist font-semibold tracking-[.12em] uppercase mb-4">Rubriques</p>
         <ul class="space-y-2.5 text-sm">
           <li><a href="#enquetes" data-cat-filter="renseignement" class="link-under text-slate-300 hover:text-white">Renseignement</a></li>
           <li><a href="#enquetes" data-cat-filter="defense"       class="link-under text-slate-300 hover:text-white">Défense</a></li>
@@ -960,7 +878,7 @@
       </div>
 
       <div class="md:col-span-2">
-        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Maison</p>
+        <p class="text-[10px] text-mist font-semibold tracking-[.12em] uppercase mb-4">Maison</p>
         <ul class="space-y-2.5 text-sm">
           <li><a href="#" class="link-under text-slate-300 hover:text-white">À propos</a></li>
           <li><a href="#" class="link-under text-slate-300 hover:text-white">Méthodologie</a></li>
@@ -970,7 +888,7 @@
       </div>
 
       <div class="md:col-span-3">
-        <p class="font-mono text-[10px] text-mist tracking-[.25em] uppercase mb-4">Newsletter</p>
+        <p class="text-[10px] text-mist font-semibold tracking-[.12em] uppercase mb-4">Newsletter</p>
         <p class="text-sm text-mist leading-relaxed mb-4">Soyez notifié à chaque nouvel article. Pas de spam.</p>
         <form class="flex flex-col gap-2" onsubmit="event.preventDefault(); subscribe(this);">
           <input type="email" required placeholder="votre@email.com"
@@ -1278,7 +1196,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent"></div>
         <div class="absolute top-4 left-4 flex gap-2">${tags}</div>
         <div class="absolute bottom-0 inset-x-0 p-5">
-          <p class="font-mono text-[10px] text-radar tracking-[.2em] uppercase mb-2">${formatWpDate(post.date)}</p>
+          <p class="text-[10px] text-radar font-semibold tracking-[.12em] uppercase mb-2">${formatWpDate(post.date)}</p>
           <h3 class="font-display font-semibold text-base lg:text-lg text-white leading-snug">${title}</h3>
           <p class="mt-2 text-sm text-mist hidden">${dek}</p>
         </div>
@@ -1330,8 +1248,8 @@
     function openReader(card) {
       const cardImg = card.querySelector('img');
       const title = card.querySelector('h3, h2')?.textContent?.trim() || 'Éditorial';
-      const kicker = card.querySelector('.font-mono.text-radar, p.font-mono.text-mist')?.textContent?.trim() || '';
-      const dek = card.querySelector('p.text-mist:not(.font-mono)')?.textContent?.trim() || '';
+      const kicker = card.querySelector('p')?.textContent?.trim() || '';
+      const dek = card.querySelector('p.text-mist')?.textContent?.trim() || '';
       const tags = [...card.querySelectorAll('.tag')]
         .map(t => `<span class="tag${t.classList.contains('night') ? ' night' : ''}${t.classList.contains('alert') ? ' alert' : ''}">${t.textContent.trim()}</span>`)
         .join('');
