@@ -21,7 +21,19 @@ BASE_URL  = os.environ.get("BASE_URL", "https://marcantoinegaland-cmd.github.io/
 BASE_PATH = os.environ.get("BASE_PATH", "/renseignons-nous/")   # préfixe des liens internes
 SITE_NAME = "Renseignons-nous"
 AUTHOR    = "Marc-Antoine Galand"
+BLOG_ID   = os.environ.get("BLOG_ID", "256008490")            # newsletter WordPress/Jetpack
+CONTACT   = os.environ.get("CONTACT_EMAIL", "marcantoine.galand@gmail.com")
 OUT       = os.path.dirname(os.path.abspath(__file__))
+
+# Config optionnelle (analytics, vérification Search Console) via config.json
+_cfg = {}
+if os.path.exists(os.path.join(OUT, "config.json")):
+    try:
+        _cfg = json.load(open(os.path.join(OUT, "config.json"), encoding="utf-8"))
+    except Exception:
+        _cfg = {}
+ANALYTICS = _cfg.get("analytics_html", "")            # snippet HTML injecté avant </body>
+GSC       = _cfg.get("google_site_verification", "")  # jeton meta Google Search Console
 
 MOIS = ["", "janvier", "février", "mars", "avril", "mai", "juin",
         "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
@@ -92,7 +104,12 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<title>{html.escape(title)}</title>',
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
+        f'<link rel="icon" href="{BASE_PATH}favicon.svg" type="image/svg+xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
+    ]
+    if GSC:
+        tags.append(f'<meta name="google-site-verification" content="{html.escape(GSC)}" />')
+    tags += [
         f'<meta property="og:site_name" content="{SITE_NAME}" />',
         f'<meta property="og:type" content="{og_type}" />',
         f'<meta property="og:title" content="{html.escape(title)}" />',
@@ -151,6 +168,8 @@ def footer(home):
         <a href="{home}#enquetes" data-cat-filter="renseignement">Renseignement</a>
         <a href="{home}#enquetes" data-cat-filter="defense">Défense</a>
         <a href="{home}#enquetes" data-cat-filter="geopolitique">Géopolitique</a>
+        <a href="{home}a-propos/">À propos</a>
+        <a href="{home}mentions-legales/">Mentions légales</a>
       </nav>
     </div>
   </div>
@@ -168,11 +187,6 @@ HOME_JS = """<script>
       c.classList.toggle('is-hidden', !(f==='all' || c.dataset.cat===f));
     });
   }); });
-  window.subscribe = function(form){
-    var i=form.querySelector('input[type=email]'), btn=form.querySelector('button'), o=btn.textContent;
-    btn.textContent='Inscription confirmée'; i.value=''; i.placeholder='Merci — surveillez votre boîte.';
-    setTimeout(function(){ btn.textContent=o; i.placeholder='votre@email.com'; }, 4000);
-  };
 })();
 </script>"""
 
@@ -228,14 +242,20 @@ def render_home(posts):
       <h2 class="nl-title">Chaque enquête, dans votre boîte mail.</h2>
       <p class="nl-desc">Une alerte par publication. Pas de spam, désabonnement en un clic.</p>
     </div>
-    <form class="nl-form" onsubmit="event.preventDefault(); subscribe(this);">
-      <input type="email" required placeholder="votre@email.com" aria-label="Adresse e-mail" />
+    <form class="nl-form" action="https://subscribe.wordpress.com/" method="post" accept-charset="utf-8" target="_blank">
+      <input type="email" name="email" required placeholder="votre@email.com" aria-label="Adresse e-mail" />
+      <input type="hidden" name="action" value="subscribe" />
+      <input type="hidden" name="blog_id" value="{BLOG_ID}" />
+      <input type="hidden" name="source" value="{BASE_URL}/" />
+      <input type="hidden" name="sub-type" value="renseignons-nous-site" />
+      <input type="hidden" name="redirect_fragment" value="subscribe-blog" />
       <button type="submit">S'abonner</button>
     </form>
   </div>
 </section>
 {footer('')}
 {HOME_JS}
+{ANALYTICS}
 </body>
 </html>"""
 
@@ -276,11 +296,60 @@ def render_article(f):
   </div>
 </main>
 {footer(BASE_PATH)}
+{ANALYTICS}
 </body>
 </html>"""
 
+def render_page(slug, title, desc, body_html):
+    url = f"{BASE_URL}/{slug}/"
+    h = head(f"{title} — {SITE_NAME}", desc, url, og_type="website")
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+{h}
+</head>
+<body>
+{masthead(BASE_PATH, full=False)}
+<main class="page">
+  <h1 class="page-title">{html.escape(title)}</h1>
+  <div class="page-body">
+{body_html}
+  </div>
+</main>
+{footer(BASE_PATH)}
+{ANALYTICS}
+</body>
+</html>"""
+
+ABOUT_HTML = f"""<p class="lead"><strong>Renseignons-nous</strong> est un média indépendant consacré au renseignement, à la défense et à la géopolitique.</p>
+<p>La ligne est simple : prendre le temps d'expliquer. Là où l'actualité va vite et se contente souvent de l'écume, ce site publie des enquêtes longues et des analyses de fond, construites uniquement à partir de <strong>sources ouvertes</strong> — documents officiels, rapports parlementaires, données AIS et satellitaires, presse spécialisée, archives. Aucune information n'y est affirmée sans être sourcée et recoupée.</p>
+<h2>Une exigence, pas une course</h2>
+<p>Chaque enquête suit le rythme du fact-checking, non celui du flux. On préfère un dossier solide et documenté à dix brèves invérifiables. Pas de publicité, pas de contenu sponsorisé : la seule fidélité du site va au lecteur qui veut <em>comprendre</em>.</p>
+<h2>Qui écrit</h2>
+<p>Le site est édité et rédigé par <strong>{AUTHOR}</strong>, basé à Lyon. Pour toute question, contact ou signalement : <a href="mailto:{CONTACT}">{CONTACT}</a>.</p>"""
+
+LEGAL_HTML = f"""<p class="lead">Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, voici les informations légales relatives au site <strong>Renseignons-nous</strong>.</p>
+<h2>Éditeur</h2>
+<p>Le site Renseignons-nous est édité par <strong>{AUTHOR}</strong>, à titre individuel et non commercial (Lyon, France).<br/>
+Directeur de la publication : {AUTHOR}.<br/>
+Contact : <a href="mailto:{CONTACT}">{CONTACT}</a>.</p>
+<h2>Hébergement</h2>
+<p>Le site est hébergé par <strong>GitHub, Inc.</strong> (service GitHub Pages), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.<br/>
+Le back-office éditorial est fourni par <strong>Automattic Inc.</strong> (WordPress.com), 60 29th Street #343, San Francisco, CA 94110, États-Unis.</p>
+<h2>Propriété intellectuelle</h2>
+<p>Sauf mention contraire, l'ensemble des contenus (textes, analyses, mises en forme) est la propriété de l'éditeur. Toute reproduction intégrale sans autorisation est interdite ; les citations courtes sont autorisées sous réserve d'indiquer clairement la source et un lien vers l'article original. Les images proviennent de leurs auteurs ou ayants droit respectifs, créditées le cas échéant.</p>
+<h2>Données personnelles</h2>
+<p>Le site ne collecte aucune donnée personnelle à votre insu. Si vous vous inscrivez à la newsletter, votre adresse e-mail est traitée par WordPress.com / Automattic aux seules fins d'envoi des nouvelles publications. Vous pouvez vous désinscrire à tout moment via le lien présent dans chaque e-mail. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données en écrivant à <a href="mailto:{CONTACT}">{CONTACT}</a>.</p>"""
+
+FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+           '<rect width="64" height="64" rx="14" fill="#1e3ac9"/>'
+           '<text x="32" y="45" font-family="Georgia, \'Source Serif 4\', serif" '
+           'font-size="40" font-weight="700" fill="#fff" text-anchor="middle">R</text></svg>\n')
+
 def sitemap(posts):
-    urls = [(BASE_URL + "/", None)]
+    urls = [(BASE_URL + "/", None),
+            (BASE_URL + "/a-propos/", None),
+            (BASE_URL + "/mentions-legales/", None)]
     for f in posts:
         lm = (f["modified"] or f["date"] or "")[:10]
         urls.append((f"{BASE_URL}/article/{f['slug']}/", lm or None))
@@ -316,6 +385,15 @@ def main():
     write("index.html", render_home(posts))
     for f in posts:
         write(f"article/{f['slug']}/index.html", render_article(f))
+    write("a-propos/index.html", render_page(
+        "a-propos", "À propos",
+        "Renseignons-nous, média indépendant sur le renseignement, la défense et la géopolitique, à partir de sources ouvertes.",
+        ABOUT_HTML))
+    write("mentions-legales/index.html", render_page(
+        "mentions-legales", "Mentions légales",
+        "Mentions légales du site Renseignons-nous : éditeur, hébergement, propriété intellectuelle et données personnelles.",
+        LEGAL_HTML))
+    write("favicon.svg", FAVICON)
     write("sitemap.xml", sitemap(posts))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
     print("Terminé.")
