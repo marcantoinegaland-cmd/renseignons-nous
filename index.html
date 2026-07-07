@@ -143,29 +143,6 @@
   :root[data-theme="light"] .theme-btn .icon-sun { display: block; }
   :root[data-theme="light"] .theme-btn .icon-moon { display: none; }
 
-  /* Avion en transit — détail animé discret du hero */
-  .hero-plane {
-    position: absolute;
-    top: 16%; left: 0;
-    width: 100%; height: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .hero-plane svg {
-    width: 120px; height: auto;
-    color: #9db9ff;
-    opacity: .14;
-    animation: plane-cross 75s linear infinite;
-    will-change: transform;
-  }
-  @keyframes plane-cross {
-    from { transform: translateX(-140px); }
-    to   { transform: translateX(calc(100vw + 140px)); }
-  }
-  :root[data-theme="light"] .hero-plane svg { color: #1d4ed8; opacity: .10; }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-plane svg { animation: none; opacity: 0; }
-  }
 
   /* Radar pulse */
   @keyframes pulse-radar {
@@ -706,14 +683,6 @@
   <div class="absolute inset-0 bg-grid opacity-50"></div>
   <div class="absolute inset-0 spotlight"></div>
   <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-radar/40 to-transparent"></div>
-
-  <!-- Avion en transit (détail animé) -->
-  <div class="hero-plane" aria-hidden="true">
-    <svg viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 12h64" stroke="currentColor" stroke-width="1" stroke-dasharray="2 7" opacity=".55"/>
-      <path d="M118 12c-2.1-.8-6.4-2-9-2.2l-12.4-.9-14.1-6.8c-.9-.4-1.8-.5-2.8-.4l-1.5.3 10.4 8.2-12 .3-4.8-3.2h-2.9l3 4.7-3 4.7h2.9l4.8-3.2 12 .3-10.4 8.2 1.5.3c1 .2 1.9 0 2.8-.4l14.1-6.8 12.4-.9c2.6-.2 6.9-1.4 9-2.2Z" fill="currentColor"/>
-    </svg>
-  </div>
 
   <div class="relative max-w-7xl mx-auto px-5 lg:px-8">
 
