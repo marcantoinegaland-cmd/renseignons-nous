@@ -17,12 +17,12 @@ import urllib.request
 
 # ----------------------------------------------------------------------------
 WP_SITE   = os.environ.get("WP_SITE", "renseignonsnous.wordpress.com")
-BASE_URL  = os.environ.get("BASE_URL", "https://marcantoinegaland-cmd.github.io/renseignons-nous")
-BASE_PATH = os.environ.get("BASE_PATH", "/renseignons-nous/")   # préfixe des liens internes
+BASE_URL  = os.environ.get("BASE_URL", "https://renseignonsnous.fr")   # domaine (URLs absolues SEO)
+BASE_PATH = os.environ.get("BASE_PATH", "/")   # (liens internes désormais relatifs — conservé pour compat)
 SITE_NAME = "Renseignons-nous"
 AUTHOR    = "Marc-Antoine Galand"
 BLOG_ID   = os.environ.get("BLOG_ID", "256008490")            # newsletter WordPress/Jetpack
-CONTACT   = os.environ.get("CONTACT_EMAIL", "marcantoine.galand@gmail.com")
+CONTACT   = os.environ.get("CONTACT_EMAIL", "renseignousnous@gmail.com")
 OUT       = os.path.dirname(os.path.abspath(__file__))
 
 # Config optionnelle (analytics, vérification Search Console) via config.json
@@ -97,14 +97,14 @@ def lead_first_p(content):
 CSS = open(os.path.join(OUT, "_style.css"), encoding="utf-8").read() \
       if os.path.exists(os.path.join(OUT, "_style.css")) else ""
 
-def head(title, desc, canonical, img="", og_type="website", jsonld=None, published=""):
+def head(title, desc, canonical, img="", og_type="website", jsonld=None, published="", root=""):
     tags = [
         '<meta charset="UTF-8" />',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
         f'<title>{html.escape(title)}</title>',
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
-        f'<link rel="icon" href="{BASE_PATH}favicon.svg" type="image/svg+xml" />',
+        f'<link rel="icon" href="{root}favicon.svg" type="image/svg+xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
     ]
     if GSC:
@@ -190,8 +190,8 @@ HOME_JS = """<script>
 })();
 </script>"""
 
-def card(f):
-    href = f"{BASE_PATH}article/{f['slug']}/"
+def card(f, root=""):
+    href = f"{root}article/{f['slug']}/"
     media = (f'<div class="card-media"><img src="{attr(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
              if f["img"] else "")
     dek = f'<p class="card-dek">{html.escape(clip(f["excerpt"], 130))}</p>' if f["excerpt"] else ""
@@ -272,7 +272,7 @@ def render_article(f):
     if f["img"]:
         jsonld["image"] = [f["img"]]
     h = head(f'{f["title"]} — {SITE_NAME}', desc, url, img=f["img"],
-             og_type="article", jsonld=jsonld, published=f["date"])
+             og_type="article", jsonld=jsonld, published=f["date"], root="../../")
     hero = (f'<div class="article-hero"><img src="{attr(f["img"])}" alt="{attr(f["title"])}"/></div>'
             if f["img"] else "")
     dek = f'<p class="article-dek">{html.escape(f["excerpt"])}</p>' if f["excerpt"] else ""
@@ -283,9 +283,9 @@ def render_article(f):
 {h}
 </head>
 <body>
-{masthead(BASE_PATH, full=False)}
+{masthead("../../", full=False)}
 <main class="article-page">
-  <a class="article-back" href="{BASE_PATH}">← Toutes les enquêtes</a>
+  <a class="article-back" href="../../">← Toutes les enquêtes</a>
   <div class="article-meta-top"><span class="tag">{html.escape(f['label'])}</span><span class="article-date">{f['date_fr']}</span></div>
   <h1 class="article-title">{html.escape(f['title'])}</h1>
   {dek}
@@ -295,28 +295,28 @@ def render_article(f):
     <div class="article-signature"><span class="sig-rule"></span><p class="sig-name">{AUTHOR}</p><p class="sig-pub">Renseignons-nous</p></div>
   </div>
 </main>
-{footer(BASE_PATH)}
+{footer("../../")}
 {ANALYTICS}
 </body>
 </html>"""
 
 def render_page(slug, title, desc, body_html):
     url = f"{BASE_URL}/{slug}/"
-    h = head(f"{title} — {SITE_NAME}", desc, url, og_type="website")
+    h = head(f"{title} — {SITE_NAME}", desc, url, og_type="website", root="../")
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
 {h}
 </head>
 <body>
-{masthead(BASE_PATH, full=False)}
+{masthead("../", full=False)}
 <main class="page">
   <h1 class="page-title">{html.escape(title)}</h1>
   <div class="page-body">
 {body_html}
   </div>
 </main>
-{footer(BASE_PATH)}
+{footer("../")}
 {ANALYTICS}
 </body>
 </html>"""
