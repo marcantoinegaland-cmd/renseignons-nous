@@ -22,7 +22,7 @@ BASE_PATH = os.environ.get("BASE_PATH", "/")   # (liens internes désormais rela
 SITE_NAME = "Renseignons-nous"
 AUTHOR    = "Marc-Antoine Galand"
 BLOG_ID   = os.environ.get("BLOG_ID", "256008490")            # newsletter WordPress/Jetpack
-CONTACT   = os.environ.get("CONTACT_EMAIL", "renseignousnous@gmail.com")
+CONTACT   = os.environ.get("CONTACT_EMAIL", "contact@renseignonsnous.fr")
 OUT       = os.path.dirname(os.path.abspath(__file__))
 
 # Config optionnelle (analytics, vérification Search Console) via config.json
