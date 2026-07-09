@@ -239,7 +239,7 @@ def masthead(home, full=True):
   <div class="mast-lede">
     <p class="mast-eyebrow">Renseignement · Défense · Géopolitique</p>
     <h1 class="mast-title">Le monde du renseignement, <em>expliqué.</em></h1>
-    <p class="mast-desc">Articles longs, analyses sourcées et briefings — sans publicité, à partir de sources ouvertes.</p>
+    <p class="mast-desc">Les profondeurs plutôt que l'écume.</p>
   </div>
 </header>"""
 
