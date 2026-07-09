@@ -3,7 +3,7 @@ title: "DGSI-Palantir : anatomie d'un divorce annoncé, pas encore consommé"
 date: 2026-07-09
 category: renseignement
 image: /content/images/0603988146787-web-tete (1).jpg
-excerpt: Mardi 16 juin 2026, Sébastien Lecornu a annoncé que la DGSE rompait avec Palantir au profit du français ChapsVision. Six mois plus tôt, ce même contrat avait pourtant été reconduit jusqu'en 2028. Dans la journée, l'éditeur américain a affirmé que son engagement restait pleinement en vigueur. Comment un outil, présenté comme transitoire en 2016, est-il devenu à ce point structurel ?
+excerpt: Mardi 16 juin 2026, Sébastien Lecornu a annoncé que la DGSE rompait avec Palantir au profit du français ChapsVision. Six mois plus tôt, ce même contrat avait pourtant été reconduit jusqu'en 2028. Dans la journée, l'éditeur américain a affirmé que son engagement restait pleinement en vigueur. Mais alors comment un outil, présenté comme transitoire en 2016, est-il devenu à ce point structurel pour les renseignements français ?
 tags: []
 ---
 
