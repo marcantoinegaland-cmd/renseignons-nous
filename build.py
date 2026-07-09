@@ -469,6 +469,7 @@ def main():
         "Mentions légales du site Renseignons-nous : éditeur, hébergement, propriété intellectuelle et données personnelles.",
         LEGAL_HTML))
     write("favicon.svg", FAVICON)
+    write(".nojekyll", "")   # GitHub Pages : servir les fichiers tels quels (ne pas traiter les .md)
     write("sitemap.xml", sitemap(posts))
     write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: {BASE_URL}/sitemap.xml\n")
     print("Terminé.")

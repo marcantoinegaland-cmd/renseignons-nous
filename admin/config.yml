@@ -2,8 +2,7 @@ backend:
   name: github
   repo: marcantoinegaland-cmd/renseignons-nous
   branch: main
-  # base_url : renseigné après la mise en place du relais de connexion (Cloudflare).
-  # base_url: https://auth.exemple.workers.dev
+  base_url: https://sveltia-cms-auth.marcantoine-galand.workers.dev
 
 # Emplacement des images téléversées depuis l'admin
 media_folder: content/images
