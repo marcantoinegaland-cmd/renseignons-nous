@@ -232,7 +232,7 @@ def masthead(home, full=True):
   <div class="mast-lede">
     <p class="mast-eyebrow">Renseignement · Défense · Géopolitique</p>
     <h1 class="mast-title">Le monde du renseignement, <em>expliqué.</em></h1>
-    <p class="mast-desc">Enquêtes longues, analyses sourcées et briefings — sans publicité, à partir de sources ouvertes.</p>
+    <p class="mast-desc">Articles longs, analyses sourcées et briefings — sans publicité, à partir de sources ouvertes.</p>
   </div>
 </header>"""
 
@@ -286,12 +286,12 @@ def card(f, root=""):
 # ----------------------------------------------------------------------------
 def render_home(posts):
     cards = "\n\n".join(card(f) for f in posts)
-    empty = "" if posts else '<p class="empty-state">Les premières enquêtes seront publiées prochainement.</p>'
+    empty = "" if posts else '<p class="empty-state">Les premiers articles seront publiés prochainement.</p>'
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME,
               "url": BASE_URL + "/",
-              "description": "Renseignement, défense et géopolitique — enquêtes et analyses sourcées."}
+              "description": "Renseignement, défense et géopolitique — articles et analyses sourcées."}
     h = head("Renseignons-nous — Renseignement, défense, géopolitique",
-             "Le média de référence sur le renseignement, la défense et la géopolitique. Enquêtes longues et analyses sourcées, à partir de sources ouvertes.",
+             "Le média de référence sur le renseignement, la défense et la géopolitique. Articles longs et analyses sourcées, à partir de sources ouvertes.",
              BASE_URL + "/", og_type="website", jsonld=jsonld)
     return f"""<!DOCTYPE html>
 <html lang="fr">
@@ -302,7 +302,7 @@ def render_home(posts):
 {masthead('')}
 <main id="enquetes" class="wrap">
   <div class="sec-head">
-    <h2 class="sec-title">Dernières enquêtes</h2>
+    <h2 class="sec-title">Derniers articles</h2>
     <div class="filters">
       <button class="filter-btn is-active" data-filter="all">Tous</button>
       <button class="filter-btn" data-filter="renseignement">Renseignement</button>
@@ -319,7 +319,7 @@ def render_home(posts):
   <div class="nl-inner">
     <div>
       <p class="nl-eyebrow">Newsletter</p>
-      <h2 class="nl-title">Chaque enquête, dans votre boîte mail.</h2>
+      <h2 class="nl-title">Chaque article, dans votre boîte mail.</h2>
       <p class="nl-desc">Une alerte par publication. Pas de spam, désabonnement en un clic.</p>
     </div>
     <form class="nl-form" action="https://subscribe.wordpress.com/" method="post" accept-charset="utf-8" target="_blank">
@@ -365,7 +365,7 @@ def render_article(f):
 <body>
 {masthead("../../", full=False)}
 <main class="article-page">
-  <a class="article-back" href="../../">← Toutes les enquêtes</a>
+  <a class="article-back" href="../../">← Tous les articles</a>
   <div class="article-meta-top"><span class="tag">{html.escape(f['label'])}</span><span class="article-date">{f['date_fr']}</span></div>
   <h1 class="article-title">{html.escape(f['title'])}</h1>
   {dek}
@@ -402,9 +402,9 @@ def render_page(slug, title, desc, body_html):
 </html>"""
 
 ABOUT_HTML = f"""<p class="lead"><strong>Renseignons-nous</strong> est un média indépendant consacré au renseignement, à la défense et à la géopolitique.</p>
-<p>La ligne est simple : prendre le temps d'expliquer. Là où l'actualité va vite et se contente souvent de l'écume, ce site publie des enquêtes longues et des analyses de fond, construites uniquement à partir de <strong>sources ouvertes</strong> — documents officiels, rapports parlementaires, données AIS et satellitaires, presse spécialisée, archives. Aucune information n'y est affirmée sans être sourcée et recoupée.</p>
+<p>La ligne est simple : prendre le temps d'expliquer. Là où l'actualité va vite et se contente souvent de l'écume, ce site publie des articles longs et des analyses de fond, construits uniquement à partir de <strong>sources ouvertes</strong> — documents officiels, rapports parlementaires, données AIS et satellitaires, presse spécialisée, archives. Aucune information n'y est affirmée sans être sourcée et recoupée.</p>
 <h2>Une exigence, pas une course</h2>
-<p>Chaque enquête suit le rythme du fact-checking, non celui du flux. On préfère un dossier solide et documenté à dix brèves invérifiables. Pas de publicité, pas de contenu sponsorisé : la seule fidélité du site va au lecteur qui veut <em>comprendre</em>.</p>
+<p>Chaque article suit le rythme du fact-checking, non celui du flux. On préfère un dossier solide et documenté à dix brèves invérifiables. Pas de publicité, pas de contenu sponsorisé : la seule fidélité du site va au lecteur qui veut <em>comprendre</em>.</p>
 <h2>Qui écrit</h2>
 <p>Le site est édité et rédigé par <strong>{AUTHOR}</strong>, basé à Lyon. Pour toute question, contact ou signalement : <a href="mailto:{CONTACT}">{CONTACT}</a>.</p>"""
 

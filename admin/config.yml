@@ -15,7 +15,7 @@ collections:
   - name: articles
     label: Articles
     label_singular: Article
-    description: "Tes enquêtes et analyses. « Publier » enregistre l'article et met le site à jour."
+    description: "Tes articles et analyses. « Publier » enregistre l'article et met le site à jour."
     folder: content/articles
     create: true
     delete: true
