@@ -17,7 +17,7 @@ L'exercice est présenté comme provisoire. Dans une déclaration relayée par l
 
 ## **L'identité problématique d'un fournisseur régalien**
 
-Palantir n'est pas un éditeur logiciel comme un autre. Fondée en 2003 par Peter Thiel et Alex Karp, l'entreprise a bénéficié dès sa création du soutien d'In-Q-Tel, fonds d'investissement de la CIA. Elle compte parmi ses clients la NSA, le FBI, le département de la Défense, la police fédérale de l'immigration (ICE) et l'armée israélienne. Peter Thiel est un soutien affiché de Donald Trump depuis 2016 ; la seconde administration Trump installe une relation encore plus étroite avec l'écosystème technologique aligné sur Palantir.
+Palantir n'est pas un éditeur logiciel comme un autre. Fondée en 2003 par Peter Thiel et Alex Karp, l'entreprise a bénéficié dès sa création du soutien d'In-Q-Tel, fonds d'investissement de la CIA. Elle compte parmi ses clients la NSA, le FBI, le département de la Défense, la police fédérale de l'immigration (ICE) et l'armée israélienne. Peter Thiel est un soutien affiché de Donald Trump depuis 2016, la seconde administration Trump installe une relation encore plus étroite avec l'écosystème technologique aligné sur Palantir.
 
 La question juridique est distincte, et souvent mal posée. Devant la mission d'information parlementaire sur la souveraineté numérique en 2021, Fabrice Brégier, alors président de Palantir France et ancien PDG d'Airbus, soutenait que Palantir n'est pas un fournisseur de cloud et n'héberge pas les données de ses clients, donc n'entre pas dans le champ du Cloud Act. La ligne de défense est cohérente sur ce texte précis, adopté en mars 2018, qui vise d'abord les hébergeurs américains (AWS, Microsoft Azure, Google Cloud).
 
