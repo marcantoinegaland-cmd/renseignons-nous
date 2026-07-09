@@ -1,0 +1,39 @@
+backend:
+  name: github
+  repo: marcantoinegaland-cmd/renseignons-nous
+  branch: main
+  # base_url : renseigné après la mise en place du relais de connexion (Cloudflare).
+  # base_url: https://auth.exemple.workers.dev
+
+# Emplacement des images téléversées depuis l'admin
+media_folder: content/images
+public_folder: /content/images
+
+# Langue de l'interface
+locale: fr
+
+collections:
+  - name: articles
+    label: Articles
+    label_singular: Article
+    description: "Tes enquêtes et analyses. « Publier » enregistre l'article et met le site à jour."
+    folder: content/articles
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Titre, widget: string }
+      - { name: date, label: Date de publication, widget: datetime, format: "YYYY-MM-DD", date_format: "DD/MM/YYYY", time_format: false, picker_utc: true }
+      - name: category
+        label: Rubrique
+        widget: select
+        options:
+          - { label: Renseignement, value: renseignement }
+          - { label: Défense, value: defense }
+          - { label: Géopolitique, value: geopolitique }
+      - { name: image, label: Image de une, widget: image, required: false, hint: "Sert de visuel sur la carte et en haut de l'article, et pour le partage sur les réseaux." }
+      - { name: excerpt, label: "Résumé (chapô + description SEO)", widget: text, required: false, hint: "1 à 2 phrases. Affiché sous le titre, dans la liste, et utilisé par Google / les partages." }
+      - { name: tags, label: Tags, widget: list, required: false, hint: "Optionnel. Mots-clés (ex. OSINT, Baltique, DGSE)." }
+      - { name: body, label: Corps de l'article, widget: markdown }

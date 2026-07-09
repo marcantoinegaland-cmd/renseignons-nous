@@ -40,11 +40,86 @@ MOIS = ["", "janvier", "février", "mars", "avril", "mai", "juin",
 CATS = {"renseignement": "Renseignement", "defense": "Défense", "geopolitique": "Géopolitique"}
 
 # ----------------------------------------------------------------------------
-def fetch_posts():
-    url = f"https://public-api.wordpress.com/wp/v2/sites/{WP_SITE}/posts?per_page=100&_embed"
-    req = urllib.request.Request(url, headers={"User-Agent": "renseignons-nous-builder"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+# ---- Markdown : front-matter + conversion en HTML (pur stdlib) --------------
+def _unquote(v):
+    v = v.strip()
+    if len(v) >= 2 and v[0] in "\"'" and v[-1] == v[0]:
+        return v[1:-1]
+    return v
+
+def parse_frontmatter(raw):
+    """Sépare le bloc YAML --- ... --- (clés simples + listes) du corps Markdown."""
+    raw = raw.replace("\r\n", "\n").replace("\r", "\n")
+    meta, body = {}, raw
+    if raw.startswith("---\n"):
+        end = raw.find("\n---", 4)
+        if end != -1:
+            fm = raw[4:end]
+            body = raw[end + 4:].lstrip("\n")
+            listbuf = None
+            for ln in fm.split("\n"):
+                if not ln.strip():
+                    continue
+                m = re.match(r"^([\w-]+):\s*(.*)$", ln)
+                if m and not ln[:1].isspace():
+                    key, val = m.group(1), m.group(2).strip()
+                    if val == "":
+                        meta[key] = []
+                        listbuf = meta[key]
+                    else:
+                        meta[key] = _unquote(val)
+                        listbuf = None
+                elif re.match(r"^\s*-\s+", ln) and listbuf is not None:
+                    listbuf.append(_unquote(re.sub(r"^\s*-\s+", "", ln)))
+    return meta, body
+
+def _inline(s):
+    s = html.escape(s)
+    s = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", r'<img src="\2" alt="\1" loading="lazy"/>', s)
+    s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', s)
+    s = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", s)
+    s = re.sub(r"__([^_]+)__", r"<strong>\1</strong>", s)
+    s = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", s)
+    s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+    return s
+
+def md_to_html(md):
+    lines = md.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    out, para, i = [], [], 0
+    def flush():
+        if para:
+            t = " ".join(x.strip() for x in para).strip()
+            if t:
+                out.append("<p>" + _inline(t) + "</p>")
+            para.clear()
+    while i < len(lines):
+        ln = lines[i]; s = ln.strip()
+        if not s:
+            flush(); i += 1; continue
+        m = re.match(r"(#{1,6})\s+(.*)", s)
+        if m:
+            flush(); lvl = 2 if len(m.group(1)) <= 2 else 3
+            out.append(f"<h{lvl}>" + _inline(m.group(2).strip()) + f"</h{lvl}>"); i += 1; continue
+        if re.match(r"^(-{3,}|\*{3,}|_{3,})$", s):
+            flush(); out.append("<hr/>"); i += 1; continue
+        if s.startswith(">"):
+            flush(); q = []
+            while i < len(lines) and lines[i].strip().startswith(">"):
+                q.append(re.sub(r"^\s*>\s?", "", lines[i])); i += 1
+            out.append("<blockquote>" + _inline(" ".join(x.strip() for x in q)) + "</blockquote>"); continue
+        if re.match(r"^[-*+]\s+", s):
+            flush(); items = []
+            while i < len(lines) and re.match(r"^\s*[-*+]\s+", lines[i]):
+                items.append(re.sub(r"^\s*[-*+]\s+", "", lines[i]).strip()); i += 1
+            out.append("<ul>" + "".join("<li>" + _inline(x) + "</li>" for x in items) + "</ul>"); continue
+        if re.match(r"^\d+\.\s+", s):
+            flush(); items = []
+            while i < len(lines) and re.match(r"^\s*\d+\.\s+", lines[i]):
+                items.append(re.sub(r"^\s*\d+\.\s+", "", lines[i]).strip()); i += 1
+            out.append("<ol>" + "".join("<li>" + _inline(x) + "</li>" for x in items) + "</ol>"); continue
+        para.append(ln); i += 1
+    flush()
+    return "\n".join(out)
 
 def txt(s):
     """HTML entities -> texte brut lisible."""
@@ -65,29 +140,34 @@ def date_fr(iso):
     y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
     return f"{d} {MOIS[mo]} {y}"
 
-def post_fields(p):
-    emb = p.get("_embedded", {}) or {}
-    fm = (emb.get("wp:featuredmedia") or [{}])
-    img = fm[0].get("source_url") if fm and isinstance(fm[0], dict) else None
-    if not img:
-        img = p.get("jetpack_featured_media_url") or ""
-    terms = [t for grp in (emb.get("wp:term") or []) for t in grp
-             if isinstance(t, dict) and t.get("name") and t.get("name") != "Non classé"]
-    label = terms[0]["name"] if terms else "Article"
-    cat = next((t["slug"] for t in terms if t.get("slug") in CATS), "")
-    return {
-        "id": p.get("id"),
-        "slug": p.get("slug") or f"article-{p.get('id')}",
-        "title": txt(p.get("title", {}).get("rendered", "")) or "Sans titre",
-        "excerpt": txt(p.get("excerpt", {}).get("rendered", "")),
-        "content": p.get("content", {}).get("rendered", "") or "",
-        "img": img,
-        "label": label,
-        "cat": cat,
-        "date": p.get("date", ""),
-        "modified": p.get("modified", p.get("date", "")),
-        "date_fr": date_fr(p.get("date", "")),
-    }
+def load_articles():
+    """Lit content/articles/*.md et renvoie les articles (triés plus loin)."""
+    d = os.path.join(OUT, "content", "articles")
+    posts = []
+    if not os.path.isdir(d):
+        return posts
+    for fn in sorted(os.listdir(d)):
+        if not fn.endswith(".md"):
+            continue
+        raw = open(os.path.join(d, fn), encoding="utf-8").read()
+        meta, body = parse_frontmatter(raw)
+        slug = (meta.get("slug") or re.sub(r"\.md$", "", fn)).strip()
+        cat = (meta.get("category") or "").strip()
+        date = (meta.get("date") or "").strip()
+        posts.append({
+            "slug": slug,
+            "title": (meta.get("title") or "Sans titre").strip(),
+            "excerpt": (meta.get("excerpt") or "").strip(),
+            "content": md_to_html(body),
+            "img": (meta.get("image") or "").strip(),
+            "label": CATS.get(cat, "Article"),
+            "cat": cat if cat in CATS else "",
+            "date": date,
+            "modified": (meta.get("modified") or date).strip(),
+            "date_fr": date_fr(date),
+            "tags": meta.get("tags") or [],
+        })
+    return posts
 
 def lead_first_p(content):
     """Ajoute la classe lead au premier <p> (lettrine éditoriale)."""
@@ -367,14 +447,9 @@ def write(path, content):
 
 # ----------------------------------------------------------------------------
 def main():
-    try:
-        raw = fetch_posts()
-    except Exception as e:
-        print("ERREUR récupération WordPress :", e, file=sys.stderr)
-        sys.exit(1)   # on n'écrase rien si l'API échoue
-    posts = [post_fields(p) for p in raw]
-    posts.sort(key=lambda f: f["date"], reverse=True)
-    print(f"{len(posts)} article(s) récupéré(s).")
+    posts = load_articles()
+    posts.sort(key=lambda f: (f["date"], f["slug"]), reverse=True)
+    print(f"{len(posts)} article(s) chargé(s) depuis content/articles/.")
 
     # purge des anciennes pages d'articles
     art_dir = os.path.join(OUT, "article")
@@ -395,7 +470,7 @@ def main():
         LEGAL_HTML))
     write("favicon.svg", FAVICON)
     write("sitemap.xml", sitemap(posts))
-    write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
+    write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: {BASE_URL}/sitemap.xml\n")
     print("Terminé.")
 
 if __name__ == "__main__":
