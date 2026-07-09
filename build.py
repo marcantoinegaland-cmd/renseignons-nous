@@ -140,6 +140,13 @@ def date_fr(iso):
     y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
     return f"{d} {MOIS[mo]} {y}"
 
+def slugify(s):
+    """URL propre : sans accent, minuscule, tirets (é->e, espaces/ponctuation->-)."""
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode("ascii")
+    s = re.sub(r"[^a-zA-Z0-9]+", "-", s).strip("-").lower()
+    return s or "article"
+
 def load_articles():
     """Lit content/articles/*.md et renvoie les articles (triés plus loin)."""
     d = os.path.join(OUT, "content", "articles")
@@ -151,7 +158,7 @@ def load_articles():
             continue
         raw = open(os.path.join(d, fn), encoding="utf-8").read()
         meta, body = parse_frontmatter(raw)
-        slug = (meta.get("slug") or re.sub(r"\.md$", "", fn)).strip()
+        slug = slugify(meta.get("slug") or re.sub(r"\.md$", "", fn))
         cat = (meta.get("category") or "").strip()
         date = (meta.get("date") or "").strip()
         posts.append({
@@ -274,12 +281,11 @@ def card(f, root=""):
     href = f"{root}article/{f['slug']}/"
     media = (f'<div class="card-media"><img src="{attr(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
              if f["img"] else "")
-    dek = f'<p class="card-dek">{html.escape(clip(f["excerpt"], 130))}</p>' if f["excerpt"] else ""
     return f"""      <a class="article-card" data-cat="{f['cat']}" href="{href}">
         {media}
         <div class="card-body">
           <div class="card-meta"><span class="tag">{html.escape(f['label'])}</span><p class="card-date">{f['date_fr']}</p></div>
-          <h3 class="card-title">{html.escape(f['title'])}</h3>{dek}
+          <h3 class="card-title">{html.escape(f['title'])}</h3>
         </div>
       </a>"""
 

@@ -11,6 +11,11 @@ public_folder: /content/images
 # Langue de l'interface
 locale: fr
 
+# Noms de fichiers / URLs propres (sans accent)
+slug:
+  encoding: ascii
+  clean_accents: true
+
 collections:
   - name: articles
     label: Articles
