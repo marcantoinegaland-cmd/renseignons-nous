@@ -192,6 +192,7 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
         f'<link rel="icon" href="{root}favicon.svg" type="image/svg+xml" />',
+        f'<link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="{root}rss.xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
     ]
     if GSC:
@@ -226,9 +227,9 @@ def masthead(home, full=True):
     bar = f"""  <div class="mast-bar">
     <a href="{home if home else '#top'}" class="wordmark">Renseignons-nous</a>
     <nav class="mast-nav" aria-label="Rubriques">
-      <a href="{home}#enquetes" data-cat-filter="renseignement">Renseignement</a>
-      <a href="{home}#enquetes" data-cat-filter="defense">Défense</a>
-      <a href="{home}#enquetes" data-cat-filter="geopolitique">Géopolitique</a>
+      <a href="{home}renseignement/">Renseignement</a>
+      <a href="{home}defense/">Défense</a>
+      <a href="{home}geopolitique/">Géopolitique</a>
       <a href="{home}#newsletter" class="mast-sub">S'abonner</a>
     </nav>
   </div>"""
@@ -260,9 +261,9 @@ def footer(home):
         </div>
       </div>
       <nav class="ft-links" aria-label="Pied de page">
-        <a href="{home}#enquetes" data-cat-filter="renseignement">Renseignement</a>
-        <a href="{home}#enquetes" data-cat-filter="defense">Défense</a>
-        <a href="{home}#enquetes" data-cat-filter="geopolitique">Géopolitique</a>
+        <a href="{home}renseignement/">Renseignement</a>
+        <a href="{home}defense/">Défense</a>
+        <a href="{home}geopolitique/">Géopolitique</a>
         <a href="{home}a-propos/">À propos</a>
         <a href="{home}mentions-legales/">Mentions légales</a>
       </nav>
@@ -297,16 +298,23 @@ def card(f, root=""):
         </div>
       </a>"""
 
+def related_posts(cur, posts, n=3):
+    """Autres articles : même rubrique d'abord, puis les plus récents."""
+    same = [p for p in posts if p["slug"] != cur["slug"] and p["cat"] == cur["cat"]]
+    other = [p for p in posts if p["slug"] != cur["slug"] and p["cat"] != cur["cat"]]
+    return (same + other)[:n]
+
 # ----------------------------------------------------------------------------
 def render_home(posts):
     cards = "\n\n".join(card(f) for f in posts)
+    og_img = posts[0]["img"] if posts and posts[0].get("img") else ""
     empty = "" if posts else '<p class="empty-state">Les premiers articles seront publiés prochainement.</p>'
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME,
               "url": BASE_URL + "/",
               "description": "Renseignement, défense et géopolitique — articles et analyses sourcées."}
     h = head("Renseignons-nous — Renseignement, défense, géopolitique",
              "Le média de référence sur le renseignement, la défense et la géopolitique. Articles longs et analyses sourcées, à partir de sources ouvertes.",
-             BASE_URL + "/", og_type="website", jsonld=jsonld)
+             BASE_URL + "/", img=og_img, og_type="website", jsonld=jsonld)
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -353,7 +361,7 @@ def render_home(posts):
 </body>
 </html>"""
 
-def render_article(f):
+def render_article(f, posts=()):
     url = f"{BASE_URL}/article/{f['slug']}/"
     desc = clip(f["excerpt"] or txt(f["content"]), 155)
     jsonld = {
@@ -371,6 +379,16 @@ def render_article(f):
             if f["img"] else "")
     dek = f'<p class="article-dek">{html.escape(f["excerpt"])}</p>' if f["excerpt"] else ""
     body = lead_first_p(f["content"])
+    rel = related_posts(f, posts)
+    related_html = ""
+    if rel:
+        rel_cards = "\n".join(card(p, root="../../") for p in rel)
+        related_html = f"""<section class="related">
+  <h2 class="related-title">À lire aussi</h2>
+  <div class="related-grid">
+{rel_cards}
+  </div>
+</section>"""
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -389,6 +407,7 @@ def render_article(f):
     <div class="article-signature"><span class="sig-rule"></span><p class="sig-name">{AUTHOR}</p><p class="sig-pub">Renseignons-nous</p></div>
   </div>
 </main>
+{related_html}
 {footer("../../")}
 {ANALYTICS}
 </body>
@@ -440,10 +459,91 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
            '<text x="32" y="45" font-family="Georgia, \'Source Serif 4\', serif" '
            'font-size="40" font-weight="700" fill="#fff" text-anchor="middle">R</text></svg>\n')
 
+def render_category(cat, label, posts):
+    items = [p for p in posts if p["cat"] == cat]
+    url = f"{BASE_URL}/{cat}/"
+    cards = "\n\n".join(card(p, root="../") for p in items)
+    empty = "" if items else '<p class="empty-state">Aucun article dans cette rubrique pour le moment.</p>'
+    h = head(f"{label} — {SITE_NAME}",
+             f"Tous les articles de la rubrique {label} sur Renseignons-nous, à partir de sources ouvertes.",
+             url, og_type="website", root="../")
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+{h}
+</head>
+<body>
+{masthead("../", full=False)}
+<main class="wrap">
+  <div class="sec-head">
+    <h2 class="sec-title">{html.escape(label)}</h2>
+  </div>
+  <div id="grid">
+{cards}
+  </div>
+  {empty}
+</main>
+{footer("../")}
+{ANALYTICS}
+</body>
+</html>"""
+
+def render_404():
+    root = BASE_URL + "/"
+    h = head(f"Page introuvable — {SITE_NAME}", "La page demandée n'existe pas ou a été déplacée.",
+             BASE_URL + "/404", og_type="website", root=root)
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+{h}
+</head>
+<body>
+{masthead(root, full=False)}
+<main class="page">
+  <h1 class="page-title">Page introuvable</h1>
+  <div class="page-body">
+    <p class="lead">La page que vous cherchez n'existe pas, ou a été déplacée.</p>
+    <p><a href="{root}">← Retour à l'accueil</a></p>
+  </div>
+</main>
+{footer(root)}
+{ANALYTICS}
+</body>
+</html>"""
+
+def rss(posts):
+    from email.utils import format_datetime
+    from datetime import datetime, timezone
+    items = ""
+    for f in posts[:20]:
+        link = f"{BASE_URL}/article/{f['slug']}/"
+        try:
+            dt = datetime.strptime((f["date"] or "")[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            pub = f"      <pubDate>{format_datetime(dt)}</pubDate>\n"
+        except Exception:
+            pub = ""
+        desc = clip(f["excerpt"] or txt(f["content"]), 300)
+        items += ("    <item>\n"
+                  f"      <title>{html.escape(f['title'])}</title>\n"
+                  f"      <link>{link}</link>\n"
+                  f"      <guid>{link}</guid>\n"
+                  f"{pub}"
+                  f"      <description>{html.escape(desc)}</description>\n"
+                  "    </item>\n")
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<rss version="2.0"><channel>\n'
+            f"  <title>{SITE_NAME}</title>\n"
+            f"  <link>{BASE_URL}/</link>\n"
+            "  <description>Renseignement, défense et géopolitique — articles et analyses sourcées.</description>\n"
+            "  <language>fr</language>\n"
+            f"{items}</channel></rss>\n")
+
 def sitemap(posts):
     urls = [(BASE_URL + "/", None),
             (BASE_URL + "/a-propos/", None),
             (BASE_URL + "/mentions-legales/", None)]
+    for cat in CATS:
+        urls.append((f"{BASE_URL}/{cat}/", None))
     for f in posts:
         lm = (f["modified"] or f["date"] or "")[:10]
         urls.append((f"{BASE_URL}/article/{f['slug']}/", lm or None))
@@ -473,7 +573,11 @@ def main():
 
     write("index.html", render_home(posts))
     for f in posts:
-        write(f"article/{f['slug']}/index.html", render_article(f))
+        write(f"article/{f['slug']}/index.html", render_article(f, posts))
+    for cat, label in CATS.items():
+        write(f"{cat}/index.html", render_category(cat, label, posts))
+    write("404.html", render_404())
+    write("rss.xml", rss(posts))
     write("a-propos/index.html", render_page(
         "a-propos", "À propos",
         "Renseignons-nous, média indépendant sur le renseignement, la défense et la géopolitique, à partir de sources ouvertes.",
