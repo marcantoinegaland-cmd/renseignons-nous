@@ -31,8 +31,11 @@ collections:
       - { name: title, label: Titre, widget: string }
       - { name: date, label: Date de publication, widget: datetime, format: "YYYY-MM-DD", date_format: "DD/MM/YYYY", time_format: false, picker_utc: true }
       - name: category
-        label: Rubrique
+        label: Rubrique(s)
         widget: select
+        multiple: true
+        min: 1
+        hint: "Tu peux en choisir plusieurs (ex. Renseignement + Défense)."
         options:
           - { label: Renseignement, value: renseignement }
           - { label: Défense, value: defense }

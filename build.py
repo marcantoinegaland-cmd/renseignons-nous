@@ -196,6 +196,18 @@ def slugify(s):
     s = re.sub(r"[^a-zA-Z0-9]+", "-", s).strip("-").lower()
     return s or "article"
 
+def norm_list(v):
+    """Normalise une valeur front-matter en liste (gère liste, « [a, b] » ou valeur unique)."""
+    if v is None:
+        return []
+    items = v if isinstance(v, list) else (
+        [x for x in str(v).strip()[1:-1].split(",")] if str(v).strip().startswith("[")
+        else ([str(v).strip()] if str(v).strip() else []))
+    return [x.strip().strip("'\"").lower() for x in items if str(x).strip()]
+
+def tag_spans(labels):
+    return "".join(f'<span class="tag">{html.escape(l)}</span>' for l in labels)
+
 def load_articles():
     """Lit content/articles/*.md et renvoie les articles (triés plus loin)."""
     d = os.path.join(OUT, "content", "articles")
@@ -208,7 +220,7 @@ def load_articles():
         raw = open(os.path.join(d, fn), encoding="utf-8").read()
         meta, body = parse_frontmatter(raw)
         slug = slugify(meta.get("slug") or re.sub(r"\.md$", "", fn))
-        cat = (meta.get("category") or "").strip()
+        cats = [c for c in norm_list(meta.get("category")) if c in CATS]  # 1+ rubriques
         date = (meta.get("date") or "").strip()
         posts.append({
             "slug": slug,
@@ -216,8 +228,10 @@ def load_articles():
             "excerpt": (meta.get("excerpt") or "").strip(),
             "content": md_to_html(body),
             "img": (meta.get("image") or "").strip(),
-            "label": CATS.get(cat, "Article"),
-            "cat": cat if cat in CATS else "",
+            "cats": cats,
+            "cat": cats[0] if cats else "",
+            "labels": [CATS[c] for c in cats],
+            "label": CATS.get(cats[0], "Article") if cats else "Article",
             "date": date,
             "modified": (meta.get("modified") or date).strip(),
             "date_fr": date_fr(date),
@@ -307,11 +321,6 @@ def footer(home):
       <div>
         <p class="ft-word">Renseignons-nous</p>
         <p class="ft-tag">Renseignement · Défense · Géopolitique</p>
-        <div class="ft-social">
-          <a href="https://www.tiktok.com/@renseignonsnous" target="_blank" rel="noopener" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.31 2.06 1.46 3.29 3.46 3.42v2.32c-1.16.11-2.17-.27-3.35-.99v4.86c0 6.18-6.74 8.11-9.45 3.68-1.74-2.85-.67-7.85 4.92-8.05v2.44c-.43.07-.88.18-1.3.32-1.24.42-1.95 1.21-1.75 2.6.37 2.66 5.25 3.45 4.84-1.77V3.01h2.63Z"/></svg>
-          </a>
-        </div>
       </div>
       <nav class="ft-links" aria-label="Pied de page">
         <a href="{home}renseignement/">Renseignement</a>
@@ -333,7 +342,7 @@ HOME_JS = """<script>
     b.classList.add('is-active');
     var f = b.dataset.filter;
     document.querySelectorAll('.article-card').forEach(function(c){
-      c.classList.toggle('is-hidden', !(f==='all' || c.dataset.cat===f));
+      c.classList.toggle('is-hidden', !(f==='all' || c.dataset.cat.split(' ').indexOf(f)>=0));
     });
   }); });
 })();
@@ -343,18 +352,19 @@ def card(f, root=""):
     href = f"{root}article/{f['slug']}/"
     media = (f'<div class="card-media"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
              if f["img"] else "")
-    return f"""      <a class="article-card" data-cat="{f['cat']}" href="{href}">
+    return f"""      <a class="article-card" data-cat="{' '.join(f['cats'])}" href="{href}">
         {media}
         <div class="card-body">
-          <div class="card-meta"><span class="tag">{html.escape(f['label'])}</span><p class="card-date">{f['date_fr']}</p></div>
+          <div class="card-meta">{tag_spans(f['labels'])}<p class="card-date">{f['date_fr']}</p></div>
           <h3 class="card-title">{html.escape(f['title'])}</h3>
         </div>
       </a>"""
 
 def related_posts(cur, posts, n=3):
-    """Autres articles : même rubrique d'abord, puis les plus récents."""
-    same = [p for p in posts if p["slug"] != cur["slug"] and p["cat"] == cur["cat"]]
-    other = [p for p in posts if p["slug"] != cur["slug"] and p["cat"] != cur["cat"]]
+    """Autres articles : rubrique en commun d'abord, puis les plus récents."""
+    ccats = set(cur["cats"])
+    same = [p for p in posts if p["slug"] != cur["slug"] and (set(p["cats"]) & ccats)]
+    other = [p for p in posts if p["slug"] != cur["slug"] and not (set(p["cats"]) & ccats)]
     return (same + other)[:n]
 
 # ----------------------------------------------------------------------------
@@ -466,7 +476,7 @@ def render_article(f, posts=()):
 {masthead("../../", full=False)}
 <main class="article-page">
   <a class="article-back" href="../../">← Tous les articles</a>
-  <div class="article-meta-top"><span class="tag">{html.escape(f['label'])}</span><span class="article-date">{f['date_fr']}</span></div>
+  <div class="article-meta-top">{tag_spans(f['labels'])}<span class="article-date">{f['date_fr']}</span></div>
   <h1 class="article-title">{html.escape(f['title'])}</h1>
   {dek}
   {hero}
@@ -528,7 +538,7 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
            'font-size="40" font-weight="700" fill="#fff" text-anchor="middle">R</text></svg>\n')
 
 def render_category(cat, label, posts):
-    items = [p for p in posts if p["cat"] == cat]
+    items = [p for p in posts if cat in p["cats"]]
     url = f"{BASE_URL}/{cat}/"
     cards = "\n\n".join(card(p, root="../") for p in items)
     empty = "" if items else '<p class="empty-state">Aucun article dans cette rubrique pour le moment.</p>'
