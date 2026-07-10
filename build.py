@@ -225,9 +225,10 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<meta name="twitter:title" content="{html.escape(title)}" />',
         f'<meta name="twitter:description" content="{html.escape(desc)}" />',
     ]
-    oimg = abs_img(img or "/og.png")   # image de partage par défaut = logo
-    tags.append(f'<meta property="og:image" content="{html.escape(oimg)}" />')
-    tags.append(f'<meta name="twitter:image" content="{html.escape(oimg)}" />')
+    if img:
+        oimg = abs_img(img)
+        tags.append(f'<meta property="og:image" content="{html.escape(oimg)}" />')
+        tags.append(f'<meta name="twitter:image" content="{html.escape(oimg)}" />')
     if published:
         tags.append(f'<meta property="article:published_time" content="{html.escape(published)}" />')
     tags += [
@@ -324,13 +325,14 @@ def related_posts(cur, posts, n=3):
 # ----------------------------------------------------------------------------
 def render_home(posts):
     cards = "\n\n".join(card(f) for f in posts)
+    og_img = posts[0]["img"] if posts and posts[0].get("img") else ""
     empty = "" if posts else '<p class="empty-state">Les premiers articles seront publiés prochainement.</p>'
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME,
               "url": BASE_URL + "/",
               "description": "Renseignement, défense et géopolitique — articles et analyses sourcées."}
     h = head("Renseignons-nous — Renseignement, défense, géopolitique",
              "Le média de référence sur le renseignement, la défense et la géopolitique. Articles longs et analyses sourcées, à partir de sources ouvertes.",
-             BASE_URL + "/", og_type="website", jsonld=jsonld)
+             BASE_URL + "/", img=og_img, og_type="website", jsonld=jsonld)
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
