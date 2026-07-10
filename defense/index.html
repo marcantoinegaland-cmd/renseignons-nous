@@ -69,9 +69,11 @@ img{display:block}
 
 /* Article à la une dans le masthead */
 .mast-lede.with-feature{display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:center}
-@media(min-width:920px){
-  .mast-lede.with-feature{grid-template-columns:1.05fr .95fr;gap:3.5rem;padding-top:3.5rem}
-  .mast-lede.with-feature .mast-title{font-size:clamp(2.4rem,4.4vw,3.9rem)}
+@media(min-width:840px){
+  .mast-lede.with-feature{grid-template-columns:1.15fr .85fr;gap:3rem;padding-top:2.5rem}
+  .mast-lede.with-feature .mast-title{font-size:clamp(3rem,5vw,5rem)}
+  .mast-lede.with-feature .mast-desc{font-size:1.2rem;max-width:38ch}
+  .mast-lede.with-feature .mast-eyebrow{font-size:13px}
 }
 .mast-feature{display:block;background:#fff;color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 26px 60px -26px rgba(0,0,0,.5);transition:transform .3s ease}
 .mast-feature:hover{transform:translateY(-4px)}
