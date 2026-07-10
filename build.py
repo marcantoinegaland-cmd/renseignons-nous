@@ -254,11 +254,12 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
     tags = [
         '<meta charset="UTF-8" />',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+        '<meta name="theme-color" content="#1e3ac9" />',
         f'<title>{html.escape(title)}</title>',
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
         f'<link rel="icon" type="image/png" href="{root}favicon.png?v=3" />',
-        f'<link rel="apple-touch-icon" href="{root}favicon.png?v=3" />',
+        f'<link rel="apple-touch-icon" href="{root}apple-touch-icon.png" />',
         f'<link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="{root}rss.xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
     ]
@@ -601,6 +602,7 @@ def render_404():
   <h1 class="page-title">Page introuvable</h1>
   <div class="page-body">
     <p class="lead">La page que vous cherchez n'existe pas, ou a été déplacée.</p>
+    <p>Explorez plutôt : <a href="{root}renseignement/">Renseignement</a> · <a href="{root}defense/">Défense</a> · <a href="{root}geopolitique/">Géopolitique</a>.</p>
     <p><a href="{root}">← Retour à l'accueil</a></p>
   </div>
 </main>
