@@ -207,8 +207,8 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<title>{html.escape(title)}</title>',
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
-        f'<link rel="icon" type="image/png" href="{root}favicon.png?v=2" />',
-        f'<link rel="apple-touch-icon" href="{root}favicon.png?v=2" />',
+        f'<link rel="icon" type="image/png" href="{root}favicon.png?v=3" />',
+        f'<link rel="apple-touch-icon" href="{root}favicon.png?v=3" />',
         f'<link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="{root}rss.xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
     ]
