@@ -40,4 +40,11 @@ collections:
       - { name: image, label: Image de une, widget: image, required: false, hint: "Sert de visuel sur la carte et en haut de l'article, et pour le partage sur les réseaux." }
       - { name: excerpt, label: "Résumé (chapô + description SEO)", widget: text, required: false, hint: "1 à 2 phrases. Affiché sous le titre, dans la liste, et utilisé par Google / les partages." }
       - { name: tags, label: Tags, widget: list, required: false, hint: "Optionnel. Mots-clés (ex. OSINT, Baltique, DGSE)." }
-      - { name: body, label: Corps de l'article, widget: markdown }
+      - name: body
+        label: Corps de l'article
+        widget: markdown
+        hint: >
+          Blocs spéciaux : une image seule sur sa ligne devient une image légendée (la légende = le texte alternatif) ·
+          « > [!note] … » (ou [!source], [!attention]) crée un encadré · une URL YouTube ou de tweet seule sur sa ligne s'intègre automatiquement · « --- » insère un séparateur.
+      - { name: seo_title, label: "Titre SEO (optionnel)", widget: string, required: false, hint: "Titre affiché dans Google et l'onglet. Laisse vide pour reprendre le titre de l'article." }
+      - { name: seo_description, label: "Description SEO (optionnel)", widget: text, required: false, hint: "Méta-description (~155 caractères) pour Google et les partages. Vide = le résumé." }

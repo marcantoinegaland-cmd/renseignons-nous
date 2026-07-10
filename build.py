@@ -84,6 +84,15 @@ def _inline(s):
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
     return s
 
+def _youtube_id(u):
+    m = re.search(r"(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([\w-]{6,})", u)
+    return m.group(1) if m else None
+
+# étiquettes des encadrés/notes
+NOTE_LABELS = {"note": "Note", "info": "À savoir", "source": "Sources",
+               "sources": "Sources", "attention": "Attention", "warning": "Attention",
+               "important": "Important"}
+
 def md_to_html(md):
     lines = md.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     out, para, i = [], [], 0
@@ -103,11 +112,35 @@ def md_to_html(md):
             out.append(f"<h{lvl}>" + _inline(m.group(2).strip()) + f"</h{lvl}>"); i += 1; continue
         if re.match(r"^(-{3,}|\*{3,}|_{3,})$", s):
             flush(); out.append("<hr/>"); i += 1; continue
+        # image seule -> figure avec légende (= texte alternatif)
+        mimg = re.fullmatch(r"!\[([^\]]*)\]\(([^)]+)\)", s)
+        if mimg:
+            flush(); alt = mimg.group(1).strip()
+            cap = f"<figcaption>{html.escape(alt)}</figcaption>" if alt else ""
+            out.append(f'<figure><img src="{img_src(mimg.group(2).strip())}" alt="{html.escape(alt)}" loading="lazy"/>{cap}</figure>')
+            i += 1; continue
+        # vidéo YouTube seule sur une ligne
+        if re.fullmatch(r"https?://\S+", s) and _youtube_id(s):
+            flush()
+            out.append(f'<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/{_youtube_id(s)}" title="Vidéo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
+            i += 1; continue
+        # tweet / X seul sur une ligne
+        if re.fullmatch(r"https?://(?:twitter\.com|x\.com)/\S+/status/\d+\S*", s):
+            flush()
+            out.append(f'<blockquote class="twitter-tweet"><a href="{html.escape(s)}"></a></blockquote>')
+            i += 1; continue
         if s.startswith(">"):
             flush(); q = []
             while i < len(lines) and lines[i].strip().startswith(">"):
                 q.append(re.sub(r"^\s*>\s?", "", lines[i])); i += 1
-            out.append("<blockquote>" + _inline(" ".join(x.strip() for x in q)) + "</blockquote>"); continue
+            text = " ".join(x.strip() for x in q).strip()
+            ma = re.match(r"^\[!(\w+)\]\s*(.*)", text, re.I)
+            if ma:
+                lbl = NOTE_LABELS.get(ma.group(1).lower(), ma.group(1).capitalize())
+                out.append(f'<aside class="note"><p class="note-label">{html.escape(lbl)}</p><p>{_inline(ma.group(2).strip())}</p></aside>')
+            else:
+                out.append("<blockquote>" + _inline(text) + "</blockquote>")
+            continue
         if re.match(r"^[-*+]\s+", s):
             flush(); items = []
             while i < len(lines) and re.match(r"^\s*[-*+]\s+", lines[i]):
@@ -189,6 +222,8 @@ def load_articles():
             "modified": (meta.get("modified") or date).strip(),
             "date_fr": date_fr(date),
             "tags": meta.get("tags") or [],
+            "seo_title": (meta.get("seo_title") or "").strip(),
+            "seo_description": (meta.get("seo_description") or "").strip(),
         })
     return posts
 
@@ -381,7 +416,8 @@ def render_home(posts):
 
 def render_article(f, posts=()):
     url = f"{BASE_URL}/article/{f['slug']}/"
-    desc = clip(f["excerpt"] or txt(f["content"]), 155)
+    seo_t = f.get("seo_title") or f["title"]                       # titre SEO dédié (sinon le titre)
+    desc = clip(f.get("seo_description") or f["excerpt"] or txt(f["content"]), 160)
     jsonld = {
         "@context": "https://schema.org", "@type": "NewsArticle",
         "headline": f["title"], "description": desc, "mainEntityOfPage": url,
@@ -391,12 +427,13 @@ def render_article(f, posts=()):
     }
     if f["img"]:
         jsonld["image"] = [abs_img(f["img"])]
-    h = head(f'{f["title"]} — {SITE_NAME}', desc, url, img=f["img"],
+    h = head(f'{seo_t} — {SITE_NAME}', desc, url, img=f["img"],
              og_type="article", jsonld=jsonld, published=f["date"], root="../../")
     hero = (f'<div class="article-hero"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}"/></div>'
             if f["img"] else "")
     dek = f'<p class="article-dek">{html.escape(f["excerpt"])}</p>' if f["excerpt"] else ""
     body = lead_first_p(f["content"])
+    tw = '\n<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>' if "twitter-tweet" in body else ""
     rel = related_posts(f, posts)
     related_html = ""
     if rel:
@@ -426,7 +463,7 @@ def render_article(f, posts=()):
   </div>
 </main>
 {related_html}
-{footer("../../")}
+{footer("../../")}{tw}
 {ANALYTICS}
 </body>
 </html>"""
