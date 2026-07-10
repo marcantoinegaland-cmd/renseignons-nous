@@ -44,6 +44,22 @@ img{display:block}
 .mast-nav a:hover{color:#fff}
 .mast-nav a.mast-sub{background:#fff;color:var(--blue);padding:.5rem 1.05rem;border-radius:999px;font-weight:600;transition:background .2s}
 .mast-nav a.mast-sub:hover{background:#e9ecff;color:var(--blue)}
+.mast-nav a.mast-tt{display:inline-flex;color:rgba(255,255,255,.85);padding:0}
+.mast-nav a.mast-tt:hover{color:#fff}
+.mast-nav a.mast-tt svg{width:21px;height:21px;display:block}
+
+/* Bandeau TikTok (accueil, sous la newsletter) */
+.tiktok-cta{background:#eceef1;border-top:1px solid var(--line)}
+.tk-inner{max-width:1200px;margin:0 auto;padding:2.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.tk-logo{flex:none;width:48px;height:48px;color:var(--ink)}
+.tk-logo svg{width:100%;height:100%;display:block}
+.tk-text{flex:1;min-width:240px}
+.tk-eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:.35rem}
+.tk-title{font-family:'Source Serif 4',Georgia,serif;font-size:1.6rem;font-weight:700;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
+.tk-stat{margin-top:.4rem;color:#4b5563;font-size:.98rem}
+.tk-btn{margin-left:auto;background:var(--ink);color:#fff;font-weight:700;padding:.85rem 1.5rem;border-radius:999px;white-space:nowrap;transition:transform .2s,background .2s}
+.tk-btn:hover{transform:translateY(-1px);background:#000}
+@media(max-width:640px){ .tk-btn{margin-left:0} }
 .mast-lede{max-width:1200px;margin:0 auto;padding:5rem 1.5rem 1rem}
 .mast-eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:1.35rem;font-weight:600}
 .mast-title{font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:clamp(2.5rem,6vw,4.7rem);line-height:1.02;letter-spacing:-.02em;max-width:15ch}
@@ -169,6 +185,9 @@ img{display:block}
       <a href="../renseignement/">Renseignement</a>
       <a href="../defense/">Défense</a>
       <a href="../geopolitique/">Géopolitique</a>
+      <a href="https://www.tiktok.com/@renseignonsnous" target="_blank" rel="noopener" class="mast-tt" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.31 2.06 1.46 3.29 3.46 3.42v2.32c-1.16.11-2.17-.27-3.35-.99v4.86c0 6.18-6.74 8.11-9.45 3.68-1.74-2.85-.67-7.85 4.92-8.05v2.44c-.43.07-.88.18-1.3.32-1.24.42-1.95 1.21-1.75 2.6.37 2.66 5.25 3.45 4.84-1.77V3.01h2.63Z"/></svg>
+      </a>
       <a href="../#newsletter" class="mast-sub">S'abonner</a>
     </nav>
   </div>

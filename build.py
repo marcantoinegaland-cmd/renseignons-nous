@@ -283,6 +283,9 @@ def masthead(home, full=True):
       <a href="{home}renseignement/">Renseignement</a>
       <a href="{home}defense/">Défense</a>
       <a href="{home}geopolitique/">Géopolitique</a>
+      <a href="https://www.tiktok.com/@renseignonsnous" target="_blank" rel="noopener" class="mast-tt" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.31 2.06 1.46 3.29 3.46 3.42v2.32c-1.16.11-2.17-.27-3.35-.99v4.86c0 6.18-6.74 8.11-9.45 3.68-1.74-2.85-.67-7.85 4.92-8.05v2.44c-.43.07-.88.18-1.3.32-1.24.42-1.95 1.21-1.75 2.6.37 2.66 5.25 3.45 4.84-1.77V3.01h2.63Z"/></svg>
+      </a>
       <a href="{home}#newsletter" class="mast-sub">S'abonner</a>
     </nav>
   </div>"""
@@ -403,6 +406,19 @@ def render_home(posts):
       <input type="hidden" name="redirect_fragment" value="subscribe-blog" />
       <button type="submit">S'abonner</button>
     </form>
+  </div>
+</section>
+<section class="tiktok-cta">
+  <div class="tk-inner">
+    <span class="tk-logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.31 2.06 1.46 3.29 3.46 3.42v2.32c-1.16.11-2.17-.27-3.35-.99v4.86c0 6.18-6.74 8.11-9.45 3.68-1.74-2.85-.67-7.85 4.92-8.05v2.44c-.43.07-.88.18-1.3.32-1.24.42-1.95 1.21-1.75 2.6.37 2.66 5.25 3.45 4.84-1.77V3.01h2.63Z"/></svg>
+    </span>
+    <div class="tk-text">
+      <p class="tk-eyebrow">Sur TikTok</p>
+      <h2 class="tk-title">Le renseignement, aussi en vidéo.</h2>
+      <p class="tk-stat">Plus de 23 000 abonnés et 261 000 j'aime.</p>
+    </div>
+    <a class="tk-btn" href="https://www.tiktok.com/@renseignonsnous" target="_blank" rel="noopener">Suivre sur TikTok</a>
   </div>
 </section>
 {footer('')}
