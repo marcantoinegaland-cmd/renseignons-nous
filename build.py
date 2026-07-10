@@ -207,7 +207,8 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<title>{html.escape(title)}</title>',
         f'<meta name="description" content="{html.escape(desc)}" />',
         f'<link rel="canonical" href="{html.escape(canonical)}" />',
-        f'<link rel="icon" href="{root}favicon.svg" type="image/svg+xml" />',
+        f'<link rel="icon" type="image/png" href="{root}favicon.png" />',
+        f'<link rel="apple-touch-icon" href="{root}favicon.png" />',
         f'<link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="{root}rss.xml" />',
         '<meta name="robots" content="index, follow, max-image-preview:large" />',
     ]
@@ -224,10 +225,9 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<meta name="twitter:title" content="{html.escape(title)}" />',
         f'<meta name="twitter:description" content="{html.escape(desc)}" />',
     ]
-    if img:
-        oimg = abs_img(img)
-        tags.append(f'<meta property="og:image" content="{html.escape(oimg)}" />')
-        tags.append(f'<meta name="twitter:image" content="{html.escape(oimg)}" />')
+    oimg = abs_img(img or "/og.png")   # image de partage par défaut = logo
+    tags.append(f'<meta property="og:image" content="{html.escape(oimg)}" />')
+    tags.append(f'<meta name="twitter:image" content="{html.escape(oimg)}" />')
     if published:
         tags.append(f'<meta property="article:published_time" content="{html.escape(published)}" />')
     tags += [
@@ -324,14 +324,13 @@ def related_posts(cur, posts, n=3):
 # ----------------------------------------------------------------------------
 def render_home(posts):
     cards = "\n\n".join(card(f) for f in posts)
-    og_img = posts[0]["img"] if posts and posts[0].get("img") else ""
     empty = "" if posts else '<p class="empty-state">Les premiers articles seront publiés prochainement.</p>'
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME,
               "url": BASE_URL + "/",
               "description": "Renseignement, défense et géopolitique — articles et analyses sourcées."}
     h = head("Renseignons-nous — Renseignement, défense, géopolitique",
              "Le média de référence sur le renseignement, la défense et la géopolitique. Articles longs et analyses sourcées, à partir de sources ouvertes.",
-             BASE_URL + "/", img=og_img, og_type="website", jsonld=jsonld)
+             BASE_URL + "/", og_type="website", jsonld=jsonld)
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -603,7 +602,6 @@ def main():
         "mentions-legales", "Mentions légales",
         "Mentions légales du site Renseignons-nous : éditeur, hébergement, propriété intellectuelle et données personnelles.",
         LEGAL_HTML))
-    write("favicon.svg", FAVICON)
     write(".nojekyll", "")   # GitHub Pages : servir les fichiers tels quels (ne pas traiter les .md)
     write("sitemap.xml", sitemap(posts))
     write("robots.txt", f"User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: {BASE_URL}/sitemap.xml\n")
