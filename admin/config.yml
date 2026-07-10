@@ -40,6 +40,7 @@ collections:
           - { label: Renseignement, value: renseignement }
           - { label: Défense, value: defense }
           - { label: Géopolitique, value: geopolitique }
+      - { name: featured, label: "À la une", widget: boolean, default: false, hint: "Met cet article en avant dans le grand bandeau d'accueil (à défaut, le plus récent y apparaît)." }
       - { name: image, label: Image de une, widget: image, required: false, hint: "Sert de visuel sur la carte et en haut de l'article, et pour le partage sur les réseaux." }
       - { name: excerpt, label: "Résumé (chapô + description SEO)", widget: text, required: false, hint: "1 à 2 phrases. Affiché sous le titre, dans la liste, et utilisé par Google / les partages." }
       - { name: tags, label: Tags, widget: list, required: false, hint: "Optionnel. Mots-clés (ex. OSINT, Baltique, DGSE)." }

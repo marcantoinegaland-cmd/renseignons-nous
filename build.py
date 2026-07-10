@@ -236,6 +236,7 @@ def load_articles():
             "modified": (meta.get("modified") or date).strip(),
             "date_fr": date_fr(date),
             "tags": meta.get("tags") or [],
+            "featured": str(meta.get("featured")).strip().lower() in ("true", "yes", "1"),
             "seo_title": (meta.get("seo_title") or "").strip(),
             "seo_description": (meta.get("seo_description") or "").strip(),
         })
@@ -290,7 +291,20 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         tags.append('<script type="application/ld+json">' + json.dumps(jsonld, ensure_ascii=False) + "</script>")
     return "\n".join(tags)
 
-def masthead(home, full=True):
+def feature_card(f, home):
+    media = (f'<div class="mf-media"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
+             if f["img"] else "")
+    meta = " · ".join(f["labels"] + ([f["date_fr"]] if f["date_fr"] else []))
+    return f"""<a class="mast-feature" href="{home}article/{f['slug']}/">
+      {media}
+      <div class="mf-body">
+        <span class="mf-badge">À la une</span>
+        <h2 class="mf-title">{html.escape(f['title'])}</h2>
+        <p class="mf-meta">{html.escape(meta)}</p>
+      </div>
+    </a>"""
+
+def masthead(home, full=True, feature=None):
     bar = f"""  <div class="mast-bar">
     <a href="{home if home else '#top'}" class="wordmark">Renseignons-nous</a>
     <nav class="mast-nav" aria-label="Rubriques">
@@ -305,12 +319,17 @@ def masthead(home, full=True):
   </div>"""
     if not full:
         return f'<header class="masthead compact">\n{bar}\n</header>'
+    feat = feature_card(feature, home) if feature else ""
+    cls = "mast-lede with-feature" if feature else "mast-lede"
     return f"""<header class="masthead">
 {bar}
-  <div class="mast-lede">
-    <p class="mast-eyebrow">Renseignement · Défense · Géopolitique</p>
-    <h1 class="mast-title">Le monde du renseignement, <em>expliqué.</em></h1>
-    <p class="mast-desc">Les profondeurs plutôt que l'écume.</p>
+  <div class="{cls}">
+    <div class="mast-lede-text">
+      <p class="mast-eyebrow">Renseignement · Défense · Géopolitique</p>
+      <h1 class="mast-title">Le monde du renseignement, <em>expliqué.</em></h1>
+      <p class="mast-desc">Les profondeurs plutôt que l'écume.</p>
+    </div>
+    {feat}
   </div>
 </header>"""
 
@@ -370,6 +389,7 @@ def related_posts(cur, posts, n=3):
 # ----------------------------------------------------------------------------
 def render_home(posts):
     cards = "\n\n".join(card(f) for f in posts)
+    feature = next((p for p in posts if p.get("featured")), posts[0]) if posts else None
     og_img = posts[0]["img"] if posts and posts[0].get("img") else ""
     empty = "" if posts else '<p class="empty-state">Les premiers articles seront publiés prochainement.</p>'
     jsonld = {"@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME,
@@ -384,7 +404,7 @@ def render_home(posts):
 {h}
 </head>
 <body id="top">
-{masthead('')}
+{masthead('', feature=feature)}
 <main id="enquetes" class="wrap">
   <div class="sec-head">
     <h2 class="sec-title">Derniers articles</h2>
