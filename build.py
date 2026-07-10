@@ -14,6 +14,7 @@ import os
 import re
 import sys
 import urllib.request
+import urllib.parse
 
 # ----------------------------------------------------------------------------
 WP_SITE   = os.environ.get("WP_SITE", "renseignonsnous.wordpress.com")
@@ -129,6 +130,21 @@ def attr(s):
     """Échappe pour un attribut / meta."""
     return html.escape(txt(s), quote=True)
 
+def img_src(p):
+    """Chemin d'image encodé pour une URL (gère espaces/parenthèses des noms de fichiers)."""
+    if not p:
+        return ""
+    if p.startswith("http"):
+        return p
+    return urllib.parse.quote(p, safe="/")
+
+def abs_img(p):
+    """URL absolue d'image (pour og:image, twitter:image, JSON-LD)."""
+    p = img_src(p)
+    if p and p.startswith("/"):
+        return BASE_URL + p
+    return p
+
 def clip(s, n=155):
     s = re.sub(r"\s+", " ", s).strip()
     return (s[: n - 1].rstrip() + "…") if len(s) > n else s
@@ -209,8 +225,9 @@ def head(title, desc, canonical, img="", og_type="website", jsonld=None, publish
         f'<meta name="twitter:description" content="{html.escape(desc)}" />',
     ]
     if img:
-        tags.append(f'<meta property="og:image" content="{html.escape(img)}" />')
-        tags.append(f'<meta name="twitter:image" content="{html.escape(img)}" />')
+        oimg = abs_img(img)
+        tags.append(f'<meta property="og:image" content="{html.escape(oimg)}" />')
+        tags.append(f'<meta name="twitter:image" content="{html.escape(oimg)}" />')
     if published:
         tags.append(f'<meta property="article:published_time" content="{html.escape(published)}" />')
     tags += [
@@ -288,7 +305,7 @@ HOME_JS = """<script>
 
 def card(f, root=""):
     href = f"{root}article/{f['slug']}/"
-    media = (f'<div class="card-media"><img src="{attr(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
+    media = (f'<div class="card-media"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}" loading="lazy"/></div>'
              if f["img"] else "")
     return f"""      <a class="article-card" data-cat="{f['cat']}" href="{href}">
         {media}
@@ -372,10 +389,10 @@ def render_article(f, posts=()):
         "publisher": {"@type": "Organization", "name": SITE_NAME},
     }
     if f["img"]:
-        jsonld["image"] = [f["img"]]
+        jsonld["image"] = [abs_img(f["img"])]
     h = head(f'{f["title"]} — {SITE_NAME}', desc, url, img=f["img"],
              og_type="article", jsonld=jsonld, published=f["date"], root="../../")
-    hero = (f'<div class="article-hero"><img src="{attr(f["img"])}" alt="{attr(f["title"])}"/></div>'
+    hero = (f'<div class="article-hero"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}"/></div>'
             if f["img"] else "")
     dek = f'<p class="article-dek">{html.escape(f["excerpt"])}</p>' if f["excerpt"] else ""
     body = lead_first_p(f["content"])
