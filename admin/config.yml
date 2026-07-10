@@ -43,6 +43,8 @@ collections:
       - name: body
         label: Corps de l'article
         widget: markdown
+        buttons: [bold, italic, link, heading-two, heading-three, quote, bulleted-list, numbered-list]
+        editor_components: [image]
         hint: >
           Blocs spéciaux : une image seule sur sa ligne devient une image légendée (la légende = le texte alternatif) ·
           « > [!note] … » (ou [!source], [!attention]) crée un encadré · une URL YouTube ou de tweet seule sur sa ligne s'intègre automatiquement · « --- » insère un séparateur.
