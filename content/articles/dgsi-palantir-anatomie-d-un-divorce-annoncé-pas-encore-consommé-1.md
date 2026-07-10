@@ -1,10 +1,14 @@
 ---
 title: "DGSI-Palantir : anatomie d'un divorce annoncé, pas encore consommé"
 date: 2026-07-09
-category: renseignement
+category:
+  - renseignement
+  - defense
 image: /content/images/0603988146787-web-tete (1).jpg
 excerpt: Mardi 16 juin 2026, Sébastien Lecornu a annoncé que la DGSE rompait avec Palantir au profit du français ChapsVision. Six mois plus tôt, ce même contrat avait pourtant été reconduit jusqu'en 2028. Dans la journée, l'éditeur américain a affirmé que son engagement restait pleinement en vigueur. Mais alors comment un outil, présenté comme transitoire en 2016, est-il devenu à ce point structurel pour les renseignements français ?
 tags: []
+seo_title: ''
+seo_description: ''
 ---
 
 Le 15 décembre 2025, Palantir Technologies publie un communiqué. Son contrat avec la Direction générale de la sécurité intérieure (DGSI) vient d'être reconduit pour trois ans, portant l'échéance à 2028. Six mois plus tard, à la veille du salon VivaTech, le Premier ministre annonce en vidéo la rupture de ce même contrat. Entre les deux dates, aucune bascule technique n'a eu lieu.
