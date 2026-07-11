@@ -6,6 +6,7 @@ category:
   - renseignement
 featured: true
 image: /content/images/7df83b3_ftp-import-images-1-cpx0sy7jjgxm-5762028-01-06.avif
+image_caption: La journaliste Ariane Lavrilleux, lors d’un rassemblement de soutien organisé à Paris, le 17 janvier 2025. ANNA KURTH / AFP
 excerpt: Le 8 juillet 2026, la cour d'appel de Paris ordonne la réouverture de l'enquête judiciaire contre la journaliste de Disclose Ariane Lavrilleux. Trois ans après sa garde à vue, neuf mois après un non-lieu. Le scandale n'est pas cette valse procédurale, mais bien le vide législatif qui la rend possible, et que le Parlement refuse de combler depuis 2016.
 tags: []
 seo_title: 'Affaire Lavrilleux : le silence coupable du Parlement - Renseignons-nous'
