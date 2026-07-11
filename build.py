@@ -228,6 +228,7 @@ def load_articles():
             "excerpt": (meta.get("excerpt") or "").strip(),
             "content": md_to_html(body),
             "img": (meta.get("image") or "").strip(),
+            "img_caption": (meta.get("image_caption") or "").strip(),
             "cats": cats,
             "cat": cats[0] if cats else "",
             "labels": [CATS[c] for c in cats],
@@ -473,8 +474,10 @@ def render_article(f, posts=()):
         jsonld["image"] = [abs_img(f["img"])]
     h = head(f'{seo_t} — {SITE_NAME}', desc, url, img=f["img"],
              og_type="article", jsonld=jsonld, published=f["date"], root="../../")
-    hero = (f'<div class="article-hero"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}"/></div>'
-            if f["img"] else "")
+    hero = ""
+    if f["img"]:
+        cap = f'<figcaption>{html.escape(f["img_caption"])}</figcaption>' if f.get("img_caption") else ""
+        hero = f'<figure class="article-hero"><img src="{img_src(f["img"])}" alt="{attr(f["title"])}"/>{cap}</figure>'
     dek = f'<p class="article-dek">{html.escape(f["excerpt"])}</p>' if f["excerpt"] else ""
     body = lead_first_p(f["content"])
     tw = '\n<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>' if "twitter-tweet" in body else ""

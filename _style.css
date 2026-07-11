@@ -135,8 +135,9 @@ img{display:block}
 .article-date{font-size:13px;color:var(--muted)}
 .article-title{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.08;letter-spacing:-.015em}
 .article-dek{margin-top:1rem;font-family:'Source Serif 4',Georgia,serif;font-size:1.2rem;color:#4b5563;line-height:1.5}
-.article-hero{margin:2rem 0;border-radius:8px;overflow:hidden;background:#eef0f3}
-.article-hero img{width:100%;height:auto;max-height:62vh;object-fit:cover}
+.article-hero{margin:2rem 0}
+.article-hero img{display:block;width:100%;height:auto;max-height:62vh;object-fit:cover;border-radius:8px;background:#eef0f3}
+.article-hero figcaption{margin-top:.6rem;font-size:.85rem;line-height:1.45;color:var(--muted)}
 .article-body{font-family:'Source Serif 4',Georgia,serif;font-size:1.16rem;line-height:1.8;color:#24303f;margin-top:1.5rem}
 .article-body p{margin:0 0 1.5rem}
 .article-body p.lead{font-size:1.32rem;color:var(--ink);line-height:1.55;margin-bottom:2rem}
