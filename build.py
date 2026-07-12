@@ -367,6 +367,19 @@ HOME_JS = """<script>
     });
   }); });
 })();
+(function(){
+  var form = document.querySelector('.nl-form');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    var email = form.querySelector('input[type=email]');
+    if(!email || !email.checkValidity()) return; // laisse la validation native gérer email vide/invalide
+    e.preventDefault();
+    var body = new URLSearchParams(new FormData(form));
+    fetch(form.action, {method:'POST', mode:'no-cors', body:body}).catch(function(){});
+    form.insertAdjacentHTML('afterend', '<p class="nl-done" role="status">Merci — vérifiez votre boîte mail pour confirmer votre inscription.</p>');
+    form.style.display = 'none';
+  });
+})();
 </script>"""
 
 def card(f, root=""):
@@ -429,13 +442,10 @@ def render_home(posts):
       <h2 class="nl-title">Chaque article, dans votre boîte mail.</h2>
       <p class="nl-desc">Une alerte par publication. Pas de spam, désabonnement en un clic.</p>
     </div>
-    <form class="nl-form" action="https://subscribe.wordpress.com/" method="post" accept-charset="utf-8" target="_blank">
-      <input type="email" name="email" required placeholder="votre@email.com" aria-label="Adresse e-mail" />
-      <input type="hidden" name="action" value="subscribe" />
-      <input type="hidden" name="blog_id" value="{BLOG_ID}" />
-      <input type="hidden" name="source" value="{BASE_URL}/" />
-      <input type="hidden" name="sub-type" value="renseignons-nous-site" />
-      <input type="hidden" name="redirect_fragment" value="subscribe-blog" />
+    <form class="nl-form" action="https://assets.mailerlite.com/jsonp/2504005/forms/192720375616899063/subscribe" method="post" accept-charset="utf-8" target="_blank">
+      <input type="email" name="fields[email]" required placeholder="votre@email.com" aria-label="Adresse e-mail" autocomplete="email" />
+      <input type="hidden" name="ml-submit" value="1" />
+      <input type="hidden" name="anticsrf" value="true" />
       <button type="submit">S'abonner</button>
     </form>
   </div>
